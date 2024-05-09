@@ -13,10 +13,10 @@
 
 package frc.robot;
 
+import static java.lang.Math.PI;
+
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
-
-import static java.lang.Math.PI;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -31,7 +31,7 @@ public final class Constants {
 
   public static enum Mode {
     REAL, // running on a real robot
-    SIM,  // running on a physics simulator
+    SIM, // running on a physics simulator
     REPLAY // replaying from a log file
   }
 
@@ -43,15 +43,14 @@ public final class Constants {
         Units.inchesToMeters(23.75); // meters - 5.25 inches less than frame length for MK4i
     public static final double DRIVE_BASE_RADIUS =
         Math.hypot(TRACK_WIDTH_X / 2.0, TRACK_WIDTH_Y / 2.0); // meters
-    public static final double MAX_ANGULAR_SPEED = MAX_LINEAR_SPEED / DRIVE_BASE_RADIUS; // radians per second
+    public static final double MAX_ANGULAR_SPEED =
+        MAX_LINEAR_SPEED / DRIVE_BASE_RADIUS; // radians per second
 
-    private DriveConstants() {
-
-    }
+    private DriveConstants() {}
   }
 
   public static class AutoConstants {
-    
+
     public static final double X_kP = 5.0;
     public static final double X_kI = 0.0;
     public static final double X_kD = 0.0;
@@ -60,7 +59,8 @@ public final class Constants {
     public static final double Y_kI = 0.0;
     public static final double Y_kD = 0.0;
 
-    public static final TrapezoidProfile.Constraints THETA_CONSTRAINTS = new TrapezoidProfile.Constraints(PI, 2 / PI);
+    public static final TrapezoidProfile.Constraints THETA_CONSTRAINTS =
+        new TrapezoidProfile.Constraints(PI, 2 / PI);
     public static final double THETA_kP = 6.0;
     public static final double THETA_kI = 0.02;
     public static final double THETA_kD = 0.0;
@@ -69,17 +69,13 @@ public final class Constants {
     public static final double PATH_THETA_kI = 0.001;
     public static final double PATH_THETA_kD = 0.0;
 
-    private AutoConstants() {
-
-    }
+    private AutoConstants() {}
   }
 
   public static class VisionConstants {
     public static final double FIELD_LENGTH = Units.inchesToMeters(651.223); // length in meters
     public static final double FIELD_WIDTH = Units.inchesToMeters(323.277); // length in meters
 
-    private VisionConstants() {
-
-    }
+    private VisionConstants() {}
   }
 }

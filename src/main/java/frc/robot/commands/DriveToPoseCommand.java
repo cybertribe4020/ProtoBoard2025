@@ -9,12 +9,9 @@ import static frc.robot.Constants.AutoConstants.X_kP;
 import static frc.robot.Constants.AutoConstants.Y_kD;
 import static frc.robot.Constants.AutoConstants.Y_kI;
 import static frc.robot.Constants.AutoConstants.Y_kP;
-import static frc.robot.Constants.DriveConstants.MAX_LINEAR_SPEED;
 import static frc.robot.Constants.DriveConstants.MAX_ANGULAR_SPEED;
+import static frc.robot.Constants.DriveConstants.MAX_LINEAR_SPEED;
 import static frc.robot.Constants.VisionConstants.FIELD_WIDTH;
-
-import java.util.Optional;
-import java.util.function.Supplier;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -26,19 +23,18 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.subsystems.drive.Drive;
+import java.util.Optional;
+import java.util.function.Supplier;
 
 public class DriveToPoseCommand {
 
   private static final double TRANSLATION_TOLERANCE = 0.02;
   private static final double THETA_TOLERANCE = Units.degreesToRadians(2.0);
 
-  /** Default constraints are 90% of max speed, accelerate to full speed in 1/3 second */
-  private static final TrapezoidProfile.Constraints DEFAULT_XY_CONSTRAINTS = new TrapezoidProfile.Constraints(
-      MAX_LINEAR_SPEED * 0.5,
-      MAX_LINEAR_SPEED);
-  private static final TrapezoidProfile.Constraints DEFAULT_OMEGA_CONSTRAINTS = new TrapezoidProfile.Constraints(
-      MAX_ANGULAR_SPEED * 0.4,
-      MAX_ANGULAR_SPEED);
+  private static final TrapezoidProfile.Constraints DEFAULT_XY_CONSTRAINTS =
+      new TrapezoidProfile.Constraints(MAX_LINEAR_SPEED * 0.5, MAX_LINEAR_SPEED);
+  private static final TrapezoidProfile.Constraints DEFAULT_OMEGA_CONSTRAINTS =
+      new TrapezoidProfile.Constraints(MAX_ANGULAR_SPEED * 0.4, MAX_ANGULAR_SPEED);
 
   private final ProfiledPIDController xController;
   private final ProfiledPIDController yController;
@@ -50,20 +46,23 @@ public class DriveToPoseCommand {
   private final boolean useAllianceColor;
 
   public DriveToPoseCommand(
-        Drive drive,
-        Supplier<Pose2d> poseProvider,
-        Pose2d goalPose,
-        boolean useAllianceColor) {
-    this(drive, poseProvider, goalPose, DEFAULT_XY_CONSTRAINTS, DEFAULT_OMEGA_CONSTRAINTS, useAllianceColor);
+      Drive drive, Supplier<Pose2d> poseProvider, Pose2d goalPose, boolean useAllianceColor) {
+    this(
+        drive,
+        poseProvider,
+        goalPose,
+        DEFAULT_XY_CONSTRAINTS,
+        DEFAULT_OMEGA_CONSTRAINTS,
+        useAllianceColor);
   }
 
   public DriveToPoseCommand(
-        Drive drive,
-        Supplier<Pose2d> poseProvider,
-        Pose2d goalPose,
-        TrapezoidProfile.Constraints xyConstraints,
-        TrapezoidProfile.Constraints omegaConstraints,
-        boolean useAllianceColor) {
+      Drive drive,
+      Supplier<Pose2d> poseProvider,
+      Pose2d goalPose,
+      TrapezoidProfile.Constraints xyConstraints,
+      TrapezoidProfile.Constraints omegaConstraints,
+      boolean useAllianceColor) {
     this.drive = drive;
     this.poseProvider = poseProvider;
     this.goalPose = goalPose;
@@ -84,18 +83,20 @@ public class DriveToPoseCommand {
     boolean allianceRed = false;
     Optional<Alliance> ally = DriverStation.getAlliance();
     if (ally.isPresent()) {
-        if (ally.get() == Alliance.Red) {
-            allianceRed = true;
-        }
+      if (ally.get() == Alliance.Red) {
+        allianceRed = true;
+      }
     }
     if (useAllianceColor && allianceRed) {
-      Translation2d transformedTranslation = new Translation2d(pose.getX(), FIELD_WIDTH - pose.getY());
+      Translation2d transformedTranslation =
+          new Translation2d(pose.getX(), FIELD_WIDTH - pose.getY());
       Rotation2d transformedHeading = pose.getRotation().times(-1);
       pose = new Pose2d(transformedTranslation, transformedHeading);
     }
     thetaController.setGoal(pose.getRotation().getRadians());
     xController.setGoal(pose.getX());
-    yController.setGoal(pose.getY());  }
+    yController.setGoal(pose.getY());
+  }
 
   public boolean atGoal() {
     return xController.atGoal() && yController.atGoal() && thetaController.atGoal();
@@ -127,7 +128,7 @@ public class DriveToPoseCommand {
     }
 
     drive.runVelocity(
-      ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, omegaSpeed, robotPose.getRotation()));
+        ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, omegaSpeed, robotPose.getRotation()));
   }
 
   public boolean isFinished() {
