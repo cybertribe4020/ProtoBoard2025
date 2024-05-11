@@ -15,8 +15,10 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.path.PathConstraints;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -159,6 +161,8 @@ public class RobotContainer {
         .whileTrue(
             Commands.startEnd(
                 () -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop, flywheel));
+
+    // drive to climb start location in front of stage left
     controller
         .y()
         .whileTrue(
@@ -167,6 +171,18 @@ public class RobotContainer {
                 () -> drive.getPose(),
                 new Pose2d(4.0, 5.5, Rotation2d.fromDegrees(120.0)),
                 true));
+
+    // drive a path with obstacle avoidance to climb start location in front of stage left
+    // note that the pathplanner command will end immediately if the robot is too close to the target location
+    controller
+        .start()
+        .whileTrue(
+            AutoBuilder.pathfindToPose(
+                new Pose2d(4.0, 5.5, Rotation2d.fromDegrees(120.0)),
+                new PathConstraints(
+                    3.0, 4.0, Units.degreesToRadians(540), Units.degreesToRadians(720)),
+                0.0,
+                0.0));
   }
 
   /**
