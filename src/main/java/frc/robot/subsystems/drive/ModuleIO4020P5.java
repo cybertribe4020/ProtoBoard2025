@@ -36,6 +36,7 @@ import edu.wpi.first.math.util.Units;
  * absolute encoders using AdvantageScope. These values are logged under
  * "/Drive/ModuleX/TurnAbsolutePositionRad"
  */
+@SuppressWarnings({"deprecation","removal"})
 public class ModuleIO4020P5 implements ModuleIO {
 
   private final WPI_TalonFX driveTalon;
