@@ -29,7 +29,7 @@ import frc.robot.commands.DriveCommands;
 import frc.robot.commands.DriveToPoseCommand;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
-import frc.robot.subsystems.drive.GyroIOPigeon2;
+import frc.robot.subsystems.drive.GyroIOPigeon2P5;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIO4020;
 import frc.robot.subsystems.drive.ModuleIOSim;
@@ -66,7 +66,7 @@ public class RobotContainer {
         // Real robot, instantiate hardware IO implementations
         drive =
             new Drive(
-                new GyroIOPigeon2(),
+                new GyroIOPigeon2P5(),
                 new ModuleIO4020(0),
                 new ModuleIO4020(1),
                 new ModuleIO4020(2),
