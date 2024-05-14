@@ -20,8 +20,6 @@ import edu.wpi.first.math.util.Units;
 /** IO implementation for Pigeon2 */
 public class GyroIOPigeon2P5 implements GyroIO {
   private final WPI_Pigeon2 pigeon = new WPI_Pigeon2(43);
-  private final double yaw = pigeon.getYaw();
-  private final double yawVelocity = pigeon.getRate();
 
   public GyroIOPigeon2P5() {
     pigeon.setYaw(0.0);
@@ -30,7 +28,7 @@ public class GyroIOPigeon2P5 implements GyroIO {
   @Override
   public void updateInputs(GyroIOInputs inputs) {
     inputs.connected = true; // not sure how to check connectedness in Phoenix5
-    inputs.yawPosition = Rotation2d.fromDegrees(yaw);
-    inputs.yawVelocityRadPerSec = Units.degreesToRadians(yawVelocity);
+    inputs.yawPosition = Rotation2d.fromDegrees(pigeon.getYaw());
+    inputs.yawVelocityRadPerSec = Units.degreesToRadians(pigeon.getRate()); // getRate is positive for clockwise rotations if Pigeon case top points up
   }
 }
