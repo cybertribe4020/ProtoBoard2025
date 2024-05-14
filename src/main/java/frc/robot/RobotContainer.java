@@ -29,9 +29,9 @@ import frc.robot.commands.DriveCommands;
 import frc.robot.commands.DriveToPoseCommand;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
-import frc.robot.subsystems.drive.GyroIOPigeon2;
+import frc.robot.subsystems.drive.GyroIOPigeon2P5;
 import frc.robot.subsystems.drive.ModuleIO;
-import frc.robot.subsystems.drive.ModuleIO4020;
+import frc.robot.subsystems.drive.ModuleIO4020P5;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.flywheel.Flywheel;
 import frc.robot.subsystems.flywheel.FlywheelIO;
@@ -66,11 +66,11 @@ public class RobotContainer {
         // Real robot, instantiate hardware IO implementations
         drive =
             new Drive(
-                new GyroIOPigeon2(),
-                new ModuleIO4020(0),
-                new ModuleIO4020(1),
-                new ModuleIO4020(2),
-                new ModuleIO4020(3));
+                new GyroIOPigeon2P5(),
+                new ModuleIO4020P5(0),
+                new ModuleIO4020P5(1),
+                new ModuleIO4020P5(2),
+                new ModuleIO4020P5(3));
         flywheel = new Flywheel(new FlywheelIOSparkMax());
         break;
 
