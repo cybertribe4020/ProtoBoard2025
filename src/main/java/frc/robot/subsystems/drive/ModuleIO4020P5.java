@@ -13,13 +13,13 @@
 
 package frc.robot.subsystems.drive;
 
-import com.ctre.phoenix.sensors.CANCoderConfiguration;
-import com.ctre.phoenix.sensors.WPI_CANCoder;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
+import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.ctre.phoenix.sensors.CANCoderConfiguration;
+import com.ctre.phoenix.sensors.WPI_CANCoder;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
@@ -36,7 +36,7 @@ import edu.wpi.first.math.util.Units;
  * absolute encoders using AdvantageScope. These values are logged under
  * "/Drive/ModuleX/TurnAbsolutePositionRad"
  */
-@SuppressWarnings({"deprecation","removal"})
+@SuppressWarnings({"deprecation", "removal"})
 public class ModuleIO4020P5 implements ModuleIO {
 
   private final WPI_TalonFX driveTalon;
@@ -58,25 +58,25 @@ public class ModuleIO4020P5 implements ModuleIO {
         driveTalon = new WPI_TalonFX(4);
         turnSparkMax = new CANSparkMax(3, MotorType.kBrushless);
         cancoder = new WPI_CANCoder(3);
-        absoluteEncoderOffset = new Rotation2d(5.28); // ToDo: MUST BE CALIBRATED
+        absoluteEncoderOffset = new Rotation2d(2.638); // ToDo: MUST BE CALIBRATED
         break;
       case 1: // FR
         driveTalon = new WPI_TalonFX(2);
         turnSparkMax = new CANSparkMax(1, MotorType.kBrushless);
         cancoder = new WPI_CANCoder(1);
-        absoluteEncoderOffset = new Rotation2d(1.92); // ToDo: MUST BE CALIBRATED
+        absoluteEncoderOffset = new Rotation2d(0.723); // ToDo: MUST BE CALIBRATED
         break;
       case 2: // BL
         driveTalon = new WPI_TalonFX(6);
         turnSparkMax = new CANSparkMax(5, MotorType.kBrushless);
         cancoder = new WPI_CANCoder(5);
-        absoluteEncoderOffset = new Rotation2d(3.30); // ToDo: MUST BE CALIBRATED
+        absoluteEncoderOffset = new Rotation2d(-2.790); // ToDo: MUST BE CALIBRATED
         break;
       case 3: // BR
         driveTalon = new WPI_TalonFX(8);
         turnSparkMax = new CANSparkMax(7, MotorType.kBrushless);
         cancoder = new WPI_CANCoder(7);
-        absoluteEncoderOffset = new Rotation2d(0.49); // ToDo: MUST BE CALIBRATED
+        absoluteEncoderOffset = new Rotation2d(-2.065); // ToDo: MUST BE CALIBRATED
         break;
       default:
         throw new RuntimeException("Invalid module index");
@@ -104,7 +104,9 @@ public class ModuleIO4020P5 implements ModuleIO {
     turnRelativeEncoder.setMeasurementPeriod(10);
     turnRelativeEncoder.setAverageDepth(2);
 
-    driveTalon.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 10); // faster position rate for odometry - Phoenix5 can't separate velocity from position
+    driveTalon.setStatusFramePeriod(
+        StatusFrameEnhanced.Status_2_Feedback0,
+        10); // faster position rate for odometry - Phoenix5 can't separate velocity from position
 
     turnSparkMax.setCANTimeout(0);
     turnSparkMax.burnFlash();
@@ -113,14 +115,16 @@ public class ModuleIO4020P5 implements ModuleIO {
   @Override
   public void updateInputs(ModuleIOInputs inputs) {
     inputs.drivePositionRad =
-        Units.rotationsToRadians(driveTalon.getSelectedSensorPosition(0) / 2048.0) / DRIVE_GEAR_RATIO;
+        Units.rotationsToRadians(driveTalon.getSelectedSensorPosition(0) / 2048.0)
+            / DRIVE_GEAR_RATIO;
     inputs.driveVelocityRadPerSec =
-        Units.rotationsToRadians(driveTalon.getSelectedSensorVelocity(0) * 10.0 / 2048.0) / DRIVE_GEAR_RATIO;
+        Units.rotationsToRadians(driveTalon.getSelectedSensorVelocity(0) * 10.0 / 2048.0)
+            / DRIVE_GEAR_RATIO;
     inputs.driveAppliedVolts = driveTalon.getMotorOutputVoltage();
     inputs.driveCurrentAmps = new double[] {driveTalon.getSupplyCurrent()};
 
     inputs.turnAbsolutePosition =
-        Rotation2d.fromRotations(cancoder.getAbsolutePosition())
+        Rotation2d.fromRotations(cancoder.getAbsolutePosition() / 360.0)
             .minus(absoluteEncoderOffset);
 
     inputs.turnPosition =
