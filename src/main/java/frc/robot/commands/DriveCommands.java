@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.drive.Drive;
 import java.util.function.DoubleSupplier;
+import org.littletonrobotics.junction.Logger;
 
 public class DriveCommands {
   private static final double DEADBAND = 0.1;
@@ -58,6 +59,10 @@ public class DriveCommands {
               new Pose2d(new Translation2d(), linearDirection)
                   .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
                   .getTranslation();
+
+          Logger.recordOutput("linearMagnitude", linearMagnitude);
+          Logger.recordOutput("linearVelocity", linearVelocity);
+          Logger.recordOutput("omega", omega);
 
           // Convert to field relative speeds & send command
           boolean isFlipped =

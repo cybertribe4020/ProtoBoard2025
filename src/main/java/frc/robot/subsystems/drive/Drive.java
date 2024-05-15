@@ -40,7 +40,7 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Drive extends SubsystemBase {
-  private static final double MAX_LINEAR_SPEED = Units.feetToMeters(16.6);
+  private static final double MAX_LINEAR_SPEED = Units.feetToMeters(15.0);
   private static final double TRACK_WIDTH_X =
       Units.inchesToMeters(24.75); // 5.25 inches less than frame for MK4i
   private static final double TRACK_WIDTH_Y =
