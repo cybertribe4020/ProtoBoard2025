@@ -30,6 +30,10 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Time;
+import edu.wpi.first.units.Velocity;
+import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -48,6 +52,11 @@ public class Drive extends SubsystemBase {
   private static final double DRIVE_BASE_RADIUS =
       Math.hypot(TRACK_WIDTH_X / 2.0, TRACK_WIDTH_Y / 2.0);
   private static final double MAX_ANGULAR_SPEED = MAX_LINEAR_SPEED / DRIVE_BASE_RADIUS;
+
+  // configuration settings for SysID
+  private final Measure<Velocity<Voltage>> rampRate = Volts.of(1.5).per(Seconds.of(1));
+  private final Measure<Voltage> stepVoltage = Volts.of(7);
+  private final Measure<Time> timeout = Seconds.of(5);
 
   private final GyroIO gyroIO;
   private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
@@ -105,9 +114,9 @@ public class Drive extends SubsystemBase {
     sysId =
         new SysIdRoutine(
             new SysIdRoutine.Config(
-                null,
-                null,
-                null,
+                rampRate,
+                stepVoltage,
+                timeout,
                 (state) -> Logger.recordOutput("Drive/SysIdState", state.toString())),
             new SysIdRoutine.Mechanism(
                 (voltage) -> {
