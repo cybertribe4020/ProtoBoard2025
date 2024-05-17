@@ -167,24 +167,24 @@ public class RobotContainer {
             Commands.startEnd(
                 () -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop, flywheel));
 
-    // drive to climb start location in front of stage left
+    // drive to climb start location in front of red stage left
     controller
         .y()
         .whileTrue(
             new DriveToPoseCommand(
                 drive,
                 drive::getPose, // could also use () -> drive.getPose()
-                new Pose2d(4.0, 5.5, Rotation2d.fromDegrees(120.0)),
-                true));
+                new Pose2d(12.6, 2.6, Rotation2d.fromDegrees(120.0)),
+                false));
 
-    // drive a path with obstacle avoidance to climb start location in front of stage left
+    // drive a path with obstacle avoidance to climb start location in front of red stage left
     // note that the pathplanner only gets within a "navgrid" resolution of the target pose
     // need to finish with a final driveToPose to fully get to the target pose
     controller
         .start()
         .whileTrue(
             AutoBuilder.pathfindToPose(
-                    new Pose2d(4.0, 5.5, Rotation2d.fromDegrees(120.0)),
+                    new Pose2d(12.6, 2.6, Rotation2d.fromDegrees(120.0)),
                     new PathConstraints(
                         3.0, 4.0, Units.degreesToRadians(540), Units.degreesToRadians(720)),
                     0.0,
@@ -193,8 +193,8 @@ public class RobotContainer {
                     new DriveToPoseCommand(
                         drive,
                         drive::getPose, // could also use () -> drive.getPose()
-                        new Pose2d(4.0, 5.5, Rotation2d.fromDegrees(120.0)),
-                        true)));
+                        new Pose2d(12.6, 2.6, Rotation2d.fromDegrees(120.0)),
+                        false)));
 
     // toggle use of vision for pose estimation
     controller
