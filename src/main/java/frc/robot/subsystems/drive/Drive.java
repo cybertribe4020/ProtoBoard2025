@@ -43,6 +43,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants.VisionConstants;
 import frc.robot.util.LocalADStarAK;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -60,7 +61,7 @@ public class Drive extends SubsystemBase {
   // configuration settings for SysID
   private final Measure<Velocity<Voltage>> rampRate = Volts.of(1.5).per(Seconds.of(1));
   private final Measure<Voltage> stepVoltage = Volts.of(7);
-  private final Measure<Time> timeout = Seconds.of(5);
+  private final Measure<Time> timeout = Seconds.of(4);
 
   private final GyroIO gyroIO;
   private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
@@ -77,8 +78,15 @@ public class Drive extends SubsystemBase {
         new SwerveModulePosition(),
         new SwerveModulePosition()
       };
+
   private SwerveDrivePoseEstimator poseEstimator =
-      new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
+      new SwerveDrivePoseEstimator(
+          kinematics,
+          rawGyroRotation,
+          lastModulePositions,
+          new Pose2d(),
+          VisionConstants.STD_DEVS_ODOMETRY,
+          VisionConstants.STD_DEVS_VISION_DEFAULT);
 
   public Drive(
       GyroIO gyroIO,
