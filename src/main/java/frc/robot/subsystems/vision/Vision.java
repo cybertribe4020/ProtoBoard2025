@@ -69,6 +69,6 @@ public class Vision extends SubsystemBase {
       return visionSim.getDebugField();
     } else {
       return null;
-    }    
+    }
   }
 }

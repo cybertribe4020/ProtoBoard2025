@@ -43,7 +43,7 @@ public class CameraIOPhoton implements CameraIO {
         cameraName = CAM_NAME_REAR;
         cameraPose = CAM_POSE_REAR;
         break;
-      // case 1:
+        // case 1:
         // cameraName = ?;
         // cameraPose = ?;
         // break;
@@ -135,7 +135,7 @@ public class CameraIOPhoton implements CameraIO {
 
       pipelineResult.setTimestampSeconds(
           inputs.timestamps[inputs.numFrames - 1] - pipelineResult.getLatencyMillis() / 1e3);
-  
+
       var visionEst = getEstimatedGlobalPose(pipelineResult);
 
       if (Constants.currentMode != Constants.Mode.REPLAY) {

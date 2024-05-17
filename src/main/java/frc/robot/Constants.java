@@ -95,7 +95,8 @@ public final class Constants {
     public static final Matrix<N3, N1> STD_DEVS_MULTI_TAG = VecBuilder.fill(0.5, 0.5, 1);
     public static final Matrix<N3, N1> STD_DEVS_ODOMETRY = VecBuilder.fill(0.05, 0.05, 0.05);
 
-    public static final double VISION_AUTO_MULTIPLIER = 1.0; // multiply std_devs in auto to trust them less (>1) or more (<1)
+    public static final double VISION_AUTO_MULTIPLIER =
+        1.0; // multiply std_devs in auto to trust them less (>1) or more (<1)
 
     private VisionConstants() {}
   }

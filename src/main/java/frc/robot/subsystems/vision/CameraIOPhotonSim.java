@@ -1,11 +1,10 @@
 package frc.robot.subsystems.vision;
 
+import static frc.robot.Constants.VisionConstants.CAM_POSE_REAR;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import frc.robot.subsystems.drive.Drive;
-
-import static frc.robot.Constants.VisionConstants.CAM_POSE_REAR;
-
 import java.util.Optional;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.simulation.PhotonCameraSim;
