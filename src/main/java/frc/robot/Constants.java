@@ -15,6 +15,13 @@ package frc.robot;
 
 import static java.lang.Math.PI;
 
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 
@@ -75,6 +82,20 @@ public final class Constants {
   public static class VisionConstants {
     public static final double FIELD_LENGTH = Units.inchesToMeters(651.223); // length in meters
     public static final double FIELD_WIDTH = Units.inchesToMeters(323.277); // length in meters
+
+    public static final String CAM_NAME_REAR = "CamRear";
+
+    public static final Transform3d CAM_POSE_REAR =
+        new Transform3d(
+            new Translation3d(-28.0, 0.0, 17.0).times(Units.inchesToMeters(1.0)),
+            new Rotation3d(0.0, Math.toRadians(-30.0), Math.PI));
+
+    public static final Matrix<N3, N1> STD_DEVS_VISION_DEFAULT = VecBuilder.fill(1, 1, 1.5);
+    public static final Matrix<N3, N1> STD_DEVS_SINGLE_TAG = VecBuilder.fill(4, 4, 8);
+    public static final Matrix<N3, N1> STD_DEVS_MULTI_TAG = VecBuilder.fill(0.5, 0.5, 1);
+    public static final Matrix<N3, N1> STD_DEVS_ODOMETRY = VecBuilder.fill(0.05, 0.05, 0.05);
+
+    public static final double VISION_AUTO_MULTIPLIER = 1.0; // multiply std_devs in auto to trust them less (>1) or more (<1)
 
     private VisionConstants() {}
   }
