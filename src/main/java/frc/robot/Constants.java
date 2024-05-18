@@ -83,12 +83,12 @@ public final class Constants {
     public static final double FIELD_LENGTH = Units.inchesToMeters(651.223); // length in meters
     public static final double FIELD_WIDTH = Units.inchesToMeters(323.277); // length in meters
 
-    public static final String CAM_NAME_REAR = "CamRear";
+    public static final String CAM_NAME_REAR = "aprilTagData";
 
     public static final Transform3d CAM_POSE_REAR =
         new Transform3d(
             new Translation3d(-28.0, 0.0, 17.0).times(Units.inchesToMeters(1.0)),
-            new Rotation3d(0.0, Math.toRadians(-30.0), Math.PI));
+            new Rotation3d(0.0, Math.toRadians(-40.0), Math.PI));
 
     public static final Matrix<N3, N1> STD_DEVS_VISION_DEFAULT = VecBuilder.fill(1, 1, 1.5);
     public static final Matrix<N3, N1> STD_DEVS_SINGLE_TAG = VecBuilder.fill(4, 4, 8);

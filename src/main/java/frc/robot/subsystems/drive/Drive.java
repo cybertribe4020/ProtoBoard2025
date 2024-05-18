@@ -184,6 +184,7 @@ public class Drive extends SubsystemBase {
 
     // Apply odometry update
     poseEstimator.update(rawGyroRotation, modulePositions);
+    Logger.recordOutput("Is Using Vision?", isUsingVision);
   }
 
   /**
