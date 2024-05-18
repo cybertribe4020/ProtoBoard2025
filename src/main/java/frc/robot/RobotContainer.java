@@ -174,7 +174,7 @@ public class RobotContainer {
             new DriveToPoseCommand(
                 drive,
                 drive::getPose, // could also use () -> drive.getPose()
-                new Pose2d(12.6, 2.6, Rotation2d.fromDegrees(120.0)),
+                new Pose2d(12.6, 2.4, Rotation2d.fromDegrees(300.0)),
                 false));
 
     // drive a path with obstacle avoidance to climb start location in front of red stage left
@@ -184,7 +184,7 @@ public class RobotContainer {
         .start()
         .whileTrue(
             AutoBuilder.pathfindToPose(
-                    new Pose2d(12.6, 2.6, Rotation2d.fromDegrees(120.0)),
+                    new Pose2d(12.6, 2.4, Rotation2d.fromDegrees(300.0)),
                     new PathConstraints(
                         3.0, 4.0, Units.degreesToRadians(540), Units.degreesToRadians(720)),
                     0.0,
@@ -193,7 +193,7 @@ public class RobotContainer {
                     new DriveToPoseCommand(
                         drive,
                         drive::getPose, // could also use () -> drive.getPose()
-                        new Pose2d(12.6, 2.6, Rotation2d.fromDegrees(120.0)),
+                        new Pose2d(12.6, 2.4, Rotation2d.fromDegrees(300.0)),
                         false)));
 
     // toggle use of vision for pose estimation
