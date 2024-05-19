@@ -1,6 +1,6 @@
 package frc.robot.subsystems.vision;
 
-import static frc.robot.Constants.VisionConstants.CAM_POSE_REAR;
+import static frc.robot.Constants.VisionConstants.*;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -23,19 +23,33 @@ public class CameraIOPhotonSim extends CameraIOPhoton {
 
     // Create simulated camera properties.
     var cameraProp = new SimCameraProperties();
-    cameraProp.setCalibration(640, 400, Rotation2d.fromDegrees(67));
+    cameraProp.setCalibration(800, 600, Rotation2d.fromDegrees(70));
     cameraProp.setCalibError(0.35, 0.10);
-    cameraProp.setFPS(120);
+    cameraProp.setFPS(65);
     cameraProp.setAvgLatencyMs(15);
     cameraProp.setLatencyStdDevMs(5);
 
+    switch (index) {
+      default:
+        cameraName = CAM_NAME_REAR;
+        cameraPose = CAM_POSE_REAR;
+        break;
+      case 1:
+        cameraName = CAM_NAME_LEFT;
+        cameraPose = CAM_POSE_LEFT;
+        break;
+      case 2:
+        cameraName = CAM_NAME_RIGHT;
+        cameraPose = CAM_POSE_RIGHT;
+        break;
+    }
     // Create a PhotonCameraSim which will update the linked PhotonCamera's values with visible
     // targets.
     cameraSim = new PhotonCameraSim(camera, cameraProp);
 
     // Add the simulated camera to view the targets on this simulated field.
-    visionSim.addCamera(cameraSim, CAM_POSE_REAR);
-    cameraSim.enableDrawWireframe(true);
+    visionSim.addCamera(cameraSim, cameraPose);
+    cameraSim.enableDrawWireframe(false);
   }
 
   @Override

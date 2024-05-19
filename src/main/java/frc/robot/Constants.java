@@ -34,7 +34,8 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static final Mode currentMode = Mode.REAL;
+  public static final Mode currentMode = Mode.SIM;
+  public static final Integer NUM_CAMS = 3; // 1 if REAL, 3 if SIM
 
   public static enum Mode {
     REAL, // running on a real robot
@@ -84,11 +85,21 @@ public final class Constants {
     public static final double FIELD_WIDTH = Units.inchesToMeters(323.277); // length in meters
 
     public static final String CAM_NAME_REAR = "aprilTagData";
+    public static final String CAM_NAME_LEFT = "aprilTagLeft";
+    public static final String CAM_NAME_RIGHT = "aprilTagRight";
 
     public static final Transform3d CAM_POSE_REAR =
         new Transform3d(
             new Translation3d(-10.0, 0.0, 17.0).times(Units.inchesToMeters(1.0)),
             new Rotation3d(0.0, Math.toRadians(-40.0), Units.degreesToRadians(182.0)));
+    public static final Transform3d CAM_POSE_LEFT =
+        new Transform3d(
+            new Translation3d(-10.5, 5.5, 25.0).times(Units.inchesToMeters(1.0)),
+            new Rotation3d(0.0, Math.toRadians(-30.0), Units.degreesToRadians(90.0)));
+    public static final Transform3d CAM_POSE_RIGHT =
+        new Transform3d(
+            new Translation3d(-10.5, -5.5, 25.0).times(Units.inchesToMeters(1.0)),
+            new Rotation3d(0.0, Math.toRadians(-30.0), Units.degreesToRadians(270.0)));
 
     public static final Matrix<N3, N1> STD_DEVS_VISION_DEFAULT = VecBuilder.fill(1, 1, 1.5);
     public static final Matrix<N3, N1> STD_DEVS_SINGLE_TAG = VecBuilder.fill(4, 4, 8);

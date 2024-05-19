@@ -43,10 +43,14 @@ public class CameraIOPhoton implements CameraIO {
         cameraName = CAM_NAME_REAR;
         cameraPose = CAM_POSE_REAR;
         break;
-        // case 1:
-        // cameraName = ?;
-        // cameraPose = ?;
-        // break;
+      case 1:
+        cameraName = CAM_NAME_LEFT;
+        cameraPose = CAM_POSE_LEFT;
+        break;
+      case 2:
+        cameraName = CAM_NAME_RIGHT;
+        cameraPose = CAM_POSE_RIGHT;
+        break;
     }
 
     camera = new PhotonCamera(cameraName);

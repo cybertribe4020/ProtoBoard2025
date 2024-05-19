@@ -10,8 +10,7 @@ import frc.robot.subsystems.drive.Drive;
 import org.photonvision.simulation.VisionSystemSim;
 
 public class Vision extends SubsystemBase {
-  private final Integer numCams = 1; // update this when adding more cameras
-  private final Camera[] cameras = new Camera[numCams];
+  private final Camera[] cameras = new Camera[Constants.NUM_CAMS];
 
   private Drive drive;
   private VisionSystemSim visionSim;
@@ -28,11 +27,11 @@ public class Vision extends SubsystemBase {
       // Add all the AprilTags inside the tag layout as visible targets to this simulated field.
       visionSim.addAprilTags(tagLayout);
 
-      for (int n = 0; n < numCams; n++) {
+      for (int n = 0; n < Constants.NUM_CAMS; n++) {
         cameras[n] = new Camera(drive, n, visionSim);
       }
     } else {
-      for (int n = 0; n < numCams; n++) {
+      for (int n = 0; n < Constants.NUM_CAMS; n++) {
         cameras[n] = new Camera(drive, n);
       }
     }
@@ -40,7 +39,7 @@ public class Vision extends SubsystemBase {
 
   @Override
   public void periodic() {
-    for (int n = 0; n < numCams; n++) {
+    for (int n = 0; n < Constants.NUM_CAMS; n++) {
       cameras[n].periodic();
     }
   }
