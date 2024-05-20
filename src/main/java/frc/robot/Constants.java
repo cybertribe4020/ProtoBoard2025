@@ -94,12 +94,12 @@ public final class Constants {
             new Rotation3d(0.0, Math.toRadians(-40.0), Units.degreesToRadians(182.0)));
     public static final Transform3d CAM_POSE_LEFT =
         new Transform3d(
-            new Translation3d(-10.5, 5.5, 25.0).times(Units.inchesToMeters(1.0)),
-            new Rotation3d(0.0, Math.toRadians(-30.0), Units.degreesToRadians(90.0)));
+            new Translation3d(-11.125, 7.44, 14.25).times(Units.inchesToMeters(1.0)),
+            new Rotation3d(0.0, Math.toRadians(-26.0), Units.degreesToRadians(90.0)));
     public static final Transform3d CAM_POSE_RIGHT =
         new Transform3d(
-            new Translation3d(-10.5, -5.5, 25.0).times(Units.inchesToMeters(1.0)),
-            new Rotation3d(0.0, Math.toRadians(-30.0), Units.degreesToRadians(270.0)));
+            new Translation3d(-11.125, -7.44, 14.25).times(Units.inchesToMeters(1.0)),
+            new Rotation3d(0.0, Math.toRadians(-26.0), Units.degreesToRadians(270.0)));
 
     public static final Matrix<N3, N1> STD_DEVS_VISION_DEFAULT = VecBuilder.fill(1, 1, 1.5);
     public static final Matrix<N3, N1> STD_DEVS_SINGLE_TAG = VecBuilder.fill(4, 4, 8);
