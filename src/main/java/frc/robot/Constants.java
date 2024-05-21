@@ -34,8 +34,8 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static final Mode currentMode = Mode.SIM;
-  public static final Integer NUM_CAMS = 3; // 1 if REAL, 3 if SIM
+  public static final Mode currentMode = Mode.REAL;
+  public static final Integer NUM_CAMS = 2; // 2 if REAL, 3 if SIM
 
   public static enum Mode {
     REAL, // running on a real robot
