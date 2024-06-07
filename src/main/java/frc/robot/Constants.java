@@ -96,9 +96,10 @@ public final class Constants {
         new Transform3d(
             new Translation3d(-11.125, 7.44, 14.25).times(Units.inchesToMeters(1.0)),
             new Rotation3d(0.0, Math.toRadians(-26.0), Units.degreesToRadians(90.0)));
+    // x is -10.375 if mount is shifted towards back by one hole, -9.875 if flush with arm upright
     public static final Transform3d CAM_POSE_RIGHT =
         new Transform3d(
-            new Translation3d(-11.125, -7.44, 14.25).times(Units.inchesToMeters(1.0)),
+            new Translation3d(-10.375, -7.44, 14.25).times(Units.inchesToMeters(1.0)),
             new Rotation3d(0.0, Math.toRadians(-26.0), Units.degreesToRadians(270.0)));
 
     public static final Matrix<N3, N1> STD_DEVS_VISION_DEFAULT = VecBuilder.fill(1, 1, 1.5);
