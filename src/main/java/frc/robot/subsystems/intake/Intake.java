@@ -5,7 +5,7 @@
 // modify it under the terms of the GNU General Public License
 // version 3 as published by the Free Software Foundation or
 // available in the root directory of this project.
-//vision
+// vision
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -65,7 +65,8 @@ public class Intake extends SubsystemBase {
   public void runVelocity(double velocityRPMLower, double velocityRPMUpper) {
     var velocityRadPerSecLower = Units.rotationsPerMinuteToRadiansPerSecond(velocityRPMLower);
     var velocityRadPerSecUpper = Units.rotationsPerMinuteToRadiansPerSecond(velocityRPMUpper);
-    io.setVelocity(velocityRadPerSecLower, velocityRadPerSecUpper, ffModel.calculate(velocityRadPerSecLower));
+    io.setVelocity(
+        velocityRadPerSecLower, velocityRadPerSecUpper, ffModel.calculate(velocityRadPerSecLower));
 
     // Log intake setpoint
     Logger.recordOutput("Intake/SetpointRPMLower", velocityRPMLower);

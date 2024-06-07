@@ -26,7 +26,7 @@ import edu.wpi.first.math.util.Units;
  * "CANSparkFlex".
  */
 public class IntakeIOSparkMax implements IntakeIO {
-  private static final double GEAR_RATIO = (24.0/16.0);
+  private static final double GEAR_RATIO = (24.0 / 16.0);
 
   private final CANSparkMax lower = new CANSparkMax(12, MotorType.kBrushless);
   private final CANSparkMax upper = new CANSparkMax(13, MotorType.kBrushless);
@@ -56,18 +56,21 @@ public class IntakeIOSparkMax implements IntakeIO {
 
   @Override
   public void updateInputs(IntakeIOInputs inputs) {
-    inputs.positionRad = new double[] {
-      Units.rotationsToRadians(encLower.getPosition() / GEAR_RATIO),
-      Units.rotationsToRadians(encUpper.getPosition() / GEAR_RATIO)
-    };
-    inputs.velocityRadPerSec = new double[] {
-      Units.rotationsPerMinuteToRadiansPerSecond(encLower.getVelocity() / GEAR_RATIO),
-      Units.rotationsPerMinuteToRadiansPerSecond(encUpper.getVelocity() / GEAR_RATIO)
-    };
-    inputs.appliedVolts = new double[] {
-      lower.getAppliedOutput() * lower.getBusVoltage(),
-      upper.getAppliedOutput() * upper.getBusVoltage()
-    };
+    inputs.positionRad =
+        new double[] {
+          Units.rotationsToRadians(encLower.getPosition() / GEAR_RATIO),
+          Units.rotationsToRadians(encUpper.getPosition() / GEAR_RATIO)
+        };
+    inputs.velocityRadPerSec =
+        new double[] {
+          Units.rotationsPerMinuteToRadiansPerSecond(encLower.getVelocity() / GEAR_RATIO),
+          Units.rotationsPerMinuteToRadiansPerSecond(encUpper.getVelocity() / GEAR_RATIO)
+        };
+    inputs.appliedVolts =
+        new double[] {
+          lower.getAppliedOutput() * lower.getBusVoltage(),
+          upper.getAppliedOutput() * upper.getBusVoltage()
+        };
     inputs.currentAmps = new double[] {lower.getOutputCurrent(), upper.getOutputCurrent()};
   }
 
@@ -78,7 +81,8 @@ public class IntakeIOSparkMax implements IntakeIO {
   }
 
   @Override
-  public void setVelocity(double velocityRadPerSecLower, double velocityRadPerSecUpper, double ffVolts) {
+  public void setVelocity(
+      double velocityRadPerSecLower, double velocityRadPerSecUpper, double ffVolts) {
     pidLower.setReference(
         Units.radiansPerSecondToRotationsPerMinute(velocityRadPerSecLower) * GEAR_RATIO,
         ControlType.kVelocity,

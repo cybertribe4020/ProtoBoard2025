@@ -35,7 +35,7 @@ import edu.wpi.first.math.util.Units;
  */
 public final class Constants {
   public static final Mode currentMode = Mode.REAL;
-  public static final Integer NUM_CAMS = 2; // 2 if REAL, 3 if SIM
+  public static final Integer NUM_CAMS = 3;
 
   public static enum Mode {
     REAL, // running on a real robot

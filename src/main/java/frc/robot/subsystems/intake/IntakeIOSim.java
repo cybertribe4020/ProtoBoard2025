@@ -19,8 +19,8 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 
 public class IntakeIOSim implements IntakeIO {
-  private FlywheelSim simLower = new FlywheelSim(DCMotor.getNEO(1), 24.0/16.0, 0.004);
-  private FlywheelSim simUpper = new FlywheelSim(DCMotor.getNEO(1), 24.0/16.0, 0.004);
+  private FlywheelSim simLower = new FlywheelSim(DCMotor.getNEO(1), 24.0 / 16.0, 0.004);
+  private FlywheelSim simUpper = new FlywheelSim(DCMotor.getNEO(1), 24.0 / 16.0, 0.004);
   private PIDController pidLower = new PIDController(0.0, 0.0, 0.0);
   private PIDController pidUpper = new PIDController(0.0, 0.0, 0.0);
 
@@ -33,22 +33,25 @@ public class IntakeIOSim implements IntakeIO {
   public void updateInputs(IntakeIOInputs inputs) {
     if (closedLoop) {
       appliedVoltsLower =
-          MathUtil.clamp(pidLower.calculate(simLower.getAngularVelocityRadPerSec()) + ffVolts, -12.0, 12.0);
+          MathUtil.clamp(
+              pidLower.calculate(simLower.getAngularVelocityRadPerSec()) + ffVolts, -12.0, 12.0);
       simLower.setInputVoltage(appliedVoltsLower);
       appliedVoltsUpper =
-          MathUtil.clamp(pidUpper.calculate(simUpper.getAngularVelocityRadPerSec()) + ffVolts, -12.0, 12.0);
+          MathUtil.clamp(
+              pidUpper.calculate(simUpper.getAngularVelocityRadPerSec()) + ffVolts, -12.0, 12.0);
       simUpper.setInputVoltage(appliedVoltsUpper);
     }
 
     simLower.update(0.02);
 
     inputs.positionRad = new double[] {0.0, 0.0};
-    inputs.velocityRadPerSec = new double[] {
-      simLower.getAngularVelocityRadPerSec(),
-      simUpper.getAngularVelocityRadPerSec()
-    };
+    inputs.velocityRadPerSec =
+        new double[] {
+          simLower.getAngularVelocityRadPerSec(), simUpper.getAngularVelocityRadPerSec()
+        };
     inputs.appliedVolts = new double[] {appliedVoltsLower, appliedVoltsUpper};
-    inputs.currentAmps = new double[] {simLower.getCurrentDrawAmps(), simUpper.getCurrentDrawAmps()};
+    inputs.currentAmps =
+        new double[] {simLower.getCurrentDrawAmps(), simUpper.getCurrentDrawAmps()};
   }
 
   @Override
@@ -61,7 +64,8 @@ public class IntakeIOSim implements IntakeIO {
   }
 
   @Override
-  public void setVelocity(double velocityRadPerSecLower, double velocityRadPerSecUpper, double ffVolts) {
+  public void setVelocity(
+      double velocityRadPerSecLower, double velocityRadPerSecUpper, double ffVolts) {
     closedLoop = true;
     pidLower.setSetpoint(velocityRadPerSecLower);
     pidUpper.setSetpoint(velocityRadPerSecUpper);
