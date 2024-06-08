@@ -126,19 +126,19 @@ public class RobotContainer {
 
     // Set up auto routines
     NamedCommands.registerCommand(
-        "Run Flywheel",
+        "runFlywheel",
         Commands.startEnd(
                 () -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop, flywheel)
             .withTimeout(5.0));
     NamedCommands.registerCommand(
-        "Run Intake",
+        "runIntake",
         Commands.startEnd(
                 () -> intake.runVolts(intakeVoltsInput.get(), intakeVoltsInput.get()),
                 intake::stop,
                 intake)
             .withTimeout(5.0));
     NamedCommands.registerCommand(
-        "Run Convey",
+        "runConvey",
         Commands.startEnd(() -> convey.runVolts(conveyVoltsInput.get()), convey::stop, convey)
             .withTimeout(5.0));
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
@@ -182,10 +182,7 @@ public class RobotContainer {
             () -> -controller.getLeftY(),
             () -> -controller.getLeftX(),
             () -> -controller.getRightX()));
-    controller
-        .x()
-        .onTrue(
-            Commands.runOnce(drive::stopWithX, drive));
+    controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
     controller
         .b()
         .onTrue(
@@ -199,7 +196,8 @@ public class RobotContainer {
         .leftBumper()
         .whileTrue(
             Commands.parallel(
-                Commands.startEnd(() -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop, flywheel),
+                Commands.startEnd(
+                    () -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop, flywheel),
                 Commands.startEnd(() -> intake.runVolts(3.6, 3.6), intake::stop, intake),
                 Commands.startEnd(() -> convey.runVolts(3.0), convey::stop, convey)));
 
