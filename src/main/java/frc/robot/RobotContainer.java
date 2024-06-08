@@ -182,7 +182,10 @@ public class RobotContainer {
             () -> -controller.getLeftY(),
             () -> -controller.getLeftX(),
             () -> -controller.getRightX()));
-    controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+    controller
+        .x()
+        .onTrue(
+            Commands.runOnce(drive::stopWithX, drive));
     controller
         .b()
         .onTrue(
@@ -193,10 +196,12 @@ public class RobotContainer {
                     drive)
                 .ignoringDisable(true));
     controller
-        .a()
+        .leftBumper()
         .whileTrue(
-            Commands.startEnd(
-                () -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop, flywheel));
+            Commands.parallel(
+                Commands.startEnd(() -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop, flywheel),
+                Commands.startEnd(() -> intake.runVolts(3.6, 3.6), intake::stop, intake),
+                Commands.startEnd(() -> convey.runVolts(3.0), convey::stop, convey)));
 
     // drive to climb start location in front of red stage left
     controller
