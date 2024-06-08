@@ -27,6 +27,10 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.DriveToPoseCommand;
+import frc.robot.subsystems.convey.Convey;
+import frc.robot.subsystems.convey.ConveyIO;
+import frc.robot.subsystems.convey.ConveyIOSim;
+import frc.robot.subsystems.convey.ConveyIOSparkMax;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2P5;
@@ -37,6 +41,10 @@ import frc.robot.subsystems.flywheel.Flywheel;
 import frc.robot.subsystems.flywheel.FlywheelIO;
 import frc.robot.subsystems.flywheel.FlywheelIOSim;
 import frc.robot.subsystems.flywheel.FlywheelIOSparkMax;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeIO;
+import frc.robot.subsystems.intake.IntakeIOSim;
+import frc.robot.subsystems.intake.IntakeIOSparkMax;
 import frc.robot.subsystems.vision.Vision;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
@@ -52,6 +60,8 @@ public class RobotContainer {
   private final Drive drive;
   private final Vision vision;
   private final Flywheel flywheel;
+  private final Intake intake;
+  private final Convey convey;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -60,6 +70,10 @@ public class RobotContainer {
   private final LoggedDashboardChooser<Command> autoChooser;
   private final LoggedDashboardNumber flywheelSpeedInput =
       new LoggedDashboardNumber("Flywheel Speed", 1500.0);
+  private final LoggedDashboardNumber intakeVoltsInput =
+      new LoggedDashboardNumber("Intake Volts", 3.6);
+  private final LoggedDashboardNumber conveyVoltsInput =
+      new LoggedDashboardNumber("Convey Volts", 3.0);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -75,6 +89,8 @@ public class RobotContainer {
                 new ModuleIO4020P5(3));
         vision = new Vision(drive);
         flywheel = new Flywheel(new FlywheelIOSparkMax());
+        intake = new Intake(new IntakeIOSparkMax());
+        convey = new Convey(new ConveyIOSparkMax());
         break;
 
       case SIM:
@@ -88,6 +104,8 @@ public class RobotContainer {
                 new ModuleIOSim());
         vision = new Vision(drive);
         flywheel = new Flywheel(new FlywheelIOSim());
+        intake = new Intake(new IntakeIOSim());
+        convey = new Convey(new ConveyIOSim());
         break;
 
       default:
@@ -101,6 +119,8 @@ public class RobotContainer {
                 new ModuleIO() {});
         vision = new Vision(drive);
         flywheel = new Flywheel(new FlywheelIO() {});
+        intake = new Intake(new IntakeIO() {});
+        convey = new Convey(new ConveyIO() {});
         break;
     }
 
@@ -109,6 +129,17 @@ public class RobotContainer {
         "Run Flywheel",
         Commands.startEnd(
                 () -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop, flywheel)
+            .withTimeout(5.0));
+    NamedCommands.registerCommand(
+        "Run Intake",
+        Commands.startEnd(
+                () -> intake.runVolts(intakeVoltsInput.get(), intakeVoltsInput.get()),
+                intake::stop,
+                intake)
+            .withTimeout(5.0));
+    NamedCommands.registerCommand(
+        "Run Convey",
+        Commands.startEnd(() -> convey.runVolts(conveyVoltsInput.get()), convey::stop, convey)
             .withTimeout(5.0));
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
