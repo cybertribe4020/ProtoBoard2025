@@ -54,6 +54,18 @@
                       "data": {
                         "pathName": "W2.W3"
                       }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "W3.C5"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "C5.C4"
+                      }
                     }
                   ]
                 }

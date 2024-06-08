@@ -42,7 +42,7 @@ public class IntakeIOSparkMax implements IntakeIO {
     lower.setCANTimeout(250);
     upper.setCANTimeout(250);
 
-    lower.setInverted(false);
+    lower.setInverted(true);
     upper.setInverted(true);
 
     lower.enableVoltageCompensation(12.0);
@@ -100,6 +100,7 @@ public class IntakeIOSparkMax implements IntakeIO {
   @Override
   public void stop() {
     lower.stopMotor();
+    upper.stopMotor();
   }
 
   @Override

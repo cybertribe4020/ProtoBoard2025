@@ -71,9 +71,9 @@ public class RobotContainer {
   private final LoggedDashboardNumber flywheelSpeedInput =
       new LoggedDashboardNumber("Flywheel Speed", 1500.0);
   private final LoggedDashboardNumber intakeVoltsInput =
-      new LoggedDashboardNumber("Intake Volts", 3.6);
+      new LoggedDashboardNumber("Intake Volts", 4.0);
   private final LoggedDashboardNumber conveyVoltsInput =
-      new LoggedDashboardNumber("Convey Volts", 3.0);
+      new LoggedDashboardNumber("Convey Volts", 4.0);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -129,18 +129,18 @@ public class RobotContainer {
         "runFlywheel",
         Commands.startEnd(
                 () -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop, flywheel)
-            .withTimeout(5.0));
+            .withTimeout(15.0));
     NamedCommands.registerCommand(
         "runIntake",
         Commands.startEnd(
                 () -> intake.runVolts(intakeVoltsInput.get(), intakeVoltsInput.get()),
                 intake::stop,
                 intake)
-            .withTimeout(5.0));
+            .withTimeout(15.0));
     NamedCommands.registerCommand(
         "runConvey",
         Commands.startEnd(() -> convey.runVolts(conveyVoltsInput.get()), convey::stop, convey)
-            .withTimeout(5.0));
+            .withTimeout(15.0));
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     // Set up SysId routines
@@ -198,8 +198,8 @@ public class RobotContainer {
             Commands.parallel(
                 Commands.startEnd(
                     () -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop, flywheel),
-                Commands.startEnd(() -> intake.runVolts(3.6, 3.6), intake::stop, intake),
-                Commands.startEnd(() -> convey.runVolts(3.0), convey::stop, convey)));
+                Commands.startEnd(() -> intake.runVolts(4.0, 3.6), intake::stop, intake),
+                Commands.startEnd(() -> convey.runVolts(4.0), convey::stop, convey)));
 
     // drive to climb start location in front of red stage left
     controller
