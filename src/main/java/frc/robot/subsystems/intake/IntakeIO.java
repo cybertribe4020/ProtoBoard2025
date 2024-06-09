@@ -32,7 +32,10 @@ public interface IntakeIO {
 
   /** Run each axle (lower/upper) closed loop at the specified velocity. */
   public default void setVelocity(
-      double velocityRadPerSecLower, double velocityRadPerSecUpper, double ffVolts) {}
+      double velocityRadPerSecLower,
+      double ffVoltsLower,
+      double velocityRadPerSecUpper,
+      double ffVoltsUpper) {}
 
   /** Stop in open loop. */
   public default void stop() {}

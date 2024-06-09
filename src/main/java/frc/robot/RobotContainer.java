@@ -70,6 +70,10 @@ public class RobotContainer {
   private final LoggedDashboardChooser<Command> autoChooser;
   private final LoggedDashboardNumber flywheelSpeedInput =
       new LoggedDashboardNumber("Flywheel Speed", 1500.0);
+  private final LoggedDashboardNumber intakeSpeedInput =
+      new LoggedDashboardNumber("Intake Speed", 1600.0);
+  private final LoggedDashboardNumber conveySpeedInput =
+      new LoggedDashboardNumber("Convey Speed", 1600.0);
   private final LoggedDashboardNumber intakeVoltsInput =
       new LoggedDashboardNumber("Intake Volts", 4.0);
   private final LoggedDashboardNumber conveyVoltsInput =
@@ -198,8 +202,12 @@ public class RobotContainer {
             Commands.parallel(
                 Commands.startEnd(
                     () -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop, flywheel),
-                Commands.startEnd(() -> intake.runVolts(4.0, 3.6), intake::stop, intake),
-                Commands.startEnd(() -> convey.runVolts(4.0), convey::stop, convey)));
+                Commands.startEnd(
+                    () -> intake.runVelocity(intakeSpeedInput.get(), intakeSpeedInput.get()),
+                    intake::stop,
+                    intake),
+                Commands.startEnd(
+                    () -> convey.runVelocity(conveySpeedInput.get()), convey::stop, convey)));
 
     // drive to climb start location in front of red stage left
     controller

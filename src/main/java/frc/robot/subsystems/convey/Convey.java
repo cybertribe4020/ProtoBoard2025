@@ -33,11 +33,11 @@ public class Convey extends SubsystemBase {
     // separate robot with different tuning)
     switch (Constants.currentMode) {
       case REAL:
-        ffModel = new SimpleMotorFeedforward(0.0, 0.000155);
+        ffModel = new SimpleMotorFeedforward(0.0, 0.0015);
         io.configurePID(0.0002, 0.0, 0.0);
         break;
       case REPLAY:
-        ffModel = new SimpleMotorFeedforward(0.0, 0.000155);
+        ffModel = new SimpleMotorFeedforward(0.0, 0.0015);
         io.configurePID(0.0002, 0.0, 0.0);
         break;
       case SIM:

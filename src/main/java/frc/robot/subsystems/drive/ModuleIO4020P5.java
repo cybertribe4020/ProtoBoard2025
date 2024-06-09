@@ -46,8 +46,9 @@ public class ModuleIO4020P5 implements ModuleIO {
   private final RelativeEncoder turnRelativeEncoder;
 
   // Gear ratio for SDS MK4i L2 with 16T drive motor pinion
-  private final double DRIVE_GEAR_RATIO = (50.0 / 16.0) * (17.0 / 27.0) * (45.0 / 15.0);
-  private final double TURN_GEAR_RATIO = 150.0 / 7.0;
+  private final double DRIVE_GEAR_RATIO =
+      (50.0 / 16.0) * (17.0 / 27.0) * (45.0 / 15.0); // this is the gear reduction (driven/driving)
+  private final double TURN_GEAR_RATIO = 150.0 / 7.0; // this is the gear reduction (driven/driving)
 
   private final boolean isTurnMotorInverted = true;
   private final Rotation2d absoluteEncoderOffset;

@@ -33,11 +33,11 @@ public class Intake extends SubsystemBase {
     // separate robot with different tuning)
     switch (Constants.currentMode) {
       case REAL:
-        ffModel = new SimpleMotorFeedforward(0.0, 0.000155);
+        ffModel = new SimpleMotorFeedforward(0.0, 0.0015);
         io.configurePID(0.0002, 0.0, 0.0);
         break;
       case REPLAY:
-        ffModel = new SimpleMotorFeedforward(0.0, 0.000155);
+        ffModel = new SimpleMotorFeedforward(0.0, 0.0015);
         io.configurePID(0.0002, 0.0, 0.0);
         break;
       case SIM:
@@ -66,7 +66,10 @@ public class Intake extends SubsystemBase {
     var velocityRadPerSecLower = Units.rotationsPerMinuteToRadiansPerSecond(velocityRPMLower);
     var velocityRadPerSecUpper = Units.rotationsPerMinuteToRadiansPerSecond(velocityRPMUpper);
     io.setVelocity(
-        velocityRadPerSecLower, velocityRadPerSecUpper, ffModel.calculate(velocityRadPerSecLower));
+        velocityRadPerSecLower,
+        ffModel.calculate(velocityRadPerSecLower),
+        velocityRadPerSecUpper,
+        ffModel.calculate(velocityRadPerSecUpper));
 
     // Log intake setpoint
     Logger.recordOutput("Intake/SetpointRPMLower", velocityRPMLower);

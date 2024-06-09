@@ -25,7 +25,8 @@ public class IntakeIOSim implements IntakeIO {
   private PIDController pidUpper = new PIDController(0.0, 0.0, 0.0);
 
   private boolean closedLoop = false;
-  private double ffVolts = 0.0;
+  private double ffVoltsLower = 0.0;
+  private double ffVoltsUpper = 0.0;
   private double appliedVoltsLower = 0.0;
   private double appliedVoltsUpper = 0.0;
 
@@ -34,15 +35,20 @@ public class IntakeIOSim implements IntakeIO {
     if (closedLoop) {
       appliedVoltsLower =
           MathUtil.clamp(
-              pidLower.calculate(simLower.getAngularVelocityRadPerSec()) + ffVolts, -12.0, 12.0);
+              pidLower.calculate(simLower.getAngularVelocityRadPerSec()) + ffVoltsLower,
+              -12.0,
+              12.0);
       simLower.setInputVoltage(appliedVoltsLower);
       appliedVoltsUpper =
           MathUtil.clamp(
-              pidUpper.calculate(simUpper.getAngularVelocityRadPerSec()) + ffVolts, -12.0, 12.0);
+              pidUpper.calculate(simUpper.getAngularVelocityRadPerSec()) + ffVoltsUpper,
+              -12.0,
+              12.0);
       simUpper.setInputVoltage(appliedVoltsUpper);
     }
 
     simLower.update(0.02);
+    simUpper.update(0.02);
 
     inputs.positionRad = new double[] {0.0, 0.0};
     inputs.velocityRadPerSec =
@@ -65,11 +71,15 @@ public class IntakeIOSim implements IntakeIO {
 
   @Override
   public void setVelocity(
-      double velocityRadPerSecLower, double velocityRadPerSecUpper, double ffVolts) {
+      double velocityRadPerSecLower,
+      double ffVoltsLower,
+      double velocityRadPerSecUpper,
+      double ffVoltsUpper) {
     closedLoop = true;
     pidLower.setSetpoint(velocityRadPerSecLower);
     pidUpper.setSetpoint(velocityRadPerSecUpper);
-    this.ffVolts = ffVolts;
+    this.ffVoltsLower = ffVoltsLower;
+    this.ffVoltsUpper = ffVoltsUpper;
   }
 
   @Override

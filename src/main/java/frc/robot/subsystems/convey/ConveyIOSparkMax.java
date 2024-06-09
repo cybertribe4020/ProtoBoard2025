@@ -26,7 +26,7 @@ import edu.wpi.first.math.util.Units;
  * "CANSparkFlex".
  */
 public class ConveyIOSparkMax implements ConveyIO {
-  private static final double GEAR_RATIO = 4.0;
+  private static final double GEAR_RATIO = 4.0; // this is the gear reduction (driven/driving)
 
   private final CANSparkMax leader = new CANSparkMax(11, MotorType.kBrushless);
   private final RelativeEncoder encoder = leader.getEncoder();

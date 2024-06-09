@@ -26,7 +26,8 @@ import edu.wpi.first.math.util.Units;
  * "CANSparkFlex".
  */
 public class IntakeIOSparkMax implements IntakeIO {
-  private static final double GEAR_RATIO = (24.0 / 16.0);
+  private static final double GEAR_RATIO =
+      (24.0 / 16.0); // this is the gear reduction (driven/driving)
 
   private final CANSparkMax lower = new CANSparkMax(12, MotorType.kBrushless);
   private final CANSparkMax upper = new CANSparkMax(13, MotorType.kBrushless);
@@ -82,18 +83,21 @@ public class IntakeIOSparkMax implements IntakeIO {
 
   @Override
   public void setVelocity(
-      double velocityRadPerSecLower, double velocityRadPerSecUpper, double ffVolts) {
+      double velocityRadPerSecLower,
+      double ffVoltsLower,
+      double velocityRadPerSecUpper,
+      double ffVoltsUpper) {
     pidLower.setReference(
         Units.radiansPerSecondToRotationsPerMinute(velocityRadPerSecLower) * GEAR_RATIO,
         ControlType.kVelocity,
         0,
-        ffVolts,
+        ffVoltsLower,
         ArbFFUnits.kVoltage);
     pidUpper.setReference(
         Units.radiansPerSecondToRotationsPerMinute(velocityRadPerSecUpper) * GEAR_RATIO,
         ControlType.kVelocity,
         0,
-        ffVolts,
+        ffVoltsUpper,
         ArbFFUnits.kVoltage);
   }
 

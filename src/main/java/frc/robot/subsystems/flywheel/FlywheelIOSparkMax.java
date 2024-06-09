@@ -26,7 +26,7 @@ import edu.wpi.first.math.util.Units;
  * "CANSparkFlex".
  */
 public class FlywheelIOSparkMax implements FlywheelIO {
-  private static final double GEAR_RATIO = 1.5;
+  private static final double GEAR_RATIO = 1.0; // this is the gear reduction (driven/driving)
 
   private final CANSparkMax leader = new CANSparkMax(20, MotorType.kBrushless);
   private final CANSparkMax follower = new CANSparkMax(21, MotorType.kBrushless);
