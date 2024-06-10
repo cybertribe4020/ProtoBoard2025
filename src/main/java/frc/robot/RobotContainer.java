@@ -37,10 +37,10 @@ import frc.robot.subsystems.drive.GyroIOPigeon2P5;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIO4020P5;
 import frc.robot.subsystems.drive.ModuleIOSim;
-import frc.robot.subsystems.flywheel.Flywheel;
-import frc.robot.subsystems.flywheel.FlywheelIO;
-import frc.robot.subsystems.flywheel.FlywheelIOSim;
-import frc.robot.subsystems.flywheel.FlywheelIOSparkMax;
+import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.ShooterIO;
+import frc.robot.subsystems.shooter.ShooterIOSim;
+import frc.robot.subsystems.shooter.ShooterIOSparkMax;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSim;
@@ -59,7 +59,7 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final Vision vision;
-  private final Flywheel flywheel;
+  private final Shooter shooter;
   private final Intake intake;
   private final Convey convey;
 
@@ -68,8 +68,8 @@ public class RobotContainer {
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
-  private final LoggedDashboardNumber flywheelSpeedInput =
-      new LoggedDashboardNumber("Flywheel Speed", 1500.0);
+  private final LoggedDashboardNumber shooterSpeedInput =
+      new LoggedDashboardNumber("Shooter Speed", 1500.0);
   private final LoggedDashboardNumber intakeSpeedInput =
       new LoggedDashboardNumber("Intake Speed", 1600.0);
   private final LoggedDashboardNumber conveySpeedInput =
@@ -92,7 +92,7 @@ public class RobotContainer {
                 new ModuleIO4020P5(2),
                 new ModuleIO4020P5(3));
         vision = new Vision(drive);
-        flywheel = new Flywheel(new FlywheelIOSparkMax());
+        shooter = new Shooter(new ShooterIOSparkMax());
         intake = new Intake(new IntakeIOSparkMax());
         convey = new Convey(new ConveyIOSparkMax());
         break;
@@ -107,7 +107,7 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 new ModuleIOSim());
         vision = new Vision(drive);
-        flywheel = new Flywheel(new FlywheelIOSim());
+        shooter = new Shooter(new ShooterIOSim());
         intake = new Intake(new IntakeIOSim());
         convey = new Convey(new ConveyIOSim());
         break;
@@ -122,7 +122,7 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {});
         vision = new Vision(drive);
-        flywheel = new Flywheel(new FlywheelIO() {});
+        shooter = new Shooter(new ShooterIO() {});
         intake = new Intake(new IntakeIO() {});
         convey = new Convey(new ConveyIO() {});
         break;
@@ -130,9 +130,9 @@ public class RobotContainer {
 
     // Set up auto routines
     NamedCommands.registerCommand(
-        "runFlywheel",
+        "runShooter",
         Commands.startEnd(
-                () -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop, flywheel)
+                () -> shooter.runVelocity(shooterSpeedInput.get()), shooter::stop, shooter)
             .withTimeout(15.0));
     NamedCommands.registerCommand(
         "runIntake",
@@ -159,15 +159,15 @@ public class RobotContainer {
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
     autoChooser.addOption(
-        "Flywheel SysId (Quasistatic Forward)",
-        flywheel.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+        "Shooter SysId (Quasistatic Forward)",
+        shooter.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
     autoChooser.addOption(
-        "Flywheel SysId (Quasistatic Reverse)",
-        flywheel.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+        "Shooter SysId (Quasistatic Reverse)",
+        shooter.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
     autoChooser.addOption(
-        "Flywheel SysId (Dynamic Forward)", flywheel.sysIdDynamic(SysIdRoutine.Direction.kForward));
+        "Shooter SysId (Dynamic Forward)", shooter.sysIdDynamic(SysIdRoutine.Direction.kForward));
     autoChooser.addOption(
-        "Flywheel SysId (Dynamic Reverse)", flywheel.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+        "Shooter SysId (Dynamic Reverse)", shooter.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
     // Configure the button bindings
     configureButtonBindings();
@@ -201,7 +201,7 @@ public class RobotContainer {
         .whileTrue(
             Commands.parallel(
                 Commands.startEnd(
-                    () -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop, flywheel),
+                    () -> shooter.runVelocity(shooterSpeedInput.get()), shooter::stop, shooter),
                 Commands.startEnd(
                     () -> intake.runVelocity(intakeSpeedInput.get(), intakeSpeedInput.get()),
                     intake::stop,
