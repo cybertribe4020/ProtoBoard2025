@@ -27,6 +27,10 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.DriveToPoseCommand;
+import frc.robot.subsystems.arm1.Arm1;
+import frc.robot.subsystems.arm1.Arm1IO;
+import frc.robot.subsystems.arm1.Arm1IOSim;
+import frc.robot.subsystems.arm1.Arm1IOSparkFlex;
 import frc.robot.subsystems.convey.Convey;
 import frc.robot.subsystems.convey.ConveyIO;
 import frc.robot.subsystems.convey.ConveyIOSim;
@@ -37,14 +41,14 @@ import frc.robot.subsystems.drive.GyroIOPigeon2P5;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIO4020P5;
 import frc.robot.subsystems.drive.ModuleIOSim;
-import frc.robot.subsystems.shooter.Shooter;
-import frc.robot.subsystems.shooter.ShooterIO;
-import frc.robot.subsystems.shooter.ShooterIOSim;
-import frc.robot.subsystems.shooter.ShooterIOSparkMax;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.intake.IntakeIOSparkMax;
+import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.ShooterIO;
+import frc.robot.subsystems.shooter.ShooterIOSim;
+import frc.robot.subsystems.shooter.ShooterIOSparkMax;
 import frc.robot.subsystems.vision.Vision;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
@@ -62,6 +66,7 @@ public class RobotContainer {
   private final Shooter shooter;
   private final Intake intake;
   private final Convey convey;
+  private final Arm1 arm;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -95,6 +100,7 @@ public class RobotContainer {
         shooter = new Shooter(new ShooterIOSparkMax());
         intake = new Intake(new IntakeIOSparkMax());
         convey = new Convey(new ConveyIOSparkMax());
+        arm = new Arm1(new Arm1IOSparkFlex());
         break;
 
       case SIM:
@@ -110,6 +116,7 @@ public class RobotContainer {
         shooter = new Shooter(new ShooterIOSim());
         intake = new Intake(new IntakeIOSim());
         convey = new Convey(new ConveyIOSim());
+        arm = new Arm1(new Arm1IOSim());
         break;
 
       default:
@@ -125,6 +132,7 @@ public class RobotContainer {
         shooter = new Shooter(new ShooterIO() {});
         intake = new Intake(new IntakeIO() {});
         convey = new Convey(new ConveyIO() {});
+        arm = new Arm1(new Arm1IO() {});
         break;
     }
 
@@ -158,6 +166,7 @@ public class RobotContainer {
         "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+
     autoChooser.addOption(
         "Shooter SysId (Quasistatic Forward)",
         shooter.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
@@ -186,7 +195,13 @@ public class RobotContainer {
             () -> -controller.getLeftY(),
             () -> -controller.getLeftX(),
             () -> -controller.getRightX()));
+
+    // X button
+    // Stop the drivetrain and turn the wheels to an X position
     controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+
+    // B button
+    //
     controller
         .b()
         .onTrue(
@@ -196,6 +211,10 @@ public class RobotContainer {
                             new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
                     drive)
                 .ignoringDisable(true));
+
+    // Left Bumper
+    // Run the intake, conveyor, and shooter at constant speed to pick up and immediately eject
+    // Notes
     controller
         .leftBumper()
         .whileTrue(
@@ -209,7 +228,9 @@ public class RobotContainer {
                 Commands.startEnd(
                     () -> convey.runVelocity(conveySpeedInput.get()), convey::stop, convey)));
 
-    // drive to climb start location in front of red stage left
+    // Y Button
+    // Drive directly to climb start location in front of red stage left
+    // Will not avoid any Stage legs in the way!!
     controller
         .y()
         .whileTrue(
@@ -219,9 +240,10 @@ public class RobotContainer {
                 new Pose2d(12.6, 2.4, Rotation2d.fromDegrees(300.0)),
                 false));
 
-    // drive a path with obstacle avoidance to climb start location in front of red stage left
-    // note that the pathplanner only gets within a "navgrid" resolution of the target pose
-    // need to finish with a final driveToPose to fully get to the target pose
+    // Start button
+    // Drive a path with obstacle avoidance to climb start location in front of red stage left
+    // Note that the pathplanner only gets within a "navgrid" resolution of the target pose
+    // Need to finish with a final driveToPose to fully get to the target pose
     controller
         .start()
         .whileTrue(
@@ -238,7 +260,16 @@ public class RobotContainer {
                         new Pose2d(12.6, 2.4, Rotation2d.fromDegrees(300.0)),
                         false)));
 
-    // toggle use of vision for pose estimation
+    // POV Right
+    // Raise arm to 16 degrees - shooting position
+    controller.povRight().whileTrue(Commands.startEnd(() -> arm.reachSetpoint(16), arm::stop, arm));
+
+    // POV Down
+    // Raise arm to 16 degrees - shooting position
+    controller.povDown().whileTrue(Commands.startEnd(() -> arm.reachSetpoint(-28), arm::stop, arm));
+
+    // Back button
+    // Toggle the use of vision for pose estimation
     controller
         .back()
         .onTrue(

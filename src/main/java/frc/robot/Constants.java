@@ -34,8 +34,8 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static final Mode currentMode = Mode.REAL;
-  public static final Integer NUM_CAMS = 3;
+  public static final Mode currentMode = Mode.SIM;
+  public static final Integer NUM_CAMS = 2;
 
   public static enum Mode {
     REAL, // running on a real robot
@@ -111,5 +111,17 @@ public final class Constants {
         1.0; // multiply std_devs in auto to trust them less (>1) or more (<1)
 
     private VisionConstants() {}
+  }
+
+  public static class ArmConstants {
+    public static final double ARM_LENGTH_IN = 20.0;
+    public static final double ARM_MASS_LBF = 10.0;
+    public static final double ARM_GEAR_REDUCTION = 355.56;
+    public static final double ARM_MIN_ANGLE_DEG = -34.0;
+    public static final double ARM_MAX_ANGLE_DEG = 100.0;
+    public static final double ARM_INIT_ANGLE_DEG = -31.0;
+    public static final double ARM_ENCODER_OFFSET_DEG = 187.0;
+
+    private ArmConstants() {}
   }
 }
