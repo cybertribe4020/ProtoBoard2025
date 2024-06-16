@@ -262,15 +262,19 @@ public class RobotContainer {
 
     // POV Left
     // Move arm to 16 degrees - shooting position
-    controller.povLeft().whileTrue(Commands.startEnd(() -> arm.setGoalDeg(16), arm::stop, arm));
+    controller.povLeft().onTrue(Commands.startEnd(() -> arm.setGoalDeg(16.0), arm::stop, arm));
 
     // POV Down
     // Move arm to -31 degrees - intake position
-    controller.povDown().whileTrue(Commands.startEnd(() -> arm.setGoalDeg(-31), arm::stop, arm));
+    controller.povDown().onTrue(Commands.startEnd(() -> arm.setGoalDeg(-31.0), arm::stop, arm));
 
     // POV Up
     // Move arm to 90 degrees - amp/trap position
-    controller.povUp().whileTrue(Commands.startEnd(() -> arm.setGoalDeg(90), arm::stop, arm));
+    controller.povUp().onTrue(Commands.startEnd(() -> arm.setGoalDeg(90.0), arm::stop, arm));
+
+    // POV Right
+    // Stop arm
+    controller.povRight().onTrue(Commands.startEnd(arm::stop, arm::stop, arm));
 
     // Back button
     // Toggle the use of vision for pose estimation

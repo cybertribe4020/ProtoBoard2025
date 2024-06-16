@@ -34,7 +34,10 @@ public class Arm1 extends SubsystemBase {
   private final Arm1IOInputsAutoLogged inputs = new Arm1IOInputsAutoLogged();
   private final ArmFeedforward ffModel;
   private final ProfiledPIDController pid;
+  private Double pidOutput;
+  private Double feedforwardOutput;
   private Double angleGoalRad = Units.degreesToRadians(ArmConstants.ARM_INIT_ANGLE_DEG);
+  private Boolean armClosedLoop = true;
 
   // Create a Mechanism2d display of an Arm with a fixed ArmTower and moving Arm.
   private final Mechanism2d mech2d = new Mechanism2d(60, 60);
@@ -85,10 +88,13 @@ public class Arm1 extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("Arm", inputs);
 
-    double pidOutput = pid.calculate(inputs.arm1InternalPositionRad, angleGoalRad);
-    double feedforwardOutput =
-        ffModel.calculate(pid.getSetpoint().position, pid.getSetpoint().velocity);
-    io.setVoltage(pidOutput + feedforwardOutput);
+    if (armClosedLoop) {
+      pidOutput = pid.calculate(inputs.arm1InternalPositionRad, angleGoalRad);
+      feedforwardOutput = ffModel.calculate(pid.getSetpoint().position, pid.getSetpoint().velocity);
+      io.setVoltage(pidOutput + feedforwardOutput);
+    } else {
+      pid.reset(inputs.arm1InternalPositionRad);
+    }
 
     Logger.recordOutput("Arm1/PID Goal", angleGoalRad);
     Logger.recordOutput("Arm1/PID SP", pid.getSetpoint().position);
@@ -104,12 +110,14 @@ public class Arm1 extends SubsystemBase {
 
   /** Run closed loop control to move the arm to the desired position */
   public void setGoalDeg(double setpointDeg) {
+    armClosedLoop = true;
     angleGoalRad = Units.degreesToRadians(setpointDeg);
   }
 
   /** Stops the Arm. */
   public void stop() {
     io.stop();
+    armClosedLoop = false;
   }
 
   /** Returns the current position in degrees. */

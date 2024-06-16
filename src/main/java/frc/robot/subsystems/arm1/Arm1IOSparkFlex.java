@@ -29,6 +29,7 @@ public class Arm1IOSparkFlex implements Arm1IO {
     leader.setCANTimeout(250);
 
     leader.setInverted(isMotorInverted);
+    setBrakeMode(true);
 
     leader.enableVoltageCompensation(12.0);
     leader.setSmartCurrentLimit(30);

@@ -65,4 +65,9 @@ public class Arm1IOSim implements Arm1IO {
     arm1AppliedVolts = MathUtil.clamp(volts, -12, 12);
     arm1Sim.setInputVoltage(arm1AppliedVolts);
   }
+
+  @Override
+  public void stop() {
+    setVoltage(0.0);
+  }
 }
