@@ -260,13 +260,17 @@ public class RobotContainer {
                         new Pose2d(12.6, 2.4, Rotation2d.fromDegrees(300.0)),
                         false)));
 
-    // POV Right
-    // Raise arm to 16 degrees - shooting position
-    controller.povRight().whileTrue(Commands.startEnd(() -> arm.reachSetpoint(16), arm::stop, arm));
+    // POV Left
+    // Move arm to 16 degrees - shooting position
+    controller.povLeft().whileTrue(Commands.startEnd(() -> arm.setGoalDeg(16), arm::stop, arm));
 
     // POV Down
-    // Raise arm to 16 degrees - shooting position
-    controller.povDown().whileTrue(Commands.startEnd(() -> arm.reachSetpoint(-28), arm::stop, arm));
+    // Move arm to -31 degrees - intake position
+    controller.povDown().whileTrue(Commands.startEnd(() -> arm.setGoalDeg(-31), arm::stop, arm));
+
+    // POV Up
+    // Move arm to 90 degrees - amp/trap position
+    controller.povUp().whileTrue(Commands.startEnd(() -> arm.setGoalDeg(90), arm::stop, arm));
 
     // Back button
     // Toggle the use of vision for pose estimation

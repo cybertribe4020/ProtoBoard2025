@@ -34,7 +34,7 @@ public class Arm1 extends SubsystemBase {
   private final Arm1IOInputsAutoLogged inputs = new Arm1IOInputsAutoLogged();
   private final ArmFeedforward ffModel;
   private final ProfiledPIDController pid;
-  private Double angleSetpointRad = Units.degreesToRadians(ArmConstants.ARM_INIT_ANGLE_DEG);
+  private Double angleGoalRad = Units.degreesToRadians(ArmConstants.ARM_INIT_ANGLE_DEG);
 
   // Create a Mechanism2d display of an Arm with a fixed ArmTower and moving Arm.
   private final Mechanism2d mech2d = new Mechanism2d(60, 60);
@@ -63,15 +63,15 @@ public class Arm1 extends SubsystemBase {
     switch (Constants.currentMode) {
       case REAL:
         ffModel = new ArmFeedforward(0.0, 0.21, 6.93, 0.01);
-        pid = new ProfiledPIDController(80.0, 0.0, 3.0, new TrapezoidProfile.Constraints(1.7, 8.0));
+        pid = new ProfiledPIDController(80.0, 0.0, 3.0, new TrapezoidProfile.Constraints(0.5, 2.0));
         break;
       case REPLAY:
         ffModel = new ArmFeedforward(0.0, 0.21, 6.93, 0.01);
-        pid = new ProfiledPIDController(80.0, 0.0, 3.0, new TrapezoidProfile.Constraints(1.7, 8.0));
+        pid = new ProfiledPIDController(80.0, 0.0, 3.0, new TrapezoidProfile.Constraints(0.5, 2.0));
         break;
       case SIM:
         ffModel = new ArmFeedforward(0.0, 0.21, 6.93, 0.01);
-        pid = new ProfiledPIDController(80.0, 0.0, 3.0, new TrapezoidProfile.Constraints(1.7, 8.0));
+        pid = new ProfiledPIDController(80.0, 0.0, 3.0, new TrapezoidProfile.Constraints(0.5, 2.0));
         break;
       default:
         ffModel = new ArmFeedforward(0.0, 0.0, 0.0, 0.0);
@@ -85,12 +85,12 @@ public class Arm1 extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("Arm", inputs);
 
-    double pidOutput = pid.calculate(inputs.arm1InternalPositionRad, angleSetpointRad);
+    double pidOutput = pid.calculate(inputs.arm1InternalPositionRad, angleGoalRad);
     double feedforwardOutput =
         ffModel.calculate(pid.getSetpoint().position, pid.getSetpoint().velocity);
     io.setVoltage(pidOutput + feedforwardOutput);
 
-    Logger.recordOutput("Arm1/PID Goal", angleSetpointRad);
+    Logger.recordOutput("Arm1/PID Goal", angleGoalRad);
     Logger.recordOutput("Arm1/PID SP", pid.getSetpoint().position);
     Logger.recordOutput("Arm1/PID PV", inputs.arm1InternalPositionRad);
     Logger.recordOutput("Arm1/PID OP", pidOutput);
@@ -103,8 +103,8 @@ public class Arm1 extends SubsystemBase {
   }
 
   /** Run closed loop control to move the arm to the desired position */
-  public void reachSetpoint(double setpointDeg) {
-    angleSetpointRad = Units.degreesToRadians(setpointDeg);
+  public void setGoalDeg(double setpointDeg) {
+    angleGoalRad = Units.degreesToRadians(setpointDeg);
   }
 
   /** Stops the Arm. */

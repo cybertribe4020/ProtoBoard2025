@@ -17,6 +17,9 @@ public class Arm1IOSparkFlex implements Arm1IO {
   private final boolean isMotorInverted = false;
   private final double absoluteEncoderOffsetRad =
       Units.degreesToRadians(ArmConstants.ARM_ENCODER_OFFSET_DEG);
+  // Power on the robot with the arm fully down against the physical stops
+  // This position is the ARM_MIN_ANGLE_DEG
+  // Initialize the internal motor encoder to the shaft revolutions corresponding to this angle
   private final double intEncoderPositionStowRev =
       ArmConstants.ARM_MIN_ANGLE_DEG / 360.0 * ArmConstants.ARM_GEAR_REDUCTION;
 
