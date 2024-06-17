@@ -14,7 +14,7 @@ public class Arm1IOSparkFlex implements Arm1IO {
   private final RelativeEncoder motorInternalEncoder = leader.getEncoder();
   private final DutyCycleEncoder extAbsoluteEncoder = new DutyCycleEncoder(8);
 
-  private final boolean isMotorInverted = false;
+  private final boolean isMotorInverted = true;
   private final double absoluteEncoderOffsetRad =
       Units.degreesToRadians(ArmConstants.ARM_ENCODER_OFFSET_DEG);
   // Power on the robot with the arm fully down against the physical stops

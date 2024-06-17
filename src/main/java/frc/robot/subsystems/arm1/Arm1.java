@@ -65,8 +65,8 @@ public class Arm1 extends SubsystemBase {
     // separate robot with different tuning)
     switch (Constants.currentMode) {
       case REAL:
-        ffModel = new ArmFeedforward(0.0, 0.21, 6.93, 0.01);
-        pid = new ProfiledPIDController(80.0, 0.0, 3.0, new TrapezoidProfile.Constraints(0.5, 2.0));
+        ffModel = new ArmFeedforward(0.0, 0.16, 6.6, 0.01);
+        pid = new ProfiledPIDController(60.0, 0.0, 1.0, new TrapezoidProfile.Constraints(1.8, 4.0));
         break;
       case REPLAY:
         ffModel = new ArmFeedforward(0.0, 0.21, 6.93, 0.01);
