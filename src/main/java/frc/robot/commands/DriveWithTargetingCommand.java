@@ -12,6 +12,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.FieldConstants;
 import frc.robot.subsystems.drive.Drive;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
@@ -108,7 +109,9 @@ public class DriveWithTargetingCommand extends Command {
             linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
             linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
             omegaSpeed,
-            robotPose.getRotation()));
+            FieldConstants.shouldFlip()
+                ? robotPose.getRotation().plus(new Rotation2d(Math.PI))
+                : robotPose.getRotation()));
   }
 
   public void end(boolean interrupted) {
