@@ -44,6 +44,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.FieldConstants;
 import frc.robot.util.LocalADStarAK;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -87,6 +88,10 @@ public class Drive extends SubsystemBase {
           new Pose2d(),
           VisionConstants.STD_DEVS_ODOMETRY,
           VisionConstants.STD_DEVS_VISION_DEFAULT);
+
+  private Translation2d speakerPosition;
+  private final Rotation2d facingBackwards = new Rotation2d(Math.PI);
+  private Rotation2d rotFaceSpeaker;
 
   public Drive(
       GyroIO gyroIO,
@@ -271,6 +276,15 @@ public class Drive extends SubsystemBase {
   /** Resets the current odometry pose. */
   public void setPose(Pose2d pose) {
     poseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
+  }
+
+  public Rotation2d getRotFaceSpeaker() {
+    speakerPosition = FieldConstants.getSpeakerPosition();
+    rotFaceSpeaker =
+        speakerPosition.minus(getPose().getTranslation()).getAngle().plus(facingBackwards);
+    Logger.recordOutput("rotFaceSpeaker", rotFaceSpeaker);
+    Logger.recordOutput("rotCurrent", this.getRotation());
+    return rotFaceSpeaker;
   }
 
   /**

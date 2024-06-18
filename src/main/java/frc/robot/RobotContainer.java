@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.DriveToPoseCommand;
+import frc.robot.commands.DriveWithTargetingCommand;
 import frc.robot.subsystems.arm1.Arm1;
 import frc.robot.subsystems.arm1.Arm1IO;
 import frc.robot.subsystems.arm1.Arm1IOSim;
@@ -227,6 +228,18 @@ public class RobotContainer {
                     intake),
                 Commands.startEnd(
                     () -> convey.runVelocity(conveySpeedInput.get()), convey::stop, convey)));
+
+    // Right Bumper
+    // Drive with joystick for translation, but use rotation control to always point to the speaker
+    controller
+        .rightBumper()
+        .whileTrue(
+            new DriveWithTargetingCommand(
+                drive,
+                () -> -controller.getLeftY(),
+                () -> -controller.getLeftX(),
+                drive::getPose,
+                drive::getRotFaceSpeaker));
 
     // Y Button
     // Drive directly to climb start location in front of red stage left

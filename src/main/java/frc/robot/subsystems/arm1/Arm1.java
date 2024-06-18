@@ -70,11 +70,11 @@ public class Arm1 extends SubsystemBase {
         break;
       case REPLAY:
         ffModel = new ArmFeedforward(0.0, 0.21, 6.93, 0.01);
-        pid = new ProfiledPIDController(80.0, 0.0, 3.0, new TrapezoidProfile.Constraints(0.5, 2.0));
+        pid = new ProfiledPIDController(80.0, 0.0, 3.0, new TrapezoidProfile.Constraints(1.7, 8.0));
         break;
       case SIM:
         ffModel = new ArmFeedforward(0.0, 0.21, 6.93, 0.01);
-        pid = new ProfiledPIDController(80.0, 0.0, 3.0, new TrapezoidProfile.Constraints(0.5, 2.0));
+        pid = new ProfiledPIDController(80.0, 0.0, 3.0, new TrapezoidProfile.Constraints(1.7, 8.0));
         break;
       default:
         ffModel = new ArmFeedforward(0.0, 0.0, 0.0, 0.0);
