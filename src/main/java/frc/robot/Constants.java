@@ -20,6 +20,7 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -123,5 +124,54 @@ public final class Constants {
     public static final double ARM_ENCODER_OFFSET_DEG = 187.0;
 
     private ArmConstants() {}
+  }
+
+  public static class ShooterConstants {
+
+    // x: distance (meters) from rear camera lens to center of speaker opening projected down
+    // Code will take care of offset from camera lens to center of robot
+    // y: shooter arm angle above horizontal (degrees)
+    public static final InterpolatingDoubleTreeMap ANGLE_MAP = new InterpolatingDoubleTreeMap();
+
+    static {
+      ANGLE_MAP.put(Units.feetToMeters(0.0), 5.0);
+      ANGLE_MAP.put(Units.feetToMeters(4.0), 6.0);
+      ANGLE_MAP.put(Units.feetToMeters(5.0), 11.5);
+      ANGLE_MAP.put(Units.feetToMeters(6.0), 16.5);
+      ANGLE_MAP.put(Units.feetToMeters(7.0), 20.0);
+      ANGLE_MAP.put(Units.feetToMeters(8.0), 22.5);
+      ANGLE_MAP.put(Units.feetToMeters(9.0), 24.5);
+      ANGLE_MAP.put(Units.feetToMeters(10.0), 27.75);
+      ANGLE_MAP.put(Units.feetToMeters(11.0), 29.25);
+      ANGLE_MAP.put(Units.feetToMeters(12.0), 30.5);
+      ANGLE_MAP.put(Units.feetToMeters(13.0), 32.25);
+      ANGLE_MAP.put(Units.feetToMeters(14.0), 33.5);
+      ANGLE_MAP.put(Units.feetToMeters(15.0), 31.0);
+      ANGLE_MAP.put(Units.feetToMeters(16.0), 32.0);
+    }
+
+    // x: distance (meters) from rear camera lens to center of speaker opening projected down
+    // Code will take care of offset from camera lens to center of robot
+    // y: shooter motor fraction output - code will convert to motor volts
+    public static final InterpolatingDoubleTreeMap SPEED_MAP = new InterpolatingDoubleTreeMap();
+
+    static {
+      SPEED_MAP.put(Units.feetToMeters(0.0), 0.53);
+      SPEED_MAP.put(Units.feetToMeters(4.0), 0.53);
+      SPEED_MAP.put(Units.feetToMeters(5.0), 0.53);
+      SPEED_MAP.put(Units.feetToMeters(6.0), 0.55);
+      SPEED_MAP.put(Units.feetToMeters(7.0), 0.57);
+      SPEED_MAP.put(Units.feetToMeters(8.0), 0.60);
+      SPEED_MAP.put(Units.feetToMeters(9.0), 0.64);
+      SPEED_MAP.put(Units.feetToMeters(10.0), 0.67);
+      SPEED_MAP.put(Units.feetToMeters(11.0), 0.70);
+      SPEED_MAP.put(Units.feetToMeters(12.0), 0.73);
+      SPEED_MAP.put(Units.feetToMeters(13.0), 0.76);
+      SPEED_MAP.put(Units.feetToMeters(14.0), 0.79);
+      SPEED_MAP.put(Units.feetToMeters(15.0), 0.79);
+      SPEED_MAP.put(Units.feetToMeters(16.0), 0.81);
+    }
+
+    private ShooterConstants() {}
   }
 }

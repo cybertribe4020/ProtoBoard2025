@@ -230,16 +230,19 @@ public class RobotContainer {
                     () -> convey.runVelocity(conveySpeedInput.get()), convey::stop, convey)));
 
     // Right Bumper
-    // Drive with joystick for translation, but use rotation control to always point to the speaker
+    // Continuous chassis rotation to face speaker but allow joystick chassis translation
+    // Set shooter speed and angle continouously based on range to speaker
     controller
         .rightBumper()
         .whileTrue(
             new DriveWithTargetingCommand(
                 drive,
+                shooter,
+                arm,
                 () -> -controller.getLeftY(),
                 () -> -controller.getLeftX(),
                 drive::getPose,
-                drive::getRotFaceSpeaker));
+                drive::getVectorFaceSpeaker));
 
     // Y Button
     // Drive directly to climb start location in front of red stage left

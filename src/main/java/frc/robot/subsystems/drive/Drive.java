@@ -90,8 +90,7 @@ public class Drive extends SubsystemBase {
           VisionConstants.STD_DEVS_VISION_DEFAULT);
 
   private Translation2d speakerPosition;
-  private final Rotation2d facingBackwards = new Rotation2d(Math.PI);
-  private Rotation2d rotFaceSpeaker;
+  private Translation2d vectorFaceSpeaker;
 
   public Drive(
       GyroIO gyroIO,
@@ -278,13 +277,10 @@ public class Drive extends SubsystemBase {
     poseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
   }
 
-  public Rotation2d getRotFaceSpeaker() {
+  public Translation2d getVectorFaceSpeaker() {
     speakerPosition = FieldConstants.getSpeakerPosition();
-    rotFaceSpeaker =
-        speakerPosition.minus(getPose().getTranslation()).getAngle().plus(facingBackwards);
-    Logger.recordOutput("rotFaceSpeaker", rotFaceSpeaker);
-    Logger.recordOutput("rotCurrent", this.getRotation());
-    return rotFaceSpeaker;
+    vectorFaceSpeaker = speakerPosition.minus(getPose().getTranslation());
+    return vectorFaceSpeaker;
   }
 
   /**
