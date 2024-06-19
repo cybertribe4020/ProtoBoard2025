@@ -16,6 +16,7 @@ package frc.robot.subsystems.arm1;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
@@ -111,7 +112,7 @@ public class Arm1 extends SubsystemBase {
   /** Run closed loop control to move the arm to the desired position */
   public void setGoalDeg(double setpointDeg) {
     armClosedLoop = true;
-    angleGoalRad = Units.degreesToRadians(setpointDeg);
+    angleGoalRad = Units.degreesToRadians(MathUtil.clamp(setpointDeg, ArmConstants.ARM_MIN_ANGLE_DEG, ArmConstants.ARM_MAX_ANGLE_DEG));
   }
 
   /** Stops the Arm. */
