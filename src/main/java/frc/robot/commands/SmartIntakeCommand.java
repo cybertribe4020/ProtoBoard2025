@@ -11,7 +11,9 @@ public class SmartIntakeCommand extends Command {
   private final Intake intake;
   private final BooleanSupplier armIsDownSupplier;
   private final BooleanSupplier noteIsLoadedSupplier;
-  private LoggedDashboardNumber intakeVoltsInput = new LoggedDashboardNumber("Intake Volts", 4.0);
+  // private LoggedDashboardNumber intakeVoltsInput = new LoggedDashboardNumber("Intake Volts",
+  // 4.0);
+  private LoggedDashboardNumber intakeVelocityInput = new LoggedDashboardNumber("Intake RPM", 1250);
 
   public SmartIntakeCommand(
       Intake intake, BooleanSupplier armIsDownSupplier, BooleanSupplier noteIsLoadedSupplier) {
@@ -28,10 +30,11 @@ public class SmartIntakeCommand extends Command {
     var intakeDirection = "undefined";
     if (armIsDown && !noteIsLoaded) {
       // intake.runVolts(intakeVoltsInput.get(), intakeVoltsInput.get());
-      intake.runVelocity(1200, 1200);
+      intake.runVelocity(intakeVelocityInput.get(), intakeVelocityInput.get());
       intakeDirection = "intake";
     } else {
-      intake.runVolts(-intakeVoltsInput.get() * 0.75, 0.0);
+      // if arm is up, run upper axle backwards and lower axle off
+      intake.runVolts(0.0, -3.0);
       intakeDirection = "reject";
     }
     Logger.recordOutput("Intake/intakeDirection", intakeDirection);

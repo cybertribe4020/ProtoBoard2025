@@ -77,11 +77,11 @@ public class RobotContainer {
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
   private final LoggedDashboardNumber shooterSpeedInput =
-      new LoggedDashboardNumber("Shooter Speed", 1500.0);
-  /* private final LoggedDashboardNumber intakeSpeedInput =
-  new LoggedDashboardNumber("Intake Speed", 1600.0);
+      new LoggedDashboardNumber("Shooter RPM", 1500.0);
+  private final LoggedDashboardNumber intakeSpeedInput =
+      new LoggedDashboardNumber("Intake RPM", 1250);
   private final LoggedDashboardNumber conveySpeedInput =
-      new LoggedDashboardNumber("Convey Speed", 1600.0); */
+      new LoggedDashboardNumber("Convey RPM", 900);
   private LoggedDashboardNumber intakeVoltsInput = new LoggedDashboardNumber("Intake Volts", 4.0);
   private LoggedDashboardNumber conveyVoltsInput = new LoggedDashboardNumber("Convey Volts", 4.0);
 

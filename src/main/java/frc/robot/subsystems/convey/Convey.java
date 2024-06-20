@@ -14,7 +14,6 @@
 package frc.robot.subsystems.convey;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -35,16 +34,16 @@ public class Convey extends SubsystemBase {
     // separate robot with different tuning)
     switch (Constants.currentMode) {
       case REAL:
-        ffModel = new SimpleMotorFeedforward(0.0, 0.0015);
-        io.configurePID(0.0002, 0.0, 0.0);
+        ffModel = new SimpleMotorFeedforward(0.0, 0.0043);
+        io.configurePID(0.0005, 0.0, 0.0);
         break;
       case REPLAY:
-        ffModel = new SimpleMotorFeedforward(0.0, 0.0015);
-        io.configurePID(0.0002, 0.0, 0.0);
+        ffModel = new SimpleMotorFeedforward(0.0, 0.0043);
+        io.configurePID(0.0005, 0.0, 0.0);
         break;
       case SIM:
-        ffModel = new SimpleMotorFeedforward(0.0, 0.03);
-        io.configurePID(0.5, 0.0, 0.0);
+        ffModel = new SimpleMotorFeedforward(0.0, 0.0043);
+        io.configurePID(0.0005, 0.0, 0.0);
         break;
       default:
         ffModel = new SimpleMotorFeedforward(0.0, 0.0);
@@ -65,11 +64,11 @@ public class Convey extends SubsystemBase {
 
   /** Run closed loop at the specified velocity. */
   public void runVelocity(double velocityRPM) {
-    var velocityRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(velocityRPM);
-    io.setVelocity(velocityRadPerSec, ffModel.calculate(velocityRadPerSec));
+    io.setVelocity(velocityRPM, ffModel.calculate(velocityRPM));
 
     // Log convey setpoint
     Logger.recordOutput("Convey/SetpointRPM", velocityRPM);
+    Logger.recordOutput("Convey/ff", ffModel.calculate(velocityRPM));
   }
 
   /** Stops the convey. */
@@ -80,12 +79,12 @@ public class Convey extends SubsystemBase {
   /** Returns the current velocity in RPM. */
   @AutoLogOutput
   public double getVelocityRPM() {
-    return Units.radiansPerSecondToRotationsPerMinute(inputs.velocityRadPerSec);
+    return inputs.velocityRPM;
   }
 
   /** Returns the current velocity in radians per second. */
   public double getCharacterizationVelocity() {
-    return inputs.velocityRadPerSec;
+    return inputs.velocityRPM;
   }
 
   @AutoLogOutput

@@ -18,8 +18,8 @@ import org.littletonrobotics.junction.AutoLog;
 public interface ConveyIO {
   @AutoLog
   public static class ConveyIOInputs {
-    public double positionRad = 0.0;
-    public double velocityRadPerSec = 0.0;
+    public double positionRot = 0.0;
+    public double velocityRPM = 0.0;
     public double appliedVolts = 0.0;
     public double currentAmps = 0.0;
   }
@@ -31,7 +31,7 @@ public interface ConveyIO {
   public default void setVoltage(double volts) {}
 
   /** Run closed loop at the specified velocity. */
-  public default void setVelocity(double velocityRadPerSec, double ffVolts) {}
+  public default void setVelocity(double velocityRPM, double ffVolts) {}
 
   /** Stop in open loop. */
   public default void stop() {}

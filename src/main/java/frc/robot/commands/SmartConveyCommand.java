@@ -13,7 +13,9 @@ public class SmartConveyCommand extends Command {
   private final BooleanSupplier noteIsLoadedSupplier;
   private final BooleanSupplier shooterIsRunningSupplier;
   private final BooleanSupplier leftTriggerPulledSupplier;
-  private LoggedDashboardNumber conveyVoltsInput = new LoggedDashboardNumber("Convey Volts", 4.0);
+  // private LoggedDashboardNumber conveyVoltsInput = new LoggedDashboardNumber("Convey Volts",
+  // 4.0);
+  private LoggedDashboardNumber conveyVelocityInput = new LoggedDashboardNumber("Convey RPM", 900);
 
   public SmartConveyCommand(
       Convey convey,
@@ -37,10 +39,11 @@ public class SmartConveyCommand extends Command {
     var leftTriggerPulled = leftTriggerPulledSupplier.getAsBoolean();
     var conveyStatus = "undefined";
     if (leftTriggerPulled && shooterIsRunning) {
-      convey.runVolts(11.5);
+      convey.runVolts(12.0);
       conveyStatus = "shooting";
     } else if (armIsDown && !noteIsLoaded) {
-      convey.runVolts(conveyVoltsInput.get());
+      // convey.runVolts(conveyVoltsInput.get());
+      convey.runVelocity(conveyVelocityInput.get());
       conveyStatus = "runToLoad";
     } else {
       convey.runVolts(0.0);
