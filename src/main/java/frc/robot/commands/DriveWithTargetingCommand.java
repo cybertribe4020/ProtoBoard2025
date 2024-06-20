@@ -26,6 +26,7 @@ public class DriveWithTargetingCommand extends Command {
 
   private static final double DEADBAND = 0.1;
   private static final double THETA_TOLERANCE = Units.degreesToRadians(1.0);
+  private static final double ANGLE_BIAS_MULTIPLIER = 1.01;
 
   private static final TrapezoidProfile.Constraints DEFAULT_OMEGA_CONSTRAINTS =
       new TrapezoidProfile.Constraints(MAX_ANGULAR_SPEED * 0.6, MAX_ANGULAR_SPEED * 1.2);
@@ -87,23 +88,16 @@ public class DriveWithTargetingCommand extends Command {
 
   public void initialize() {
     resetPIDControllers();
-    thetaController.setGoal(goalVector.get().getAngle().plus(facingBackwards).getRadians());
-  }
-
-  public boolean atGoal() {
-    return thetaController.atGoal();
-  }
-
-  private void resetPIDControllers() {
-    var robotPose = poseProvider.get();
-    thetaController.reset(robotPose.getRotation().getRadians());
+    thetaController.setGoal(
+        biasedRotation(goalVector.get().getAngle().plus(facingBackwards).getRadians()));
   }
 
   public void execute() {
     var robotPose = poseProvider.get();
 
     // Turn towards the target
-    thetaController.setGoal(goalVector.get().getAngle().plus(facingBackwards).getRadians());
+    thetaController.setGoal(
+        biasedRotation(goalVector.get().getAngle().plus(facingBackwards).getRadians()));
     var omegaSpeed = thetaController.calculate(robotPose.getRotation().getRadians());
     if (thetaController.atGoal()) {
       omegaSpeed = 0;
@@ -154,5 +148,23 @@ public class DriveWithTargetingCommand extends Command {
     drive.stop();
     shooter.stop();
     arm1.setGoalDeg(ArmConstants.ARM_STOW_ANGLE_DEG);
+  }
+
+  private void resetPIDControllers() {
+    var robotPose = poseProvider.get();
+    thetaController.reset(robotPose.getRotation().getRadians());
+  }
+
+  public boolean atGoal() {
+    return thetaController.atGoal();
+  }
+
+  private double biasedRotation(double directRotation) {
+    if (FieldConstants.isBlue()) {
+      return directRotation * ANGLE_BIAS_MULTIPLIER;
+    } else {
+      var flippedRotation = MathUtil.angleModulus(directRotation + Math.PI);
+      return MathUtil.angleModulus((flippedRotation * ANGLE_BIAS_MULTIPLIER) - Math.PI);
+    }
   }
 }

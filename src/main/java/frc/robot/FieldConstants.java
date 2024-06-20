@@ -46,6 +46,14 @@ public class FieldConstants {
     }
   }
 
+  public static Pose2d getSpeakerPose2d() {
+    if (isBlue()) {
+      return AprilTagFields.k2024Crescendo.loadAprilTagLayoutField().getTagPose(7).get().toPose2d();
+    } else {
+      return AprilTagFields.k2024Crescendo.loadAprilTagLayoutField().getTagPose(4).get().toPose2d();
+    }
+  }
+
   public static Translation2d shooterPositionOffset = new Translation2d(0, 0);
 
   public static Translation2d getSubwooferPosition() {
