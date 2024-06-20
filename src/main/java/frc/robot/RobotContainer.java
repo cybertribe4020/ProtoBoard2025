@@ -28,6 +28,8 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.DriveToPoseCommand;
 import frc.robot.commands.DriveWithTargetingCommand;
+import frc.robot.commands.SmartConveyCommand;
+import frc.robot.commands.SmartIntakeCommand;
 import frc.robot.subsystems.arm1.Arm1;
 import frc.robot.subsystems.arm1.Arm1IO;
 import frc.robot.subsystems.arm1.Arm1IOSim;
@@ -76,10 +78,10 @@ public class RobotContainer {
   private final LoggedDashboardChooser<Command> autoChooser;
   private final LoggedDashboardNumber shooterSpeedInput =
       new LoggedDashboardNumber("Shooter Speed", 1500.0);
-  private final LoggedDashboardNumber intakeSpeedInput =
-      new LoggedDashboardNumber("Intake Speed", 1600.0);
+  /* private final LoggedDashboardNumber intakeSpeedInput =
+  new LoggedDashboardNumber("Intake Speed", 1600.0);
   private final LoggedDashboardNumber conveySpeedInput =
-      new LoggedDashboardNumber("Convey Speed", 1600.0);
+      new LoggedDashboardNumber("Convey Speed", 1600.0); */
   private final LoggedDashboardNumber intakeVoltsInput =
       new LoggedDashboardNumber("Intake Volts", 4.0);
   private final LoggedDashboardNumber conveyVoltsInput =
@@ -214,20 +216,19 @@ public class RobotContainer {
                 .ignoringDisable(true));
 
     // Left Bumper
-    // Run the intake, conveyor, and shooter at constant speed to pick up and immediately eject
-    // Notes
+    // Run the intake and conveyor
+    // For now, this is set to toggle to be able to turn these motors off while testing
     controller
         .leftBumper()
-        .whileTrue(
+        .toggleOnTrue(
             Commands.parallel(
-                Commands.startEnd(
-                    () -> shooter.runVelocity(shooterSpeedInput.get()), shooter::stop, shooter),
-                Commands.startEnd(
-                    () -> intake.runVelocity(intakeSpeedInput.get(), intakeSpeedInput.get()),
-                    intake::stop,
-                    intake),
-                Commands.startEnd(
-                    () -> convey.runVelocity(conveySpeedInput.get()), convey::stop, convey)));
+                new SmartIntakeCommand(intake, arm::armIsDown, convey::noteIsLoaded),
+                new SmartConveyCommand(
+                    convey,
+                    arm::armIsDown,
+                    convey::noteIsLoaded,
+                    shooter::shooterIsRunning,
+                    () -> controller.getLeftTriggerAxis() > 0.5)));
 
     // Right Bumper
     // Continuous chassis rotation to face speaker but allow joystick chassis translation
@@ -243,6 +244,14 @@ public class RobotContainer {
                 () -> -controller.getLeftX(),
                 drive::getPose,
                 drive::getVectorFaceSpeaker));
+
+    // Left Trigger
+    // Run convey motor to shoot a Note
+    // Shooter must be running before this action runs the convey motor
+    controller
+        .leftTrigger(0.5)
+        .and(() -> shooter.shooterIsRunning())
+        .whileTrue(Commands.startEnd(() -> convey.runVolts(11.5), convey::stop, convey));
 
     // Y Button
     // Drive directly to climb start location in front of red stage left

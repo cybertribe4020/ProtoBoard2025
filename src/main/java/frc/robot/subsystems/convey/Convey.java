@@ -15,6 +15,7 @@ package frc.robot.subsystems.convey;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -24,6 +25,7 @@ public class Convey extends SubsystemBase {
   private final ConveyIO io;
   private final ConveyIOInputsAutoLogged inputs = new ConveyIOInputsAutoLogged();
   private final SimpleMotorFeedforward ffModel;
+  private final DigitalInput conveyNoteSensor = new DigitalInput(9);
 
   /** Creates a new Convey. */
   public Convey(ConveyIO io) {
@@ -84,5 +86,10 @@ public class Convey extends SubsystemBase {
   /** Returns the current velocity in radians per second. */
   public double getCharacterizationVelocity() {
     return inputs.velocityRadPerSec;
+  }
+
+  @AutoLogOutput
+  public boolean noteIsLoaded() {
+    return !conveyNoteSensor.get();
   }
 }

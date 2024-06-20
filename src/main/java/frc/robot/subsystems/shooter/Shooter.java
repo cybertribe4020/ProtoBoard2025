@@ -110,4 +110,8 @@ public class Shooter extends SubsystemBase {
   public double getCharacterizationVelocity() {
     return inputs.velocityRadPerSec;
   }
+
+  public boolean shooterIsRunning() {
+    return getVelocityRPM() >= 2000.0;
+  }
 }

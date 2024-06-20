@@ -117,7 +117,7 @@ public class DriveWithTargetingCommand extends Command {
     // set the shooter speed and angle
     // get distance to center of robot and subtract 0.28 meters of offset to camera lens
     distToSpeaker = goalVector.get().getNorm() - 0.28;
-    // shooter.runVolts(12.0 * ShooterConstants.SPEED_MAP.get(distToSpeaker));
+    shooter.runVolts(12.0 * ShooterConstants.SPEED_MAP.get(distToSpeaker));
     arm1.setGoalDeg(ShooterConstants.ANGLE_MAP.get(distToSpeaker));
 
     Logger.recordOutput("feedToSpeaker", Units.metersToFeet(distToSpeaker));
@@ -152,7 +152,7 @@ public class DriveWithTargetingCommand extends Command {
 
   public void end(boolean interrupted) {
     drive.stop();
-    // shooter.stop();
-    arm1.setGoalDeg(ArmConstants.ARM_INIT_ANGLE_DEG);
+    shooter.stop();
+    arm1.setGoalDeg(ArmConstants.ARM_STOW_ANGLE_DEG);
   }
 }

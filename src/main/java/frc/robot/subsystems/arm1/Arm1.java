@@ -37,7 +37,7 @@ public class Arm1 extends SubsystemBase {
   private final ProfiledPIDController pid;
   private Double pidOutput;
   private Double feedforwardOutput;
-  private Double angleGoalRad = Units.degreesToRadians(ArmConstants.ARM_INIT_ANGLE_DEG);
+  private Double angleGoalRad = Units.degreesToRadians(ArmConstants.ARM_STOW_ANGLE_DEG);
   private Boolean armClosedLoop = true;
 
   // Create a Mechanism2d display of an Arm with a fixed ArmTower and moving Arm.
@@ -128,5 +128,10 @@ public class Arm1 extends SubsystemBase {
   @AutoLogOutput
   public double getPositionDeg() {
     return Units.radiansToDegrees(inputs.arm1InternalPositionRad);
+  }
+
+  public boolean armIsDown() {
+    return Units.radiansToDegrees(inputs.arm1InternalPositionRad)
+        <= ArmConstants.ARM_STOW_ANGLE_DEG + 1.0;
   }
 }
