@@ -19,7 +19,6 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.SparkPIDController.ArbFFUnits;
-import edu.wpi.first.math.util.Units;
 
 /**
  * NOTE: To use the Spark Flex / NEO Vortex, replace all instances of "CANSparkMax" with
@@ -57,16 +56,10 @@ public class IntakeIOSparkMax implements IntakeIO {
 
   @Override
   public void updateInputs(IntakeIOInputs inputs) {
-    inputs.positionRad =
-        new double[] {
-          Units.rotationsToRadians(encLower.getPosition() / GEAR_RATIO),
-          Units.rotationsToRadians(encUpper.getPosition() / GEAR_RATIO)
-        };
-    inputs.velocityRadPerSec =
-        new double[] {
-          Units.rotationsPerMinuteToRadiansPerSecond(encLower.getVelocity() / GEAR_RATIO),
-          Units.rotationsPerMinuteToRadiansPerSecond(encUpper.getVelocity() / GEAR_RATIO)
-        };
+    inputs.positionRot =
+        new double[] {encLower.getPosition() / GEAR_RATIO, encUpper.getPosition() / GEAR_RATIO};
+    inputs.velocityRPM =
+        new double[] {encLower.getVelocity() / GEAR_RATIO, encUpper.getVelocity() / GEAR_RATIO};
     inputs.appliedVolts =
         new double[] {
           lower.getAppliedOutput() * lower.getBusVoltage(),
@@ -83,22 +76,11 @@ public class IntakeIOSparkMax implements IntakeIO {
 
   @Override
   public void setVelocity(
-      double velocityRadPerSecLower,
-      double ffVoltsLower,
-      double velocityRadPerSecUpper,
-      double ffVoltsUpper) {
+      double velocityRPMLower, double ffVoltsLower, double velocityRPMUpper, double ffVoltsUpper) {
     pidLower.setReference(
-        Units.radiansPerSecondToRotationsPerMinute(velocityRadPerSecLower) * GEAR_RATIO,
-        ControlType.kVelocity,
-        0,
-        ffVoltsLower,
-        ArbFFUnits.kVoltage);
+        velocityRPMLower * GEAR_RATIO, ControlType.kVelocity, 0, ffVoltsLower, ArbFFUnits.kVoltage);
     pidUpper.setReference(
-        Units.radiansPerSecondToRotationsPerMinute(velocityRadPerSecUpper) * GEAR_RATIO,
-        ControlType.kVelocity,
-        0,
-        ffVoltsUpper,
-        ArbFFUnits.kVoltage);
+        velocityRPMUpper * GEAR_RATIO, ControlType.kVelocity, 0, ffVoltsUpper, ArbFFUnits.kVoltage);
   }
 
   @Override

@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.convey.Convey;
 import java.util.function.BooleanSupplier;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 public class SmartConveyCommand extends Command {
 
@@ -12,6 +13,7 @@ public class SmartConveyCommand extends Command {
   private final BooleanSupplier noteIsLoadedSupplier;
   private final BooleanSupplier shooterIsRunningSupplier;
   private final BooleanSupplier leftTriggerPulledSupplier;
+  private LoggedDashboardNumber conveyVoltsInput = new LoggedDashboardNumber("Convey Volts", 4.0);
 
   public SmartConveyCommand(
       Convey convey,
@@ -38,7 +40,7 @@ public class SmartConveyCommand extends Command {
       convey.runVolts(11.5);
       conveyStatus = "shooting";
     } else if (armIsDown && !noteIsLoaded) {
-      convey.runVolts(4.0);
+      convey.runVolts(conveyVoltsInput.get());
       conveyStatus = "runToLoad";
     } else {
       convey.runVolts(0.0);

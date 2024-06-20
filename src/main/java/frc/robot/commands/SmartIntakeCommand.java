@@ -4,12 +4,14 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.intake.Intake;
 import java.util.function.BooleanSupplier;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 public class SmartIntakeCommand extends Command {
 
   private final Intake intake;
   private final BooleanSupplier armIsDownSupplier;
   private final BooleanSupplier noteIsLoadedSupplier;
+  private LoggedDashboardNumber intakeVoltsInput = new LoggedDashboardNumber("Intake Volts", 4.0);
 
   public SmartIntakeCommand(
       Intake intake, BooleanSupplier armIsDownSupplier, BooleanSupplier noteIsLoadedSupplier) {
@@ -25,10 +27,11 @@ public class SmartIntakeCommand extends Command {
     var noteIsLoaded = noteIsLoadedSupplier.getAsBoolean();
     var intakeDirection = "undefined";
     if (armIsDown && !noteIsLoaded) {
-      intake.runVolts(4.0, 4.0);
+      // intake.runVolts(intakeVoltsInput.get(), intakeVoltsInput.get());
+      intake.runVelocity(1200, 1200);
       intakeDirection = "intake";
     } else {
-      intake.runVolts(-3.0, 0.0);
+      intake.runVolts(-intakeVoltsInput.get() * 0.75, 0.0);
       intakeDirection = "reject";
     }
     Logger.recordOutput("Intake/intakeDirection", intakeDirection);

@@ -18,8 +18,8 @@ import org.littletonrobotics.junction.AutoLog;
 public interface IntakeIO {
   @AutoLog
   public static class IntakeIOInputs {
-    public double[] positionRad = new double[] {};
-    public double[] velocityRadPerSec = new double[] {};
+    public double[] positionRot = new double[] {};
+    public double[] velocityRPM = new double[] {};
     public double[] appliedVolts = new double[] {};
     public double[] currentAmps = new double[] {};
   }
@@ -32,10 +32,7 @@ public interface IntakeIO {
 
   /** Run each axle (lower/upper) closed loop at the specified velocity. */
   public default void setVelocity(
-      double velocityRadPerSecLower,
-      double ffVoltsLower,
-      double velocityRadPerSecUpper,
-      double ffVoltsUpper) {}
+      double velocityRPMLower, double ffVoltsLower, double velocityRPMUpper, double ffVoltsUpper) {}
 
   /** Stop in open loop. */
   public default void stop() {}

@@ -82,10 +82,8 @@ public class RobotContainer {
   new LoggedDashboardNumber("Intake Speed", 1600.0);
   private final LoggedDashboardNumber conveySpeedInput =
       new LoggedDashboardNumber("Convey Speed", 1600.0); */
-  private final LoggedDashboardNumber intakeVoltsInput =
-      new LoggedDashboardNumber("Intake Volts", 4.0);
-  private final LoggedDashboardNumber conveyVoltsInput =
-      new LoggedDashboardNumber("Convey Volts", 4.0);
+  private LoggedDashboardNumber intakeVoltsInput = new LoggedDashboardNumber("Intake Volts", 4.0);
+  private LoggedDashboardNumber conveyVoltsInput = new LoggedDashboardNumber("Convey Volts", 4.0);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {

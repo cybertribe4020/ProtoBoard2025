@@ -14,7 +14,6 @@
 package frc.robot.subsystems.intake;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -33,16 +32,16 @@ public class Intake extends SubsystemBase {
     // separate robot with different tuning)
     switch (Constants.currentMode) {
       case REAL:
-        ffModel = new SimpleMotorFeedforward(0.0, 0.0028);
-        io.configurePID(0.0002, 0.0, 0.0);
+        ffModel = new SimpleMotorFeedforward(0.0, 0.0032);
+        io.configurePID(0.001, 0.0, 0.0);
         break;
       case REPLAY:
-        ffModel = new SimpleMotorFeedforward(0.0, 0.0015);
-        io.configurePID(0.0002, 0.0, 0.0);
+        ffModel = new SimpleMotorFeedforward(0.0, 0.0032);
+        io.configurePID(0.001, 0.0, 0.0);
         break;
       case SIM:
-        ffModel = new SimpleMotorFeedforward(0.0, 0.03);
-        io.configurePID(0.5, 0.0, 0.0);
+        ffModel = new SimpleMotorFeedforward(0.0, 0.0032);
+        io.configurePID(0.001, 0.0, 0.0);
         break;
       default:
         ffModel = new SimpleMotorFeedforward(0.0, 0.0);
@@ -63,17 +62,16 @@ public class Intake extends SubsystemBase {
 
   /** Run both axles (lower/upper) closed loop at the specified velocity. */
   public void runVelocity(double velocityRPMLower, double velocityRPMUpper) {
-    var velocityRadPerSecLower = Units.rotationsPerMinuteToRadiansPerSecond(velocityRPMLower);
-    var velocityRadPerSecUpper = Units.rotationsPerMinuteToRadiansPerSecond(velocityRPMUpper);
     io.setVelocity(
-        velocityRadPerSecLower,
-        ffModel.calculate(velocityRadPerSecLower),
-        velocityRadPerSecUpper,
-        ffModel.calculate(velocityRadPerSecUpper));
+        velocityRPMLower,
+        ffModel.calculate(velocityRPMLower),
+        velocityRPMUpper,
+        ffModel.calculate(velocityRPMUpper));
 
     // Log intake setpoint
     Logger.recordOutput("Intake/SetpointRPMLower", velocityRPMLower);
     Logger.recordOutput("Intake/SetpointRPMUpper", velocityRPMUpper);
+    Logger.recordOutput("Intake/ffLower", ffModel.calculate(velocityRPMLower));
   }
 
   /** Stops the intake. */
@@ -84,11 +82,11 @@ public class Intake extends SubsystemBase {
   /** Returns the current velocity in RPM. */
   @AutoLogOutput
   public double getVelocityRPMLower() {
-    return Units.radiansPerSecondToRotationsPerMinute(inputs.velocityRadPerSec[0]);
+    return inputs.velocityRPM[0];
   }
 
   @AutoLogOutput
   public double getVelocityRPMUpper() {
-    return Units.radiansPerSecondToRotationsPerMinute(inputs.velocityRadPerSec[1]);
+    return inputs.velocityRPM[1];
   }
 }
