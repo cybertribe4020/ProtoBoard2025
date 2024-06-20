@@ -26,7 +26,7 @@ public class DriveWithTargetingCommand extends Command {
 
   private static final double DEADBAND = 0.1;
   private static final double THETA_TOLERANCE = Units.degreesToRadians(1.0);
-  private static final double ANGLE_BIAS_MULTIPLIER = 1.01;
+  private static final double ANGLE_BIAS_MULTIPLIER = 1.1;
 
   private static final TrapezoidProfile.Constraints DEFAULT_OMEGA_CONSTRAINTS =
       new TrapezoidProfile.Constraints(MAX_ANGULAR_SPEED * 0.6, MAX_ANGULAR_SPEED * 1.2);

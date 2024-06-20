@@ -33,7 +33,7 @@ public class Intake extends SubsystemBase {
     // separate robot with different tuning)
     switch (Constants.currentMode) {
       case REAL:
-        ffModel = new SimpleMotorFeedforward(0.0, 0.0015);
+        ffModel = new SimpleMotorFeedforward(0.0, 0.0028);
         io.configurePID(0.0002, 0.0, 0.0);
         break;
       case REPLAY:

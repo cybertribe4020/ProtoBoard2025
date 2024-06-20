@@ -25,10 +25,10 @@ public class SmartIntakeCommand extends Command {
     var noteIsLoaded = noteIsLoadedSupplier.getAsBoolean();
     var intakeDirection = "undefined";
     if (armIsDown && !noteIsLoaded) {
-      intake.runVelocity(1600.0, 1600.0);
+      intake.runVolts(4.0, 4.0);
       intakeDirection = "intake";
     } else {
-      intake.runVelocity(-1000.0, 0);
+      intake.runVolts(-3.0, 0.0);
       intakeDirection = "reject";
     }
     Logger.recordOutput("Intake/intakeDirection", intakeDirection);

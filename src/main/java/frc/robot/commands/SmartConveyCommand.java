@@ -38,7 +38,7 @@ public class SmartConveyCommand extends Command {
       convey.runVolts(11.5);
       conveyStatus = "shooting";
     } else if (armIsDown && !noteIsLoaded) {
-      convey.runVolts(4.5);
+      convey.runVolts(4.0);
       conveyStatus = "runToLoad";
     } else {
       convey.runVolts(0.0);
