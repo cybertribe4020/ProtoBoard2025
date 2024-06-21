@@ -68,7 +68,7 @@ public class Convey extends SubsystemBase {
 
     // Log convey setpoint
     Logger.recordOutput("Convey/SetpointRPM", velocityRPM);
-    Logger.recordOutput("Convey/ff", ffModel.calculate(velocityRPM));
+    Logger.recordOutput("Convey/ffVolts", ffModel.calculate(velocityRPM));
   }
 
   /** Stops the convey. */
@@ -87,6 +87,7 @@ public class Convey extends SubsystemBase {
     return inputs.velocityRPM;
   }
 
+  // The note sensor reads True without a note present and False when it sees a note
   @AutoLogOutput
   public boolean noteIsLoaded() {
     return !conveyNoteSensor.get();

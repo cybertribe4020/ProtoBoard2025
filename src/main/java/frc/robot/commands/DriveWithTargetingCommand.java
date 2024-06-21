@@ -103,10 +103,10 @@ public class DriveWithTargetingCommand extends Command {
       omegaSpeed = 0;
     }
     Logger.recordOutput(
-        "thetaGoal", goalVector.get().getAngle().plus(facingBackwards).getRadians());
-    Logger.recordOutput("thetaSP", thetaController.getSetpoint().position);
-    Logger.recordOutput("thetaPV", robotPose.getRotation().getRadians());
-    Logger.recordOutput("thetaOP", omegaSpeed);
+        "Arm1/thetaGoal", goalVector.get().getAngle().plus(facingBackwards).getRadians());
+    Logger.recordOutput("Arm1/thetaSP", thetaController.getSetpoint().position);
+    Logger.recordOutput("Arm1/thetaPV", robotPose.getRotation().getRadians());
+    Logger.recordOutput("Arm1/thetaOP", omegaSpeed);
 
     // set the shooter speed and angle
     // get distance to center of robot and subtract 0.28 meters of offset to camera lens
@@ -114,9 +114,9 @@ public class DriveWithTargetingCommand extends Command {
     shooter.runVolts(12.0 * ShooterConstants.SPEED_MAP.get(distToSpeaker));
     arm1.setGoalDeg(ShooterConstants.ANGLE_MAP.get(distToSpeaker));
 
-    Logger.recordOutput("feedToSpeaker", Units.metersToFeet(distToSpeaker));
-    Logger.recordOutput("speed map value", ShooterConstants.SPEED_MAP.get(distToSpeaker));
-    Logger.recordOutput("angle map value", ShooterConstants.ANGLE_MAP.get(distToSpeaker));
+    Logger.recordOutput("Shooter/feetToSpeaker", Units.metersToFeet(distToSpeaker));
+    Logger.recordOutput("Shooter/speedMapValue", ShooterConstants.SPEED_MAP.get(distToSpeaker));
+    Logger.recordOutput("Shooter/angleMapValue", ShooterConstants.ANGLE_MAP.get(distToSpeaker));
 
     // Apply deadband to translation inputs
     double linearMagnitude =

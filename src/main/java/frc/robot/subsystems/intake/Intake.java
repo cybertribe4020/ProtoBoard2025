@@ -55,12 +55,12 @@ public class Intake extends SubsystemBase {
     Logger.processInputs("Intake", inputs);
   }
 
-  /** Run both axles (lower/upper) open loop at the specified voltage. */
+  /** Run both axles (lower/upper) open loop at the specified voltages. */
   public void runVolts(double voltsLower, double voltsUpper) {
     io.setVoltage(voltsLower, voltsUpper);
   }
 
-  /** Run both axles (lower/upper) closed loop at the specified velocity. */
+  /** Run both axles (lower/upper) closed loop at the specified velocities. */
   public void runVelocity(double velocityRPMLower, double velocityRPMUpper) {
     io.setVelocity(
         velocityRPMLower,
@@ -71,7 +71,7 @@ public class Intake extends SubsystemBase {
     // Log intake setpoint
     Logger.recordOutput("Intake/SetpointRPMLower", velocityRPMLower);
     Logger.recordOutput("Intake/SetpointRPMUpper", velocityRPMUpper);
-    Logger.recordOutput("Intake/ffLower", ffModel.calculate(velocityRPMLower));
+    Logger.recordOutput("Intake/ffVoltsLower", ffModel.calculate(velocityRPMLower));
   }
 
   /** Stops the intake. */
