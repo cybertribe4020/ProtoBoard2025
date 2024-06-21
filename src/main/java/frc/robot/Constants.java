@@ -137,12 +137,12 @@ public final class Constants {
       ANGLE_MAP.put(Units.feetToMeters(0.0), 5.0);
       ANGLE_MAP.put(Units.feetToMeters(4.0), 6.0);
       ANGLE_MAP.put(Units.feetToMeters(5.0), 11.5);
-      ANGLE_MAP.put(Units.feetToMeters(6.0), 16.5);
+      ANGLE_MAP.put(Units.feetToMeters(6.0), 16.0);
       ANGLE_MAP.put(Units.feetToMeters(7.0), 20.0);
       ANGLE_MAP.put(Units.feetToMeters(8.0), 22.5);
-      ANGLE_MAP.put(Units.feetToMeters(9.0), 24.5);
-      ANGLE_MAP.put(Units.feetToMeters(10.0), 27.75);
-      ANGLE_MAP.put(Units.feetToMeters(11.0), 29.25);
+      ANGLE_MAP.put(Units.feetToMeters(9.0), 25.25);
+      ANGLE_MAP.put(Units.feetToMeters(10.0), 27.25);
+      ANGLE_MAP.put(Units.feetToMeters(11.0), 29.0);
       ANGLE_MAP.put(Units.feetToMeters(12.0), 30.5);
       ANGLE_MAP.put(Units.feetToMeters(13.0), 32.25);
       ANGLE_MAP.put(Units.feetToMeters(14.0), 33.5);
@@ -162,8 +162,8 @@ public final class Constants {
       SPEED_MAP.put(Units.feetToMeters(6.0), 0.55);
       SPEED_MAP.put(Units.feetToMeters(7.0), 0.57);
       SPEED_MAP.put(Units.feetToMeters(8.0), 0.60);
-      SPEED_MAP.put(Units.feetToMeters(9.0), 0.64);
-      SPEED_MAP.put(Units.feetToMeters(10.0), 0.67);
+      SPEED_MAP.put(Units.feetToMeters(9.0), 0.63);
+      SPEED_MAP.put(Units.feetToMeters(10.0), 0.66);
       SPEED_MAP.put(Units.feetToMeters(11.0), 0.70);
       SPEED_MAP.put(Units.feetToMeters(12.0), 0.73);
       SPEED_MAP.put(Units.feetToMeters(13.0), 0.76);
