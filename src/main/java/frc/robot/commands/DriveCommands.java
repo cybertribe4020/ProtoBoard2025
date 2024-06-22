@@ -29,6 +29,7 @@ import org.littletonrobotics.junction.Logger;
 
 public class DriveCommands {
   private static final double DEADBAND = 0.1;
+  private static final double ROTATION_RATE_SCALE = 0.6;
 
   private DriveCommands() {}
 
@@ -52,7 +53,7 @@ public class DriveCommands {
 
           // Square values
           linearMagnitude = linearMagnitude * linearMagnitude;
-          omega = Math.copySign(omega * omega, omega);
+          omega = ROTATION_RATE_SCALE * Math.copySign(omega * omega, omega);
 
           // Calcaulate new linear velocity
           Translation2d linearVelocity =
