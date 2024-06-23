@@ -16,6 +16,9 @@ package frc.robot.subsystems.intake;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+
+import java.util.function.BooleanSupplier;
+
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -55,6 +58,11 @@ public class Intake extends SubsystemBase {
     Logger.processInputs("Intake", inputs);
   }
 
+  /** Stops the intake. */
+  public void stop() {
+    io.stop();
+  }
+
   /** Run both axles (lower/upper) open loop at the specified voltages. */
   public void runVolts(double voltsLower, double voltsUpper) {
     io.setVoltage(voltsLower, voltsUpper);
@@ -72,11 +80,7 @@ public class Intake extends SubsystemBase {
     Logger.recordOutput("Intake/SetpointRPMLower", velocityRPMLower);
     Logger.recordOutput("Intake/SetpointRPMUpper", velocityRPMUpper);
     Logger.recordOutput("Intake/ffVoltsLower", ffModel.calculate(velocityRPMLower));
-  }
-
-  /** Stops the intake. */
-  public void stop() {
-    io.stop();
+    Logger.recordOutput("Intake/ffVoltsUpper", ffModel.calculate(velocityRPMUpper));
   }
 
   /** Returns the current velocity in RPM. */
@@ -88,5 +92,23 @@ public class Intake extends SubsystemBase {
   @AutoLogOutput
   public double getVelocityRPMUpper() {
     return inputs.velocityRPM[1];
+  }
+
+  public void smartIntakeControl (
+    double intakeRPMFwd,
+    double intakeRPMRev,
+    BooleanSupplier armIsDownSupplier,
+    BooleanSupplier noteIsLoadedSupplier) {
+
+    var intakeDirection = "undefined";
+    if (armIsDownSupplier.getAsBoolean() && !noteIsLoadedSupplier.getAsBoolean()) {
+      this.runVelocity(intakeRPMFwd, intakeRPMFwd);
+      intakeDirection = "intake";
+    } else {
+      // if arm is up, run lower axle off and upper axle in reverse
+      this.runVelocity(0.0, intakeRPMRev);
+      intakeDirection = "reverse";
+    }
+    Logger.recordOutput("Intake/intakeDirection", intakeDirection);
   }
 }
