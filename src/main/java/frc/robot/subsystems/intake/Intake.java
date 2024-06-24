@@ -16,9 +16,7 @@ package frc.robot.subsystems.intake;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-
 import java.util.function.BooleanSupplier;
-
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -94,11 +92,11 @@ public class Intake extends SubsystemBase {
     return inputs.velocityRPM[1];
   }
 
-  public void smartIntakeControl (
-    double intakeRPMFwd,
-    double intakeRPMRev,
-    BooleanSupplier armIsDownSupplier,
-    BooleanSupplier noteIsLoadedSupplier) {
+  public void smartIntakeControl(
+      double intakeRPMFwd,
+      double intakeRPMRev,
+      BooleanSupplier armIsDownSupplier,
+      BooleanSupplier noteIsLoadedSupplier) {
 
     var intakeDirection = "undefined";
     if (armIsDownSupplier.getAsBoolean() && !noteIsLoadedSupplier.getAsBoolean()) {

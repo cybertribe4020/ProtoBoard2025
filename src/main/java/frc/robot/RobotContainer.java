@@ -226,13 +226,13 @@ public class RobotContainer {
                     arm::armIsDown,
                     convey::noteIsLoaded,
                     shooter::shooterIsRunning,
-                    () -> controller.getLeftTriggerAxis() > 0.5)));
+                    () -> controller.getRightTriggerAxis() > 0.5)));
 
-    // Right Bumper
+    // Left Trigger
     // Continuous chassis rotation to face speaker but allow joystick chassis translation
     // Set shooter speed and angle continouously based on range to speaker
     controller
-        .rightBumper()
+        .leftTrigger(0.5)
         .whileTrue(
             new DriveWithTargetingCommand(
                 drive,
@@ -243,11 +243,11 @@ public class RobotContainer {
                 drive::getPose,
                 drive::getVectorFaceSpeaker));
 
-    // Left Trigger
+    // Right Trigger
     // Run convey motor to shoot a Note
     // Shooter must be running before this action runs the convey motor
     controller
-        .leftTrigger(0.5)
+        .rightTrigger(0.5)
         .and(() -> shooter.shooterIsRunning())
         .whileTrue(Commands.startEnd(() -> convey.runVolts(11.5), convey::stop, convey));
 
