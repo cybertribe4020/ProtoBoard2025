@@ -306,6 +306,20 @@ public class RobotContainer {
         .onTrue(
             Commands.runOnce(() -> drive.isUsingVision = !drive.isUsingVision, drive)
                 .ignoringDisable(true));
+
+    // Left stick button
+    // Drive robot centric
+    controller
+        .leftStick()
+        .onTrue(
+            Commands.runOnce(() -> drive.driveFieldCentric = false, drive).ignoringDisable(true));
+
+    // Right stick button
+    // Drive field centric
+    controller
+        .rightStick()
+        .onTrue(
+            Commands.runOnce(() -> drive.driveFieldCentric = true, drive).ignoringDisable(true));
   }
 
   /**

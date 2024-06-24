@@ -69,6 +69,7 @@ public class Drive extends SubsystemBase {
   private final Module[] modules = new Module[4]; // FL, FR, BL, BR
   private final SysIdRoutine sysId;
   public boolean isUsingVision = false;
+  public boolean driveFieldCentric = true;
 
   private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(getModuleTranslations());
   private Rotation2d rawGyroRotation = new Rotation2d();
@@ -189,6 +190,7 @@ public class Drive extends SubsystemBase {
     // Apply odometry update
     poseEstimator.update(rawGyroRotation, modulePositions);
     Logger.recordOutput("Is Using Vision?", isUsingVision);
+    Logger.recordOutput("driveFieldCentric", driveFieldCentric);
   }
 
   /**

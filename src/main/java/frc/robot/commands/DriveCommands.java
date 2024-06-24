@@ -66,18 +66,27 @@ public class DriveCommands {
           Logger.recordOutput("linearVelocity", linearVelocity);
           Logger.recordOutput("omega", omega);
 
-          // Convert to field relative speeds & send command
-          boolean isFlipped =
-              DriverStation.getAlliance().isPresent()
-                  && DriverStation.getAlliance().get() == Alliance.Red;
-          drive.runVelocity(
-              ChassisSpeeds.fromFieldRelativeSpeeds(
-                  linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
-                  linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
-                  omega * drive.getMaxAngularSpeedRadPerSec(),
-                  isFlipped
-                      ? drive.getRotation().plus(new Rotation2d(Math.PI))
-                      : drive.getRotation()));
+          if (drive.driveFieldCentric) {
+            // Convert to field relative speeds & send command
+            boolean isFlipped =
+                DriverStation.getAlliance().isPresent()
+                    && DriverStation.getAlliance().get() == Alliance.Red;
+            drive.runVelocity(
+                ChassisSpeeds.fromFieldRelativeSpeeds(
+                    linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
+                    linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
+                    omega * drive.getMaxAngularSpeedRadPerSec(),
+                    isFlipped
+                        ? drive.getRotation().plus(new Rotation2d(Math.PI))
+                        : drive.getRotation()));
+          } else {
+            // just turn the controller inputs into robot-centric chassis speeds
+            drive.runVelocity(
+                new ChassisSpeeds(
+                    linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
+                    linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
+                    omega * drive.getMaxAngularSpeedRadPerSec()));
+          }
         },
         drive);
   }
