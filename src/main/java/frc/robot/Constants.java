@@ -120,13 +120,16 @@ public final class Constants {
     public static final double ARM_GEAR_REDUCTION = 355.56;
     public static final double ARM_MIN_ANGLE_DEG = -34.0;
     public static final double ARM_MAX_ANGLE_DEG = 95.0;
-    public static final double ARM_STOW_ANGLE_DEG = -31.0;
+    public static final double ARM_LOAD_ANGLE_DEG = -31.0;
     public static final double ARM_ENCODER_OFFSET_DEG = 187.0;
 
     private ArmConstants() {}
   }
 
   public static class ShooterConstants {
+
+    // shoot wider than the direct angle to the speaker Apriltag to give more clearance for the Note
+    public static final double ANGLE_BIAS_MULTIPLIER = 1.1;
 
     // x: distance (meters) from rear camera lens to center of speaker opening projected down
     // Code will take care of offset from camera lens to center of robot

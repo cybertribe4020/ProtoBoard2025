@@ -12,7 +12,7 @@ public class SmartConveyCommand extends Command {
   private final BooleanSupplier armIsDownSupplier;
   private final BooleanSupplier noteIsLoadedSupplier;
   private final BooleanSupplier shooterIsRunningSupplier;
-  private final BooleanSupplier leftTriggerPulledSupplier;
+  private final BooleanSupplier shootSignalSupplier;
   // private LoggedDashboardNumber conveyVoltsInput = new LoggedDashboardNumber("Convey Volts",
   // 4.0);
   private LoggedDashboardNumber conveyVelocityInput = new LoggedDashboardNumber("Convey RPM", 900);
@@ -22,12 +22,12 @@ public class SmartConveyCommand extends Command {
       BooleanSupplier armIsDownSupplier,
       BooleanSupplier noteIsLoadedSupplier,
       BooleanSupplier shooterIsRunningSupplier,
-      BooleanSupplier leftTriggerPulledSupplier) {
+      BooleanSupplier shootSignalSupplier) {
     this.convey = convey;
     this.armIsDownSupplier = armIsDownSupplier;
     this.noteIsLoadedSupplier = noteIsLoadedSupplier;
     this.shooterIsRunningSupplier = shooterIsRunningSupplier;
-    this.leftTriggerPulledSupplier = leftTriggerPulledSupplier;
+    this.shootSignalSupplier = shootSignalSupplier;
   }
 
   public void initialize() {}
@@ -36,7 +36,7 @@ public class SmartConveyCommand extends Command {
     var armIsDown = armIsDownSupplier.getAsBoolean();
     var noteIsLoaded = noteIsLoadedSupplier.getAsBoolean();
     var shooterIsRunning = shooterIsRunningSupplier.getAsBoolean();
-    var leftTriggerPulled = leftTriggerPulledSupplier.getAsBoolean();
+    var leftTriggerPulled = shootSignalSupplier.getAsBoolean();
     var conveyStatus = "undefined";
     if (leftTriggerPulled && shooterIsRunning) {
       convey.runVolts(12.0);

@@ -15,16 +15,22 @@ package frc.robot.subsystems.convey;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 public class Convey extends SubsystemBase {
   private final ConveyIO io;
   private final ConveyIOInputsAutoLogged inputs = new ConveyIOInputsAutoLogged();
   private final SimpleMotorFeedforward ffModel;
   private final DigitalInput conveyNoteSensor = new DigitalInput(9);
+
+  public LoggedDashboardNumber conveyVelocityInput = new LoggedDashboardNumber("Convey RPM", 900);
 
   /** Creates a new Convey. */
   public Convey(ConveyIO io) {
@@ -91,5 +97,24 @@ public class Convey extends SubsystemBase {
   @AutoLogOutput
   public boolean noteIsLoaded() {
     return !conveyNoteSensor.get();
+  }
+
+  // To shoot is to run the conveyor to advance a Note into the shooter
+  // Other logic needs to make sure the shooter is running and that a Note is present to shoot
+  // Finish the command as soon as the Note is not detected by the sensor
+  // The Note will have cleared the convey rollers by then
+  // Add a timeout for some safety if the shooter is not running or a Note gets stuck in any other
+  // way
+  public Command shootCommand() {
+    return new StartEndCommand(() -> runVolts(11.5), () -> stop(), this)
+        .until(() -> !noteIsLoaded())
+        .withTimeout(0.5)
+        .withName("Shoot");
+  }
+
+  public Command loadCommand() {
+    return new StartEndCommand(() -> runVelocity(conveyVelocityInput.get()), () -> stop(), this)
+        .until(() -> (noteIsLoaded() || RobotBase.isSimulation()))
+        .withName("Load");
   }
 }

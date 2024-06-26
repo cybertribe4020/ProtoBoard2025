@@ -20,16 +20,23 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.DriveToPoseCommand;
 import frc.robot.commands.DriveWithTargetingCommand;
 import frc.robot.commands.SmartConveyCommand;
 import frc.robot.commands.SmartIntakeCommand;
+import frc.robot.commands.TurnToAngleCommand;
 import frc.robot.subsystems.arm1.Arm1;
 import frc.robot.subsystems.arm1.Arm1IO;
 import frc.robot.subsystems.arm1.Arm1IOSim;
@@ -139,21 +146,13 @@ public class RobotContainer {
 
     // Set up auto routines
     NamedCommands.registerCommand(
-        "runShooter",
-        Commands.startEnd(
-                () -> shooter.runVelocity(shooterSpeedInput.get()), shooter::stop, shooter)
-            .withTimeout(15.0));
-    NamedCommands.registerCommand(
-        "runIntake",
-        Commands.startEnd(
-                () -> intake.runVolts(intakeVoltsInput.get(), intakeVoltsInput.get()),
-                intake::stop,
-                intake)
-            .withTimeout(15.0));
-    NamedCommands.registerCommand(
-        "runConvey",
-        Commands.startEnd(() -> convey.runVolts(conveyVoltsInput.get()), convey::stop, convey)
-            .withTimeout(15.0));
+        "smartIntake",
+        new SmartIntakeCommand(intake, () -> arm.armIsDown(), () -> convey.noteIsLoaded()));
+    NamedCommands.registerCommand("runConvey", convey.loadCommand());
+    NamedCommands.registerCommand("aimAtSpeaker", aimAtSpeakerCommand());
+    NamedCommands.registerCommand("shoot", convey.shootCommand());
+    NamedCommands.registerCommand("lowerArm", arm.armToLoadCommand());
+
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     // Set up SysId routines
@@ -168,7 +167,7 @@ public class RobotContainer {
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
-    autoChooser.addOption(
+    /* autoChooser.addOption(
         "Shooter SysId (Quasistatic Forward)",
         shooter.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
     autoChooser.addOption(
@@ -177,7 +176,7 @@ public class RobotContainer {
     autoChooser.addOption(
         "Shooter SysId (Dynamic Forward)", shooter.sysIdDynamic(SysIdRoutine.Direction.kForward));
     autoChooser.addOption(
-        "Shooter SysId (Dynamic Reverse)", shooter.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+        "Shooter SysId (Dynamic Reverse)", shooter.sysIdDynamic(SysIdRoutine.Direction.kReverse)); */
 
     // Configure the button bindings
     configureButtonBindings();
@@ -284,16 +283,24 @@ public class RobotContainer {
                         false)));
 
     // POV Left
-    // Move arm to 16 degrees - shooting position
-    controller.povLeft().onTrue(Commands.startEnd(() -> arm.setGoalDeg(16.0), arm::stop, arm));
+    // Test turning to shooting angle
+    controller
+        .povLeft()
+        .onTrue(
+            new TurnToAngleCommand(
+                    drive,
+                    () ->
+                        drive.getBiasedShootingRot(
+                            drive
+                                .getVectorFaceSpeaker()
+                                .getAngle()
+                                .plus(new Rotation2d(Math.PI)) // shooter faces backwards
+                                .getRadians()))
+                .withTimeout(2.0));
 
     // POV Down
     // Move arm to -31 degrees - intake position
     controller.povDown().onTrue(Commands.startEnd(() -> arm.setGoalDeg(-31.0), arm::stop, arm));
-
-    // POV Up
-    // Move arm to 90 degrees - amp/trap position
-    controller.povUp().onTrue(Commands.startEnd(() -> arm.setGoalDeg(90.0), arm::stop, arm));
 
     // POV Right
     // Stop arm
@@ -329,5 +336,38 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     return autoChooser.get();
+  }
+
+  // aimAtSpeaker will do these things in parallel
+  // Spin up the shooter to the correct voltage based on distance to target
+  // Raise the arm to the correct angle looked up based on distance to target (verify noteIsLoaded
+  // before moving)
+  // Rotate the chassis to point at the speaker using a biased rotation target based on angle to
+  // speaker
+  // Finish only when arm angle is at target and chassis angle is at target
+  // Assume shooter will spin up before arm or chassis commands finish
+  public Command aimAtSpeakerCommand() {
+    return new ParallelCommandGroup(
+        new InstantCommand(
+            () -> shooter.runVolts(12.0 * ShooterConstants.SPEED_MAP.get(drive.getDistToSpeaker())),
+            shooter),
+        new RunCommand(
+                () -> arm.setGoalDeg(ShooterConstants.ANGLE_MAP.get(drive.getDistToSpeaker())), arm)
+            .until(() -> arm.atGoal())
+            .beforeStarting(
+                new FunctionalCommand(
+                    () -> {},
+                    () -> {},
+                    (interrupted) -> {},
+                    () -> (convey.noteIsLoaded() || RobotBase.isSimulation()))),
+        new TurnToAngleCommand(
+            drive,
+            () ->
+                drive.getBiasedShootingRot(
+                    drive
+                        .getVectorFaceSpeaker()
+                        .getAngle()
+                        .plus(new Rotation2d(Math.PI)) // shooter faces backwards
+                        .getRadians())));
   }
 }

@@ -24,6 +24,8 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.ArmConstants;
@@ -37,7 +39,7 @@ public class Arm1 extends SubsystemBase {
   private final ProfiledPIDController pid;
   private Double pidOutput;
   private Double feedforwardOutput;
-  private Double angleGoalRad = Units.degreesToRadians(ArmConstants.ARM_STOW_ANGLE_DEG);
+  private Double angleGoalRad = Units.degreesToRadians(ArmConstants.ARM_LOAD_ANGLE_DEG);
   private Boolean armClosedLoop = true;
 
   // Create a Mechanism2d display of an Arm with a fixed ArmTower and moving Arm.
@@ -82,6 +84,7 @@ public class Arm1 extends SubsystemBase {
         pid = new ProfiledPIDController(0.0, 0.0, 0.0, new TrapezoidProfile.Constraints(0.0, 0.0));
         break;
     }
+    pid.setTolerance(Units.degreesToRadians(0.2));
   }
 
   @Override
@@ -132,6 +135,15 @@ public class Arm1 extends SubsystemBase {
 
   public boolean armIsDown() {
     return Units.radiansToDegrees(inputs.arm1InternalPositionRad)
-        <= ArmConstants.ARM_STOW_ANGLE_DEG + 1.0;
+        <= ArmConstants.ARM_LOAD_ANGLE_DEG + 1.0;
+  }
+
+  public boolean atGoal() {
+    return pid.atGoal();
+  }
+
+  public Command armToLoadCommand() {
+    return new RunCommand(() -> setGoalDeg(ArmConstants.ARM_LOAD_ANGLE_DEG))
+        .until(() -> armIsDown());
   }
 }

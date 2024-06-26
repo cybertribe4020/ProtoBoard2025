@@ -20,7 +20,7 @@ public class Arm1IOSparkFlex implements Arm1IO {
   // Power on the robot with the arm fully down against the physical stops
   // This position is the ARM_MIN_ANGLE_DEG
   // Initialize the internal motor encoder to the shaft revolutions corresponding to this angle
-  private final double intEncoderPositionStowRev =
+  private final double intEncoderPositionLOADRev =
       ArmConstants.ARM_MIN_ANGLE_DEG / 360.0 * ArmConstants.ARM_GEAR_REDUCTION;
 
   public Arm1IOSparkFlex() {
@@ -34,7 +34,7 @@ public class Arm1IOSparkFlex implements Arm1IO {
     leader.enableVoltageCompensation(12.0);
     leader.setSmartCurrentLimit(30);
 
-    motorInternalEncoder.setPosition(intEncoderPositionStowRev);
+    motorInternalEncoder.setPosition(intEncoderPositionLOADRev);
     motorInternalEncoder.setMeasurementPeriod(10);
     motorInternalEncoder.setAverageDepth(2);
 

@@ -20,6 +20,7 @@ import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.ReplanningConfig;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -43,6 +44,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.FieldConstants;
 import frc.robot.util.LocalADStarAK;
@@ -68,7 +70,7 @@ public class Drive extends SubsystemBase {
   private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
   private final Module[] modules = new Module[4]; // FL, FR, BL, BR
   private final SysIdRoutine sysId;
-  public boolean isUsingVision = false;
+  public boolean isUsingVision = true;
   public boolean driveFieldCentric = true;
 
   private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(getModuleTranslations());
@@ -282,7 +284,24 @@ public class Drive extends SubsystemBase {
   public Translation2d getVectorFaceSpeaker() {
     speakerPosition = FieldConstants.getSpeakerPosition();
     vectorFaceSpeaker = speakerPosition.minus(getPose().getTranslation());
+    // Logger.recordOutput("vectorFaceSpeaker", vectorFaceSpeaker);
     return vectorFaceSpeaker;
+  }
+
+  public double getDistToSpeaker() {
+    return getVectorFaceSpeaker().getNorm()
+        - 0.28; // distance calibration was recorded from rear camera lens, not bot center
+  }
+
+  // Shoot wider than the direct angle to the speaker Apriltag to give more clearance for the Note
+  public double getBiasedShootingRot(double directRotation) {
+    if (FieldConstants.isBlue()) {
+      return directRotation * ShooterConstants.ANGLE_BIAS_MULTIPLIER;
+    } else {
+      var flippedRotation = MathUtil.angleModulus(directRotation + Math.PI);
+      return MathUtil.angleModulus(
+          (flippedRotation * ShooterConstants.ANGLE_BIAS_MULTIPLIER) - Math.PI);
+    }
   }
 
   /**

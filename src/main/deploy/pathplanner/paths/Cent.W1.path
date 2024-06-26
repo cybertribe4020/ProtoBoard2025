@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.444812946768751,
-        "y": 5.566684809560096
+        "x": 2.171922058129831,
+        "y": 5.160129177401212
       },
       "isLocked": false,
       "linkedName": "CentStart"
     },
     {
       "anchor": {
-        "x": 2.680116598328435,
-        "y": 4.112466586837936
+        "x": 2.6117057948401614,
+        "y": 4.339199535541929
       },
       "prevControl": {
-        "x": 1.6801165983284352,
-        "y": 4.112466586837936
+        "x": 1.8347545266519112,
+        "y": 4.64704815123916
       },
       "nextControl": null,
       "isLocked": false,
@@ -39,7 +39,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
+    "rotation": -30.0,
     "rotateFast": false
   },
   "reversed": false,
