@@ -96,6 +96,7 @@ public class Arm1 extends SubsystemBase {
       pidOutput = pid.calculate(inputs.arm1InternalPositionRad, angleGoalRad);
       feedforwardOutput = ffModel.calculate(pid.getSetpoint().position, pid.getSetpoint().velocity);
       io.setVoltage(pidOutput + feedforwardOutput);
+      Logger.recordOutput("Arm/atGoal", pid.atGoal());
     } else {
       pid.reset(inputs.arm1InternalPositionRad);
     }

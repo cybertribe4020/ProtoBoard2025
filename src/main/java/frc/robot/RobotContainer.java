@@ -152,6 +152,8 @@ public class RobotContainer {
     NamedCommands.registerCommand("aimAtSpeaker", aimAtSpeakerCommand());
     NamedCommands.registerCommand("shoot", convey.shootCommand());
     NamedCommands.registerCommand("lowerArm", arm.armToLoadCommand());
+    NamedCommands.registerCommand("stopShooter", new InstantCommand(() -> shooter.stop()));
+    NamedCommands.registerCommand("stopIntake", new InstantCommand(() -> intake.stop()));
 
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
@@ -299,8 +301,10 @@ public class RobotContainer {
                 .withTimeout(2.0));
 
     // POV Down
-    // Move arm to -31 degrees - intake position
-    controller.povDown().onTrue(Commands.startEnd(() -> arm.setGoalDeg(-31.0), arm::stop, arm));
+    controller.povDown().onTrue(convey.shootCommand());
+
+    // POV Up
+    controller.povUp().onTrue(aimAtSpeakerCommand());
 
     // POV Right
     // Stop arm

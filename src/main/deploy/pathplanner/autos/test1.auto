@@ -50,6 +50,12 @@
                           {
                             "type": "named",
                             "data": {
+                              "name": "stopShooter"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
                               "name": "runConvey"
                             }
                           },
@@ -100,6 +106,12 @@
                           {
                             "type": "named",
                             "data": {
+                              "name": "stopShooter"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
                               "name": "runConvey"
                             }
                           },
@@ -135,6 +147,31 @@
                       "type": "named",
                       "data": {
                         "name": "shoot"
+                      }
+                    },
+                    {
+                      "type": "parallel",
+                      "data": {
+                        "commands": [
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "lowerArm"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "stopShooter"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "stopIntake"
+                            }
+                          }
+                        ]
                       }
                     }
                   ]
