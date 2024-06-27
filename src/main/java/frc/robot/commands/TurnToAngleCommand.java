@@ -9,6 +9,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 import frc.robot.subsystems.drive.Drive;
 import java.util.function.DoubleSupplier;
+import org.littletonrobotics.junction.Logger;
 
 public class TurnToAngleCommand extends ProfiledPIDCommand {
 
@@ -23,8 +24,8 @@ public class TurnToAngleCommand extends ProfiledPIDCommand {
         targetAngleRad,
         (output, setpoint) -> {
           drive.runVelocity(new ChassisSpeeds(0.0, 0.0, output));
-          // Logger.recordOutput("Turn/thetaOP", output);
-          // Logger.recordOutput("Turn/thetaSP", setpoint.position);
+          Logger.recordOutput("TurnToAngle/thetaOP", output);
+          Logger.recordOutput("TurnToAngle/thetaSP", setpoint.position);
         },
         drive);
 
@@ -34,6 +35,7 @@ public class TurnToAngleCommand extends ProfiledPIDCommand {
 
   @Override
   public boolean isFinished() {
+    Logger.recordOutput("TurnToAngle/atGoal", getController().atGoal());
     return getController().atGoal();
   }
 }

@@ -32,6 +32,12 @@
                       }
                     },
                     {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.25
+                      }
+                    },
+                    {
                       "type": "named",
                       "data": {
                         "name": "shoot"
@@ -85,6 +91,12 @@
                       "type": "named",
                       "data": {
                         "name": "aimAtSpeaker"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.25
                       }
                     },
                     {
@@ -144,6 +156,12 @@
                       }
                     },
                     {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.25
+                      }
+                    },
+                    {
                       "type": "named",
                       "data": {
                         "name": "shoot"
@@ -169,6 +187,12 @@
                             "type": "named",
                             "data": {
                               "name": "stopIntake"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "stopConvey"
                             }
                           }
                         ]

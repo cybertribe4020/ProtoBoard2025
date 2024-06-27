@@ -109,6 +109,8 @@ public class Arm1 extends SubsystemBase {
     Logger.recordOutput("Arm1/PID Volts", inputs.arm1AppliedVolts);
     Logger.recordOutput("Arm1/PID SP V", pid.getSetpoint().velocity);
 
+    Logger.recordOutput("Arm1/armIsUp", armIsUp());
+
     // Update the Mechanism Arm angle based on the simulated arm angle
     arm.setAngle(Units.radiansToDegrees(inputs.arm1InternalPositionRad));
   }
@@ -137,6 +139,12 @@ public class Arm1 extends SubsystemBase {
   public boolean armIsDown() {
     return Units.radiansToDegrees(inputs.arm1InternalPositionRad)
         <= ArmConstants.ARM_LOAD_ANGLE_DEG + 1.0;
+  }
+
+  // Define "up" as an angle greater than 0 radians - currently no
+  // shooting position would be lower than that
+  public boolean armIsUp() {
+    return inputs.arm1InternalPositionRad >= 0.0;
   }
 
   public boolean atGoal() {

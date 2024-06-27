@@ -99,19 +99,6 @@ public class Convey extends SubsystemBase {
     return !conveyNoteSensor.get();
   }
 
-  // To shoot is to run the conveyor to advance a Note into the shooter
-  // Other logic needs to make sure the shooter is running and that a Note is present to shoot
-  // Finish the command as soon as the Note is not detected by the sensor
-  // The Note will have cleared the convey rollers by then
-  // Add a timeout for some safety if the shooter is not running or a Note gets stuck in any other
-  // way
-  public Command shootCommand() {
-    return new StartEndCommand(() -> runVolts(11.5), () -> stop(), this)
-        .until(() -> !noteIsLoaded())
-        .withTimeout(0.5)
-        .withName("Shoot");
-  }
-
   public Command loadCommand() {
     return new StartEndCommand(() -> runVelocity(conveyVelocityInput.get()), () -> stop(), this)
         .until(() -> (noteIsLoaded() || RobotBase.isSimulation()))

@@ -28,6 +28,8 @@ import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.ShooterConstants;
@@ -150,10 +152,11 @@ public class RobotContainer {
         new SmartIntakeCommand(intake, () -> arm.armIsDown(), () -> convey.noteIsLoaded()));
     NamedCommands.registerCommand("runConvey", convey.loadCommand());
     NamedCommands.registerCommand("aimAtSpeaker", aimAtSpeakerCommand());
-    NamedCommands.registerCommand("shoot", convey.shootCommand());
+    NamedCommands.registerCommand("shoot", shootCommand());
     NamedCommands.registerCommand("lowerArm", arm.armToLoadCommand());
-    NamedCommands.registerCommand("stopShooter", new InstantCommand(() -> shooter.stop()));
-    NamedCommands.registerCommand("stopIntake", new InstantCommand(() -> intake.stop()));
+    NamedCommands.registerCommand("stopShooter", new InstantCommand(() -> shooter.stop(), shooter));
+    NamedCommands.registerCommand("stopIntake", new InstantCommand(() -> intake.stop(), intake));
+    NamedCommands.registerCommand("stopConvey", new InstantCommand(() -> convey.stop(), convey));
 
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
@@ -301,7 +304,7 @@ public class RobotContainer {
                 .withTimeout(2.0));
 
     // POV Down
-    controller.povDown().onTrue(convey.shootCommand());
+    controller.povDown().onTrue(shootCommand());
 
     // POV Up
     controller.povUp().onTrue(aimAtSpeakerCommand());
@@ -373,5 +376,19 @@ public class RobotContainer {
                         .getAngle()
                         .plus(new Rotation2d(Math.PI)) // shooter faces backwards
                         .getRadians())));
+  }
+
+  // To shoot is to run the conveyor to advance a Note into the shooter
+  // Other logic needs to make sure the shooter is running and that a Note is present to shoot
+  // Finish the command as soon as the Note is not detected by the sensor
+  // The Note will have cleared the convey rollers by then
+  // Add a timeout for some safety if the shooter is not running or a Note gets stuck in any other
+  // way
+  public Command shootCommand() {
+    return new StartEndCommand(() -> convey.runVolts(11.5), () -> convey.stop(), convey)
+        .until(() -> !convey.noteIsLoaded())
+        .beforeStarting(new WaitUntilCommand(() -> (arm.armIsUp() && arm.atGoal())))
+        .withTimeout(0.5)
+        .withName("Shoot");
   }
 }
