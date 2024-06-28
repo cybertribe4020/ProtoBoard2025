@@ -393,4 +393,16 @@ public class RobotContainer {
         .withTimeout(0.5)
         .withName("Shoot");
   }
+
+  public void disableInitialize() {
+    arm.armClosedLoop = false;
+  }
+
+  public void autoInitialize() {
+    arm.armClosedLoop = true;
+  }
+
+  public void teleopInitialize() {
+    arm.armClosedLoop = true;
+  }
 }

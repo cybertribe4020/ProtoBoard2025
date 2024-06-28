@@ -40,7 +40,7 @@ public class Arm1 extends SubsystemBase {
   private Double pidOutput;
   private Double feedforwardOutput;
   private Double angleGoalRad = Units.degreesToRadians(ArmConstants.ARM_LOAD_ANGLE_DEG);
-  private Boolean armClosedLoop = true;
+  public Boolean armClosedLoop = false;
 
   // Create a Mechanism2d display of an Arm with a fixed ArmTower and moving Arm.
   private final Mechanism2d mech2d = new Mechanism2d(60, 60);
@@ -97,19 +97,18 @@ public class Arm1 extends SubsystemBase {
       feedforwardOutput = ffModel.calculate(pid.getSetpoint().position, pid.getSetpoint().velocity);
       io.setVoltage(pidOutput + feedforwardOutput);
       Logger.recordOutput("Arm/atGoal", pid.atGoal());
+      Logger.recordOutput("Arm/PID Goal", angleGoalRad);
+      Logger.recordOutput("Arm/PID SP", pid.getSetpoint().position);
+      Logger.recordOutput("Arm/PID SP Vel", pid.getSetpoint().velocity);
+      Logger.recordOutput("Arm/PID OP", pidOutput);
+      Logger.recordOutput("Arm/FF OP", feedforwardOutput);
     } else {
       pid.reset(inputs.arm1InternalPositionRad);
     }
 
-    Logger.recordOutput("Arm1/PID Goal", angleGoalRad);
-    Logger.recordOutput("Arm1/PID SP", pid.getSetpoint().position);
-    Logger.recordOutput("Arm1/PID PV", inputs.arm1InternalPositionRad);
-    Logger.recordOutput("Arm1/PID OP", pidOutput);
-    Logger.recordOutput("Arm1/FF OP", feedforwardOutput);
-    Logger.recordOutput("Arm1/PID Volts", inputs.arm1AppliedVolts);
-    Logger.recordOutput("Arm1/PID SP V", pid.getSetpoint().velocity);
-
-    Logger.recordOutput("Arm1/armIsUp", armIsUp());
+    Logger.recordOutput("Arm/PID PV", inputs.arm1InternalPositionRad);
+    Logger.recordOutput("Arm/PID Volts", inputs.arm1AppliedVolts);
+    Logger.recordOutput("Arm/armIsUp", armIsUp());
 
     // Update the Mechanism Arm angle based on the simulated arm angle
     arm.setAngle(Units.radiansToDegrees(inputs.arm1InternalPositionRad));
