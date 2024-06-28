@@ -27,7 +27,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -358,9 +357,12 @@ public class RobotContainer {
         new InstantCommand(
             () -> shooter.runVolts(12.0 * ShooterConstants.SPEED_MAP.get(drive.getDistToSpeaker())),
             shooter),
-        new RunCommand(
-                () -> arm.setGoalDeg(ShooterConstants.ANGLE_MAP.get(drive.getDistToSpeaker())), arm)
-            .until(() -> arm.atGoal())
+        new FunctionalCommand(
+                () -> arm.setGoalDeg(ShooterConstants.ANGLE_MAP.get(drive.getDistToSpeaker())),
+                () -> {},
+                (interrupted) -> {},
+                () -> arm.atGoal(),
+                arm)
             .beforeStarting(
                 new FunctionalCommand(
                     () -> {},
@@ -387,7 +389,7 @@ public class RobotContainer {
   public Command shootCommand() {
     return new StartEndCommand(() -> convey.runVolts(11.5), () -> convey.stop(), convey)
         .until(() -> !convey.noteIsLoaded())
-        .beforeStarting(new WaitUntilCommand(() -> (arm.armIsUp() && arm.atGoal())))
+        .beforeStarting(new WaitUntilCommand(() -> arm.armIsUp()))
         .withTimeout(0.5)
         .withName("Shoot");
   }
