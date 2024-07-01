@@ -13,7 +13,7 @@ public class SmartIntakeCommand extends Command {
   private final BooleanSupplier noteIsLoadedSupplier;
   // private LoggedDashboardNumber intakeVoltsInput = new LoggedDashboardNumber("Intake Volts",
   // 4.0);
-  private LoggedDashboardNumber intakeVelocityInput = new LoggedDashboardNumber("Intake RPM", 1250);
+  private LoggedDashboardNumber intakeVelocityInput = new LoggedDashboardNumber("Intake RPM", 1300);
 
   public SmartIntakeCommand(
       Intake intake, BooleanSupplier armIsDownSupplier, BooleanSupplier noteIsLoadedSupplier) {

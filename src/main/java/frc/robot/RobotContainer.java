@@ -87,7 +87,7 @@ public class RobotContainer {
   private final LoggedDashboardNumber shooterSpeedInput =
       new LoggedDashboardNumber("Shooter RPM", 1500.0);
   private final LoggedDashboardNumber intakeSpeedInput =
-      new LoggedDashboardNumber("Intake RPM", 1250);
+      new LoggedDashboardNumber("Intake RPM", 1300);
   private final LoggedDashboardNumber conveySpeedInput =
       new LoggedDashboardNumber("Convey RPM", 900);
   private LoggedDashboardNumber intakeVoltsInput = new LoggedDashboardNumber("Intake Volts", 4.0);
