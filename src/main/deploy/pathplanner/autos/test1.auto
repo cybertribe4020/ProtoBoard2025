@@ -60,16 +60,9 @@
                             }
                           },
                           {
-                            "type": "sequential",
+                            "type": "path",
                             "data": {
-                              "commands": [
-                                {
-                                  "type": "path",
-                                  "data": {
-                                    "pathName": "Cent.W1"
-                                  }
-                                }
-                              ]
+                              "pathName": "Cent.W1"
                             }
                           }
                         ]
@@ -110,16 +103,9 @@
                             }
                           },
                           {
-                            "type": "sequential",
+                            "type": "path",
                             "data": {
-                              "commands": [
-                                {
-                                  "type": "path",
-                                  "data": {
-                                    "pathName": "W1.W2"
-                                  }
-                                }
-                              ]
+                              "pathName": "W1.W2"
                             }
                           }
                         ]
@@ -160,16 +146,9 @@
                             }
                           },
                           {
-                            "type": "sequential",
+                            "type": "path",
                             "data": {
-                              "commands": [
-                                {
-                                  "type": "path",
-                                  "data": {
-                                    "pathName": "W2.W3"
-                                  }
-                                }
-                              ]
+                              "pathName": "W2.W3"
                             }
                           }
                         ]
@@ -210,19 +189,18 @@
                             }
                           },
                           {
-                            "type": "sequential",
+                            "type": "path",
                             "data": {
-                              "commands": [
-                                {
-                                  "type": "path",
-                                  "data": {
-                                    "pathName": "W3.C5"
-                                  }
-                                }
-                              ]
+                              "pathName": "W3.C5"
                             }
                           }
                         ]
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "C5.C5shoot"
                       }
                     },
                     {

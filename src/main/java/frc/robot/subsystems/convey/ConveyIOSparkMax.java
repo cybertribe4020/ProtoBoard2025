@@ -41,6 +41,11 @@ public class ConveyIOSparkMax implements ConveyIO {
     leader.enableVoltageCompensation(12.0);
     leader.setSmartCurrentLimit(30);
 
+    // for velocity control with low inertia, reduce the encoder sensor filtering
+    // default filter values add so much effective dead time that P control is almost impossible
+    encoder.setMeasurementPeriod(16);
+    encoder.setAverageDepth(2);
+
     leader.burnFlash();
   }
 

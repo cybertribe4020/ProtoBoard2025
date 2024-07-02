@@ -95,6 +95,8 @@ public class Drive extends SubsystemBase {
   private Translation2d speakerPosition;
   private Translation2d vectorFaceSpeaker;
 
+  public Pose2d currentPathEndpoint;
+
   public Drive(
       GyroIO gyroIO,
       ModuleIO flModuleIO,
@@ -124,6 +126,9 @@ public class Drive extends SubsystemBase {
         (activePath) -> {
           Logger.recordOutput(
               "Odometry/Trajectory", activePath.toArray(new Pose2d[activePath.size()]));
+          currentPathEndpoint =
+              (activePath.size() > 0) ? activePath.get(activePath.size() - 1) : getPose();
+          Logger.recordOutput("currentPathEndpoint", currentPathEndpoint);
         });
     PathPlannerLogging.setLogTargetPoseCallback(
         (targetPose) -> {
@@ -290,6 +295,13 @@ public class Drive extends SubsystemBase {
 
   public double getDistToSpeaker() {
     return getVectorFaceSpeaker().getNorm()
+        - 0.28; // distance calibration was recorded from rear camera lens, not bot center
+  }
+
+  public double getPathEndToSpeaker() {
+    speakerPosition = FieldConstants.getSpeakerPosition();
+    vectorFaceSpeaker = speakerPosition.minus(currentPathEndpoint.getTranslation());
+    return vectorFaceSpeaker.getNorm()
         - 0.28; // distance calibration was recorded from rear camera lens, not bot center
   }
 

@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -150,6 +151,8 @@ public class RobotContainer {
         "smartIntake",
         new SmartIntakeCommand(intake, () -> arm.armIsDown(), () -> convey.noteIsLoaded()));
     NamedCommands.registerCommand("runConvey", convey.loadCommand());
+    NamedCommands.registerCommand("prepareShooter", prepareShooterCommand());
+    NamedCommands.registerCommand("turnToSpeaker", turnToSpeakerCommand());
     NamedCommands.registerCommand("aimAtSpeaker", aimAtSpeakerCommand());
     NamedCommands.registerCommand("shoot", shootCommand());
     NamedCommands.registerCommand("lowerArm", arm.armToLoadCommand());
@@ -380,6 +383,47 @@ public class RobotContainer {
                         .getRadians())));
   }
 
+  // prepareShooter will do two things in parallel after a Note is detected as being loaded
+  // Raise the arm to the correct angle looked up based on distance to target
+  // Spin up the shooter to the correct voltage based on distance to target
+  // Distance to target needs to come from current PathPlanner path segment
+  // Finish only when arm angle is at target
+  // Assume shooter will spin up before arm command finishes
+  public Command prepareShooterCommand() {
+    return new SequentialCommandGroup(
+        // wait until note is loaded
+        new FunctionalCommand(
+            () -> {},
+            () -> {},
+            (interrupted) -> {},
+            () -> (convey.noteIsLoaded() || RobotBase.isSimulation())),
+        // then raise the arm to the angle needed at path end
+        new FunctionalCommand(
+                () -> arm.setGoalDeg(ShooterConstants.ANGLE_MAP.get(drive.getPathEndToSpeaker())),
+                () -> {},
+                (interrupted) -> {},
+                () -> arm.atGoal(),
+                arm)
+            // and in parallel, get the shooter running at the rpm needed at path end
+            .alongWith(
+                new InstantCommand(
+                    () ->
+                        shooter.runVolts(
+                            12.0 * ShooterConstants.SPEED_MAP.get(drive.getPathEndToSpeaker())),
+                    shooter)));
+  }
+
+  public Command turnToSpeakerCommand() {
+    return new TurnToAngleCommand(
+        drive,
+        () ->
+            drive.getBiasedShootingRot(
+                drive
+                    .getVectorFaceSpeaker()
+                    .getAngle()
+                    .plus(new Rotation2d(Math.PI)) // shooter faces backwards
+                    .getRadians()));
+  }
   // To shoot is to run the conveyor to advance a Note into the shooter
   // Other logic needs to make sure the shooter is running and that a Note is present to shoot
   // Finish the command as soon as the Note is not detected by the sensor
