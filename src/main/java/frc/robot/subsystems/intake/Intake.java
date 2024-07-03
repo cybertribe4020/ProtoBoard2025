@@ -34,15 +34,15 @@ public class Intake extends SubsystemBase {
     switch (Constants.currentMode) {
       case REAL:
         ffModel = new SimpleMotorFeedforward(0.0, 0.0032);
-        io.configurePID(0.0001, 0.0, 0.0);
+        io.configurePID(0.0002, 0.0, 0.0);
         break;
       case REPLAY:
         ffModel = new SimpleMotorFeedforward(0.0, 0.0032);
-        io.configurePID(0.0001, 0.0, 0.0);
+        io.configurePID(0.0002, 0.0, 0.0);
         break;
       case SIM:
         ffModel = new SimpleMotorFeedforward(0.0, 0.0032);
-        io.configurePID(0.0001, 0.0, 0.0);
+        io.configurePID(0.0002, 0.0, 0.0);
         break;
       default:
         ffModel = new SimpleMotorFeedforward(0.0, 0.0);

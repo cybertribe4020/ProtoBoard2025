@@ -41,15 +41,15 @@ public class Convey extends SubsystemBase {
     switch (Constants.currentMode) {
       case REAL:
         ffModel = new SimpleMotorFeedforward(0.0, 0.0043);
-        io.configurePID(0.00005, 0.0, 0.0);
+        io.configurePID(0.0001, 0.0, 0.0);
         break;
       case REPLAY:
         ffModel = new SimpleMotorFeedforward(0.0, 0.0043);
-        io.configurePID(0.00005, 0.0, 0.0);
+        io.configurePID(0.0001, 0.0, 0.0);
         break;
       case SIM:
         ffModel = new SimpleMotorFeedforward(0.0, 0.0043);
-        io.configurePID(0.00005, 0.0, 0.0);
+        io.configurePID(0.0001, 0.0, 0.0);
         break;
       default:
         ffModel = new SimpleMotorFeedforward(0.0, 0.0);

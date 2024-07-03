@@ -56,7 +56,8 @@ public class DriveCommands {
 
           // Square values to get a nonlinear response to how far you push the sticks
           // Without this, it would be extremely difficult to drive slowly
-          // Also apply scaling after squaring to set the upper bound of translation and rotation speed
+          // Also apply scaling after squaring to set the upper bound of translation and rotation
+          // speed
           linearMagnitude = TRANSLATION_RATE_SCALE * (linearMagnitude * linearMagnitude);
           omega = ROTATION_RATE_SCALE * Math.copySign(omega * omega, omega);
 
