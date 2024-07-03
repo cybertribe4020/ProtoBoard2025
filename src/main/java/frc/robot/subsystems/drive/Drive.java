@@ -261,6 +261,15 @@ public class Drive extends SubsystemBase {
     return states;
   }
 
+  @AutoLogOutput(key = "ChassisSpeeds/Measured")
+  private ChassisSpeeds getMeasuredSpeeds() {
+    var cSpeeds = kinematics.toChassisSpeeds(getModuleStates());
+    Logger.recordOutput(
+        "ChassisSpeeds/LinearVelocity",
+        Math.sqrt(Math.pow(cSpeeds.vxMetersPerSecond, 2) + Math.pow(cSpeeds.vyMetersPerSecond, 2)));
+    return cSpeeds;
+  }
+
   /** Returns the module positions (turn angles and drive positions) for all of the modules. */
   private SwerveModulePosition[] getModulePositions() {
     SwerveModulePosition[] states = new SwerveModulePosition[4];
