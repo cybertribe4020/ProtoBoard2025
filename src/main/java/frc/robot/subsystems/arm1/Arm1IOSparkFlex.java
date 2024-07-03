@@ -20,7 +20,7 @@ public class Arm1IOSparkFlex implements Arm1IO {
   // Power on the robot with the arm fully down against the physical stops
   // This position is the ARM_MIN_ANGLE_DEG
   // Initialize the internal motor encoder to the shaft revolutions corresponding to this angle
-  private final double intEncoderPositionLOADRev =
+  private final double intEncoderPositionStopsRev =
       ArmConstants.ARM_MIN_ANGLE_DEG / 360.0 * ArmConstants.ARM_GEAR_REDUCTION;
 
   public Arm1IOSparkFlex() {
@@ -34,9 +34,12 @@ public class Arm1IOSparkFlex implements Arm1IO {
     leader.enableVoltageCompensation(12.0);
     leader.setSmartCurrentLimit(30);
 
-    motorInternalEncoder.setPosition(intEncoderPositionLOADRev);
-    motorInternalEncoder.setMeasurementPeriod(10);
-    motorInternalEncoder.setAverageDepth(2);
+    motorInternalEncoder.setPosition(intEncoderPositionStopsRev);
+
+    // Vortex has a much higher resolution encoder than the NEO
+    // More filtering is possible on the Vortex encoder while keeping the signal delay manageable
+    motorInternalEncoder.setMeasurementPeriod(32); // was 10 if need to go back
+    motorInternalEncoder.setAverageDepth(8); // was 2 if need to go back
 
     leader.setCANTimeout(0);
 

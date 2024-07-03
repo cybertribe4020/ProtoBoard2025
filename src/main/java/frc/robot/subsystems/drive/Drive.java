@@ -266,7 +266,7 @@ public class Drive extends SubsystemBase {
     var cSpeeds = kinematics.toChassisSpeeds(getModuleStates());
     Logger.recordOutput(
         "ChassisSpeeds/LinearVelocity",
-        Math.sqrt(Math.pow(cSpeeds.vxMetersPerSecond, 2) + Math.pow(cSpeeds.vyMetersPerSecond, 2)));
+        Math.hypot(cSpeeds.vxMetersPerSecond, cSpeeds.vyMetersPerSecond));
     return cSpeeds;
   }
 

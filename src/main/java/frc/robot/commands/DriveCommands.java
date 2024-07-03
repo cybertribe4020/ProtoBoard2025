@@ -34,9 +34,9 @@ public class DriveCommands {
 
   private DriveCommands() {}
 
-  /**
-   * Field relative drive command using two joysticks (controlling linear and angular velocities).
-   */
+  // Drive with two joysticks
+  // X and Y translation suppliers are usually two axes of one stick
+  // Omega rotation supplier is usually one axis of another stick
   public static Command joystickDrive(
       Drive drive,
       DoubleSupplier xSupplier,
@@ -44,7 +44,9 @@ public class DriveCommands {
       DoubleSupplier omegaSupplier) {
     return Commands.run(
         () -> {
-          // Apply deadband
+          // Apply deadband to joystick axis values
+          // Need this because joysticks rarely settle exactly to the center point
+          // Without deadband, the robot may move with hands off the sticks
           double linearMagnitude =
               MathUtil.applyDeadband(
                   Math.hypot(xSupplier.getAsDouble(), ySupplier.getAsDouble()), DEADBAND);
@@ -52,22 +54,27 @@ public class DriveCommands {
               new Rotation2d(xSupplier.getAsDouble(), ySupplier.getAsDouble());
           double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
 
-          // Square values
+          // Square values to get a nonlinear response to how far you push the sticks
+          // Without this, it would be extremely difficult to drive slowly
+          // Also apply scaling after squaring to set the upper bound of translation and rotation speed
           linearMagnitude = TRANSLATION_RATE_SCALE * (linearMagnitude * linearMagnitude);
           omega = ROTATION_RATE_SCALE * Math.copySign(omega * omega, omega);
 
-          // Calcaulate new linear velocity
+          // Calcaulate new linear velocity by combining magnitude and direction
           Translation2d linearVelocity =
               new Pose2d(new Translation2d(), linearDirection)
                   .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
                   .getTranslation();
 
-          Logger.recordOutput("linearMagnitude", linearMagnitude);
-          Logger.recordOutput("linearVelocity", linearVelocity);
-          Logger.recordOutput("omega", omega);
+          Logger.recordOutput("JoystickDrive/linearMagnitude", linearMagnitude);
+          Logger.recordOutput("JoystickDrive/linearVelocity", linearVelocity);
+          Logger.recordOutput("JoystickDrive/omega", omega);
 
+          // Turn joystick inputs into robot chassis speed requests
           if (drive.driveFieldCentric) {
-            // Convert to field relative speeds & send command
+            // Joystick inputs are field-centric, so they need to be converted
+            // into robot-centric chassis speeds
+            // Current robot rotation from the gyro is required to make this conversion
             boolean isFlipped =
                 DriverStation.getAlliance().isPresent()
                     && DriverStation.getAlliance().get() == Alliance.Red;
@@ -80,7 +87,7 @@ public class DriveCommands {
                         ? drive.getRotation().plus(new Rotation2d(Math.PI))
                         : drive.getRotation()));
           } else {
-            // just turn the controller inputs into robot-centric chassis speeds
+            // Joystick inputs are already robot-centric, so just send them
             drive.runVelocity(
                 new ChassisSpeeds(
                     linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),

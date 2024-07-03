@@ -97,17 +97,17 @@ public class Arm1 extends SubsystemBase {
       feedforwardOutput = ffModel.calculate(pid.getSetpoint().position, pid.getSetpoint().velocity);
       io.setVoltage(pidOutput + feedforwardOutput);
       Logger.recordOutput("Arm/atGoal", pid.atGoal());
-      Logger.recordOutput("Arm/PID Goal", angleGoalRad);
-      Logger.recordOutput("Arm/PID SP", pid.getSetpoint().position);
-      Logger.recordOutput("Arm/PID SP Vel", pid.getSetpoint().velocity);
-      Logger.recordOutput("Arm/PID OP", pidOutput);
-      Logger.recordOutput("Arm/FF OP", feedforwardOutput);
+      Logger.recordOutput("Arm/angleGoalRad", angleGoalRad);
+      Logger.recordOutput("Arm/angleSPRad", pid.getSetpoint().position);
+      Logger.recordOutput("Arm/angleSPRadPerSec", pid.getSetpoint().velocity);
+      Logger.recordOutput("Arm/feedbackOP", pidOutput);
+      Logger.recordOutput("Arm/feedforwardOP", feedforwardOutput);
     } else {
       pid.reset(inputs.arm1InternalPositionRad);
     }
 
-    Logger.recordOutput("Arm/PID PV", inputs.arm1InternalPositionRad);
-    Logger.recordOutput("Arm/PID Volts", inputs.arm1AppliedVolts);
+    Logger.recordOutput("Arm/angleInternalRad", inputs.arm1InternalPositionRad);
+    Logger.recordOutput("Arm/motorVolts", inputs.arm1AppliedVolts);
     Logger.recordOutput("Arm/armIsUp", armIsUp());
 
     // Update the Mechanism Arm angle based on the simulated arm angle
@@ -130,7 +130,7 @@ public class Arm1 extends SubsystemBase {
   }
 
   /** Returns the current position in degrees. */
-  @AutoLogOutput
+  @AutoLogOutput(key = "Arm/angleInternalDeg")
   public double getPositionDeg() {
     return Units.radiansToDegrees(inputs.arm1InternalPositionRad);
   }

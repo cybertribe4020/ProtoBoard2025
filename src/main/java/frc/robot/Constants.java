@@ -118,9 +118,11 @@ public final class Constants {
     public static final double ARM_LENGTH_IN = 20.0;
     public static final double ARM_MASS_LBF = 10.0;
     public static final double ARM_GEAR_REDUCTION = 355.56;
+    // Arm angle is defined to be 0 when the arm is parallel to the floor
     public static final double ARM_MIN_ANGLE_DEG = -34.0;
     public static final double ARM_MAX_ANGLE_DEG = 95.0;
     public static final double ARM_LOAD_ANGLE_DEG = -31.0;
+    // External encoder reading in degrees when the arm is parallel to the floor
     public static final double ARM_ENCODER_OFFSET_DEG = 187.0;
 
     private ArmConstants() {}
