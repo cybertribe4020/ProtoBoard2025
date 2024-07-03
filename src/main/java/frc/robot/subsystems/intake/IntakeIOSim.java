@@ -36,12 +36,13 @@ public class IntakeIOSim implements IntakeIO {
       appliedVoltsLower =
           MathUtil.clamp(
               pidLower.calculate(simLower.getAngularVelocityRPM()) + ffVoltsLower, -12.0, 12.0);
-      simLower.setInputVoltage(appliedVoltsLower);
       appliedVoltsUpper =
           MathUtil.clamp(
               pidUpper.calculate(simUpper.getAngularVelocityRPM()) + ffVoltsUpper, -12.0, 12.0);
-      simUpper.setInputVoltage(appliedVoltsUpper);
     }
+
+    simLower.setInputVoltage(appliedVoltsLower);
+    simUpper.setInputVoltage(appliedVoltsUpper);
 
     simLower.update(0.02);
     simUpper.update(0.02);

@@ -46,9 +46,9 @@ public class IntakeIOSparkMax implements IntakeIO {
     upper.setInverted(true);
 
     lower.enableVoltageCompensation(12.0);
-    lower.setSmartCurrentLimit(30);
+    lower.setSmartCurrentLimit(40);
     upper.enableVoltageCompensation(12.0);
-    upper.setSmartCurrentLimit(30);
+    upper.setSmartCurrentLimit(40);
 
     // for velocity control with low inertia, reduce the encoder sensor filtering
     // default filter values add so much effective dead time that P control is almost impossible

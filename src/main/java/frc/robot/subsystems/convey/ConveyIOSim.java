@@ -31,8 +31,9 @@ public class ConveyIOSim implements ConveyIO {
     if (closedLoop) {
       appliedVolts =
           MathUtil.clamp(pid.calculate(sim.getAngularVelocityRPM()) + ffVolts, -12.0, 12.0);
-      sim.setInputVoltage(appliedVolts);
     }
+
+    sim.setInputVoltage(appliedVolts);
 
     sim.update(0.02);
 

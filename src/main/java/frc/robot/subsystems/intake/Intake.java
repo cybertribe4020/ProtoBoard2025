@@ -109,4 +109,22 @@ public class Intake extends SubsystemBase {
     }
     Logger.recordOutput("Intake/intakeDirection", intakeDirection);
   }
+
+  public void smartIntakeOpenLoop(
+      double intakeVoltsFwd,
+      double intakeVoltsRev,
+      BooleanSupplier armIsDownSupplier,
+      BooleanSupplier noteIsLoadedSupplier) {
+
+    var intakeDirection = "undefined";
+    if (armIsDownSupplier.getAsBoolean() && !noteIsLoadedSupplier.getAsBoolean()) {
+      this.runVolts(intakeVoltsFwd, intakeVoltsFwd);
+      intakeDirection = "intake";
+    } else {
+      // if arm is up, run lower axle off and upper axle in reverse
+      this.runVolts(0.0, intakeVoltsRev);
+      intakeDirection = "reverse";
+    }
+    Logger.recordOutput("Intake/intakeDirection", intakeDirection);
+  }
 }
