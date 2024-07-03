@@ -103,10 +103,10 @@ public class DriveWithTargetingCommand extends Command {
       omegaSpeed = 0;
     }
     Logger.recordOutput(
-        "Arm1/thetaGoal", goalVector.get().getAngle().plus(facingBackwards).getRadians());
-    Logger.recordOutput("Arm1/thetaSP", thetaController.getSetpoint().position);
-    Logger.recordOutput("Arm1/thetaPV", robotPose.getRotation().getRadians());
-    Logger.recordOutput("Arm1/thetaOP", omegaSpeed);
+        "Arm/thetaGoal", goalVector.get().getAngle().plus(facingBackwards).getRadians());
+    Logger.recordOutput("Arm/thetaSP", thetaController.getSetpoint().position);
+    Logger.recordOutput("Arm/thetaPV", robotPose.getRotation().getRadians());
+    Logger.recordOutput("Arm/thetaOP", omegaSpeed);
 
     // set the shooter speed and angle
     // get distance to center of robot and subtract 0.28 meters of offset to camera lens
