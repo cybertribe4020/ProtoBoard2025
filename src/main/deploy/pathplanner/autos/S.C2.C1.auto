@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.439,
-      "y": 5.541
+      "x": 1.41,
+      "y": 4.12
     },
     "rotation": 0
   },
@@ -62,136 +62,7 @@
                           {
                             "type": "path",
                             "data": {
-                              "pathName": "Cent.W1"
-                            }
-                          }
-                        ]
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "aimAtSpeaker"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "shoot"
-                      }
-                    },
-                    {
-                      "type": "parallel",
-                      "data": {
-                        "commands": [
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "lowerArm"
-                            }
-                          },
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "stopShooter"
-                            }
-                          },
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "runConvey"
-                            }
-                          },
-                          {
-                            "type": "path",
-                            "data": {
-                              "pathName": "W1.W2"
-                            }
-                          }
-                        ]
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "aimAtSpeaker"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "shoot"
-                      }
-                    },
-                    {
-                      "type": "parallel",
-                      "data": {
-                        "commands": [
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "lowerArm"
-                            }
-                          },
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "stopShooter"
-                            }
-                          },
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "runConvey"
-                            }
-                          },
-                          {
-                            "type": "path",
-                            "data": {
-                              "pathName": "W2.W3"
-                            }
-                          }
-                        ]
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "aimAtSpeaker"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "shoot"
-                      }
-                    },
-                    {
-                      "type": "parallel",
-                      "data": {
-                        "commands": [
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "lowerArm"
-                            }
-                          },
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "stopShooter"
-                            }
-                          },
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "runConvey"
-                            }
-                          },
-                          {
-                            "type": "path",
-                            "data": {
-                              "pathName": "W3.C5"
+                              "pathName": "Stage.C2"
                             }
                           }
                         ]
@@ -200,7 +71,56 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "C5.C5shoot"
+                        "pathName": "C2.Sshoot"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "aimAtSpeaker"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "shoot"
+                      }
+                    },
+                    {
+                      "type": "parallel",
+                      "data": {
+                        "commands": [
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "lowerArm"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "stopShooter"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "runConvey"
+                            }
+                          },
+                          {
+                            "type": "path",
+                            "data": {
+                              "pathName": "Sshoot.C1"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "C1.Sshoot"
                       }
                     },
                     {
