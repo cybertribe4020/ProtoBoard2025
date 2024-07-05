@@ -77,7 +77,7 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "aimAtSpeaker"
+                        "name": "turnToSpeaker"
                       }
                     },
                     {
@@ -126,7 +126,7 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "aimAtSpeaker"
+                        "name": "turnToSpeaker"
                       }
                     },
                     {

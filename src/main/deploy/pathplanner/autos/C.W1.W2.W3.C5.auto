@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.439,
-      "y": 5.541
+      "x": 1.44,
+      "y": 5.57
     },
     "rotation": 0
   },
@@ -206,7 +206,7 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "aimAtSpeaker"
+                        "name": "turnToSpeaker"
                       }
                     },
                     {
