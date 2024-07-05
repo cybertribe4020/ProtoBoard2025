@@ -3,6 +3,7 @@
     "deleteAfter": false,
     "localDir": "C:\\Users\\CyberTribe\\Downloads",
     "remoteDir": "/u/logs",
-    "serverTeam": "4020"
+    "serverTeam": "10.40.20.2",
+    "visible": false
   }
 }
