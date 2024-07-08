@@ -271,17 +271,16 @@ public class RobotContainer {
                 drive::getVectorFaceSpeaker));
 
     // Right Trigger
-    // Shoot a Note into the Speaker or Amp
-    // Choice depends on the arm angle - high angle = amp
+    // Shoot a Note into the Speaker or Amp by running the conveyor
     // Shooter must be running to shoot
-    /* controller
-    .rightTrigger(0.5)
-    .and(() -> shooter.shooterIsRunning())
-    .onTrue(shootCommand().alongWith(ampExtrasCommand().unless(() -> !arm.armIsAmped()))); */
+    // If the arm angle is nearly vertical, we are shooting into the Amp
+    // In this case, also run the "extras" for the Amp that
+    // pushes the arm more forward while backing the base away, and then lowers the arm
+    // and turns off the shooter
     controller
         .rightTrigger(0.5)
         .and(() -> shooter.shooterIsRunning())
-        .onTrue(shootCommand().alongWith(ampExtrasCommand().unless(() -> !arm.armIsAmped())));
+        .onTrue(shootCommand().alongWith(ampExtrasCommand().unless(() -> arm.armIsNotAmped())));
 
     // Y Button
     // Drive to a staging location in front of the Amp
