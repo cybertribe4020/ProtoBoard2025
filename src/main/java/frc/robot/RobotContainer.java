@@ -32,6 +32,7 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.DriveToPoseCommand;
@@ -203,6 +204,26 @@ public class RobotContainer {
             () -> -controller.getLeftX(),
             () -> -controller.getRightX()));
 
+    // POV - drive translation slowly
+    // Go in the direction of the POV
+    // Can move field or robot-centric depending on the current selected drive mode
+    controller
+        .povLeft()
+        .whileTrue(
+            DriveCommands.driveByValues(drive, 0.0, 0.13, 0.0, () -> drive.driveFieldCentric));
+    controller
+        .povDown()
+        .whileTrue(
+            DriveCommands.driveByValues(drive, -0.13, 0.0, 0.0, () -> drive.driveFieldCentric));
+    controller
+        .povUp()
+        .whileTrue(
+            DriveCommands.driveByValues(drive, 0.13, 0.0, 0.0, () -> drive.driveFieldCentric));
+    controller
+        .povRight()
+        .whileTrue(
+            DriveCommands.driveByValues(drive, 0.0, -0.13, 0.0, () -> drive.driveFieldCentric));
+
     // X button
     // Stop the drivetrain and turn the wheels to an X position
     controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
@@ -250,24 +271,31 @@ public class RobotContainer {
                 drive::getVectorFaceSpeaker));
 
     // Right Trigger
-    // Run convey motor to shoot a Note
-    // Shooter must be running before this action runs the convey motor
+    // Shoot a Note into the Speaker or Amp
+    // Choice depends on the arm angle - high angle = amp
+    // Shooter must be running to shoot
+    /* controller
+    .rightTrigger(0.5)
+    .and(() -> shooter.shooterIsRunning())
+    .onTrue(shootCommand().alongWith(ampExtrasCommand().unless(() -> !arm.armIsAmped()))); */
     controller
         .rightTrigger(0.5)
         .and(() -> shooter.shooterIsRunning())
-        .whileTrue(Commands.startEnd(() -> convey.runVolts(11.5), convey::stop, convey));
+        .onTrue(shootCommand().alongWith(ampExtrasCommand().unless(() -> !arm.armIsAmped())));
 
     // Y Button
-    // Drive directly to climb start location in front of red stage left
-    // Will not avoid any Stage legs in the way!!
+    // Drive to a staging location in front of the Amp
+    // Will not avoid any obstacles in the way!!
+    // Simultaneously raise the arm and run the shooter as needed for the Amp
     controller
         .y()
         .whileTrue(
             new DriveToPoseCommand(
-                drive,
-                drive::getPose, // could also use () -> drive.getPose()
-                new Pose2d(12.6, 2.4, Rotation2d.fromDegrees(300.0)),
-                false));
+                    drive,
+                    drive::getPose, // could also use () -> drive.getPose()
+                    new Pose2d(1.82, 7.49, Rotation2d.fromDegrees(270.0)),
+                    true)
+                .alongWith(prepareForAmpCommand()));
 
     // Start button
     // Drive a path with obstacle avoidance to climb start location in front of red stage left
@@ -288,32 +316,6 @@ public class RobotContainer {
                         drive::getPose, // could also use () -> drive.getPose()
                         new Pose2d(12.6, 2.4, Rotation2d.fromDegrees(300.0)),
                         false)));
-
-    // POV Left
-    // Test turning to shooting angle
-    controller
-        .povLeft()
-        .onTrue(
-            new TurnToAngleCommand(
-                    drive,
-                    () ->
-                        drive.getBiasedShootingRot(
-                            drive
-                                .getVectorFaceSpeaker()
-                                .getAngle()
-                                .plus(new Rotation2d(Math.PI)) // shooter faces backwards
-                                .getRadians()))
-                .withTimeout(2.0));
-
-    // POV Down
-    controller.povDown().onTrue(shootCommand());
-
-    // POV Up
-    controller.povUp().onTrue(aimAtSpeakerCommand());
-
-    // POV Right
-    // Stop arm
-    controller.povRight().onTrue(Commands.startEnd(arm::stop, arm::stop, arm));
 
     // Back button
     // Toggle the use of vision for pose estimation
@@ -413,6 +415,26 @@ public class RobotContainer {
                     shooter)));
   }
 
+  // prepareForAmp will do two things in parallel after a Note is detected as being loaded
+  // Raise the arm to the initial angle for the Amp
+  // Spin up the shooter to the correct voltage for the Amp
+  // Finish only when arm angle is at target
+  // Assume shooter will spin up before arm command finishes
+  public Command prepareForAmpCommand() {
+    return new SequentialCommandGroup(
+        // wait until note is loaded
+        new FunctionalCommand(
+            () -> {},
+            () -> {},
+            (interrupted) -> {},
+            () -> (convey.noteIsLoaded() || RobotBase.isSimulation())),
+        // then raise the arm to the angle needed for the amp
+        new FunctionalCommand(
+                () -> arm.setGoalDeg(83.0), () -> {}, (interrupted) -> {}, () -> arm.atGoal(), arm)
+            // and in parallel, get the shooter running at the rpm needed for the amp
+            .alongWith(new InstantCommand(() -> shooter.runVolts(4.8), shooter)));
+  }
+
   public Command turnToSpeakerCommand() {
     return new TurnToAngleCommand(
         drive,
@@ -436,6 +458,25 @@ public class RobotContainer {
         .beforeStarting(new WaitUntilCommand(() -> arm.armIsUp()))
         .withTimeout(0.5)
         .withName("Shoot");
+  }
+
+  // The sticky polycarb Amp slot backing makes it necessary to do more than just shoot the Note
+  // into the Amp
+  // We found that we get good Amp deposits if we also
+  // Rotate the arm forward another 10 degrees
+  // While simultaneously slowly backing away from the Amp (driving forward, since intake faces
+  // away)
+  // After depositing the Note, lower the arm and stop the shooter
+  public Command ampExtrasCommand() {
+    return new SequentialCommandGroup(
+        new ParallelCommandGroup(
+            new FunctionalCommand(
+                () -> arm.setGoalDeg(93.0), () -> {}, (interrupted) -> {}, () -> arm.atGoal(), arm),
+            DriveCommands.driveByValues(drive, 0.13, 0.0, 0.0, () -> false).withTimeout(0.5)),
+        new ParallelCommandGroup(
+            new InstantCommand(() -> drive.stop()),
+            new InstantCommand(() -> shooter.stop()),
+            new InstantCommand(() -> arm.setGoalDeg(ArmConstants.ARM_LOAD_ANGLE_DEG))));
   }
 
   public void disableInitialize() {

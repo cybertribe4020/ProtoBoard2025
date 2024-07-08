@@ -11,7 +11,7 @@ import static frc.robot.Constants.AutoConstants.Y_kI;
 import static frc.robot.Constants.AutoConstants.Y_kP;
 import static frc.robot.Constants.DriveConstants.MAX_ANGULAR_SPEED;
 import static frc.robot.Constants.DriveConstants.MAX_LINEAR_SPEED;
-import static frc.robot.Constants.VisionConstants.FIELD_WIDTH;
+import static frc.robot.Constants.VisionConstants.FIELD_LENGTH;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -90,8 +90,9 @@ public class DriveToPoseCommand extends Command {
     }
     if (useAllianceColor && allianceRed) {
       Translation2d transformedTranslation =
-          new Translation2d(pose.getX(), FIELD_WIDTH - pose.getY());
-      Rotation2d transformedHeading = pose.getRotation().times(-1);
+          new Translation2d(FIELD_LENGTH - pose.getX(), pose.getY());
+      Rotation2d transformedHeading =
+          pose.getRotation().times(-1).plus(Rotation2d.fromDegrees(180));
       pose = new Pose2d(transformedTranslation, transformedHeading);
     }
     thetaController.setGoal(pose.getRotation().getRadians());

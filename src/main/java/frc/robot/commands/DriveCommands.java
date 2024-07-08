@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.drive.Drive;
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 
@@ -94,6 +95,46 @@ public class DriveCommands {
                     linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
                     linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
                     omega * drive.getMaxAngularSpeedRadPerSec()));
+          }
+        },
+        drive);
+  }
+
+  // Drive robot-centric using passed parameters for x, y, and omega speeds
+  public static Command driveByValues(
+      Drive drive, double xFrac, double yFrac, double omegaFrac, BooleanSupplier fieldCentric) {
+    return Commands.run(
+        () -> {
+          double linearMagnitude = Math.hypot(xFrac, yFrac);
+          Rotation2d linearDirection = new Rotation2d(xFrac, yFrac);
+
+          // Calcaulate new linear velocity by combining magnitude and direction
+          Translation2d linearVelocity =
+              new Pose2d(new Translation2d(), linearDirection)
+                  .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
+                  .getTranslation();
+
+          // Turn inputs into robot chassis speed requests
+          if (fieldCentric.getAsBoolean()) {
+            // Inputs need to be converted into robot-centric chassis speeds
+            // Current robot rotation from the gyro is required to make this conversion
+            boolean isFlipped =
+                DriverStation.getAlliance().isPresent()
+                    && DriverStation.getAlliance().get() == Alliance.Red;
+            drive.runVelocity(
+                ChassisSpeeds.fromFieldRelativeSpeeds(
+                    linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
+                    linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
+                    omegaFrac * drive.getMaxAngularSpeedRadPerSec(),
+                    isFlipped
+                        ? drive.getRotation().plus(new Rotation2d(Math.PI))
+                        : drive.getRotation()));
+          } else {
+            drive.runVelocity(
+                new ChassisSpeeds(
+                    linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
+                    linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
+                    omegaFrac * drive.getMaxAngularSpeedRadPerSec()));
           }
         },
         drive);

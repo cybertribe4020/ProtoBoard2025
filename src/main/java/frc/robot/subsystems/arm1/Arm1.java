@@ -146,6 +146,11 @@ public class Arm1 extends SubsystemBase {
     return inputs.arm1InternalPositionRad >= 0.0;
   }
 
+  // Define up for Amp to be > 75 degrees
+  public boolean armIsAmped() {
+    return inputs.arm1InternalPositionRad >= Units.degreesToRadians(75.0);
+  }
+
   public boolean atGoal() {
     return pid.atGoal();
   }
