@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -210,19 +211,19 @@ public class RobotContainer {
     controller
         .povLeft()
         .whileTrue(
-            DriveCommands.driveByValues(drive, 0.0, 0.13, 0.0, () -> drive.driveFieldCentric));
+            DriveCommands.driveByValues(drive, 0.0, 0.08, 0.0, () -> drive.driveFieldCentric));
     controller
         .povDown()
         .whileTrue(
-            DriveCommands.driveByValues(drive, -0.13, 0.0, 0.0, () -> drive.driveFieldCentric));
+            DriveCommands.driveByValues(drive, -0.08, 0.0, 0.0, () -> drive.driveFieldCentric));
     controller
         .povUp()
         .whileTrue(
-            DriveCommands.driveByValues(drive, 0.13, 0.0, 0.0, () -> drive.driveFieldCentric));
+            DriveCommands.driveByValues(drive, 0.08, 0.0, 0.0, () -> drive.driveFieldCentric));
     controller
         .povRight()
         .whileTrue(
-            DriveCommands.driveByValues(drive, 0.0, -0.13, 0.0, () -> drive.driveFieldCentric));
+            DriveCommands.driveByValues(drive, 0.0, -0.08, 0.0, () -> drive.driveFieldCentric));
 
     // X button
     // Stop the drivetrain and turn the wheels to an X position
@@ -280,7 +281,9 @@ public class RobotContainer {
     controller
         .rightTrigger(0.5)
         .and(() -> shooter.shooterIsRunning())
-        .onTrue(shootCommand().alongWith(ampExtrasCommand().unless(() -> arm.armIsNotAmped())));
+        .onTrue(
+            (ampExtrasCommand().unless(() -> arm.armIsNotAmped()))
+                .alongWith(new WaitCommand(0.25).andThen(shootCommand())));
 
     // Y Button
     // Drive to a staging location in front of the Amp
@@ -431,7 +434,7 @@ public class RobotContainer {
         new FunctionalCommand(
                 () -> arm.setGoalDeg(83.0), () -> {}, (interrupted) -> {}, () -> arm.atGoal(), arm)
             // and in parallel, get the shooter running at the rpm needed for the amp
-            .alongWith(new InstantCommand(() -> shooter.runVolts(4.8), shooter)));
+            .alongWith(new InstantCommand(() -> shooter.runVolts(2.0), shooter)));
   }
 
   public Command turnToSpeakerCommand() {
@@ -471,7 +474,7 @@ public class RobotContainer {
         new ParallelCommandGroup(
             new FunctionalCommand(
                 () -> arm.setGoalDeg(93.0), () -> {}, (interrupted) -> {}, () -> arm.atGoal(), arm),
-            DriveCommands.driveByValues(drive, 0.13, 0.0, 0.0, () -> false).withTimeout(0.5)),
+            DriveCommands.driveByValues(drive, 0.08, 0.0, 0.0, () -> false).withTimeout(0.5)),
         new ParallelCommandGroup(
             new InstantCommand(() -> drive.stop()),
             new InstantCommand(() -> shooter.stop()),

@@ -112,6 +112,6 @@ public class Shooter extends SubsystemBase {
   }
 
   public boolean shooterIsRunning() {
-    return getVelocityRPM() >= 1000.0;
+    return getVelocityRPM() >= 500.0;
   }
 }
