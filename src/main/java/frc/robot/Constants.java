@@ -35,8 +35,8 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static final Mode currentMode = Mode.REAL;
-  public static final Integer NUM_CAMS = 3;
+  public static final Mode currentMode = Mode.SIM;
+  public static final Integer NUM_CAMS = 2;
 
   public static enum Mode {
     REAL, // running on a real robot
@@ -122,6 +122,8 @@ public final class Constants {
     public static final double ARM_MIN_ANGLE_DEG = -34.0;
     public static final double ARM_MAX_ANGLE_DEG = 95.0;
     public static final double ARM_LOAD_ANGLE_DEG = -31.0;
+    public static final double ARM_AMP_ANGLE_DEG = 83.0;
+    public static final double ARM_AMP_ANGLE2_DEG = 93.0;
     // External encoder reading in degrees when the arm is parallel to the floor
     public static final double ARM_ENCODER_OFFSET_DEG = 187.0;
 
@@ -132,6 +134,7 @@ public final class Constants {
 
     // shoot wider than the direct angle to the speaker Apriltag to give more clearance for the Note
     public static final double ANGLE_BIAS_MULTIPLIER = 1.1;
+    public static final double AMP_SHOOT_VOLTS = 2.0;
 
     // x: distance (meters) from rear camera lens to center of speaker opening projected down
     // Code will take care of offset from camera lens to center of robot

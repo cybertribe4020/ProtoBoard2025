@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -275,15 +276,14 @@ public class RobotContainer {
     // Shoot a Note into the Speaker or Amp by running the conveyor
     // Shooter must be running to shoot
     // If the arm angle is nearly vertical, we are shooting into the Amp
-    // In this case, also run the "extras" for the Amp that
+    // In this case, run a more complicated sequence for the Amp that
     // pushes the arm more forward while backing the base away, and then lowers the arm
     // and turns off the shooter
     controller
         .rightTrigger(0.5)
         .and(() -> shooter.shooterIsRunning())
         .onTrue(
-            (ampExtrasCommand().unless(() -> arm.armIsNotAmped()))
-                .alongWith(new WaitCommand(0.25).andThen(shootCommand())));
+            new ConditionalCommand(shootCommand(), depositAmpCommand(), () -> arm.armIsNotAmped()));
 
     // Y Button
     // Drive to a staging location in front of the Amp
@@ -361,30 +361,29 @@ public class RobotContainer {
   // Assume shooter will spin up before arm or chassis commands finish
   public Command aimAtSpeakerCommand() {
     return new ParallelCommandGroup(
+        // Get the shooter running at the correct speed for the current distance away from the
+        // speaker
+        // based on pose
         new InstantCommand(
             () -> shooter.runVolts(12.0 * ShooterConstants.SPEED_MAP.get(drive.getDistToSpeaker())),
             shooter),
+        // Raise the arm to the correct angle for the current distance away from the speaker based
+        // on pose
         new FunctionalCommand(
                 () -> arm.setGoalDeg(ShooterConstants.ANGLE_MAP.get(drive.getDistToSpeaker())),
                 () -> {},
                 (interrupted) -> {},
                 () -> arm.atGoal(),
                 arm)
+            // By the way, don't start raising the arm unless a Note is ready to shoot
             .beforeStarting(
                 new FunctionalCommand(
                     () -> {},
                     () -> {},
                     (interrupted) -> {},
                     () -> (convey.noteIsLoaded() || RobotBase.isSimulation()))),
-        new TurnToAngleCommand(
-            drive,
-            () ->
-                drive.getBiasedShootingRot(
-                    drive
-                        .getVectorFaceSpeaker()
-                        .getAngle()
-                        .plus(new Rotation2d(Math.PI)) // shooter faces backwards
-                        .getRadians())));
+        // Turn the base to the correct angle to shoot into the speaker
+        turnToSpeakerCommand());
   }
 
   // prepareShooter will do two things in parallel after a Note is detected as being loaded
@@ -432,11 +431,24 @@ public class RobotContainer {
             () -> (convey.noteIsLoaded() || RobotBase.isSimulation())),
         // then raise the arm to the angle needed for the amp
         new FunctionalCommand(
-                () -> arm.setGoalDeg(83.0), () -> {}, (interrupted) -> {}, () -> arm.atGoal(), arm)
+                () -> arm.setGoalDeg(ArmConstants.ARM_AMP_ANGLE_DEG),
+                () -> {},
+                (interrupted) -> {},
+                () -> arm.atGoal(),
+                arm)
             // and in parallel, get the shooter running at the rpm needed for the amp
-            .alongWith(new InstantCommand(() -> shooter.runVolts(2.0), shooter)));
+            .alongWith(
+                new InstantCommand(
+                    () -> shooter.runVolts(ShooterConstants.AMP_SHOOT_VOLTS), shooter)));
   }
 
+  // Use getVectorFaceSpeaker to find the angle between the current robot pose
+  // and the pose of the center of the speaker opening
+  // Need to add PI and wrap if needed to get the correct angle to face the back
+  // of the robot at the speaker
+  // Finally, bias the angle based on the angle
+  // When shooting at an angle, shoot beyond the center of the speaker opening
+  // and use the hood to give more clearance past the near edge of the speaker opening
   public Command turnToSpeakerCommand() {
     return new TurnToAngleCommand(
         drive,
@@ -455,9 +467,14 @@ public class RobotContainer {
   // Add a timeout for some safety if the shooter is not running or a Note gets stuck in any other
   // way
   public Command shootCommand() {
+    // Run the conveyor at close to max speed to push the Note into the already-running shooter
+    // wheels
     return new StartEndCommand(() -> convey.runVolts(11.5), () -> convey.stop(), convey)
+        // Stop conveying when the Note sensor no longer sees a Note
         .until(() -> !convey.noteIsLoaded())
+        // By the way, in case the arm is not up, wait for it to be up before conveying
         .beforeStarting(new WaitUntilCommand(() -> arm.armIsUp()))
+        // Stop conveying after some time even if the sensor still sees the Note - likely a problem
         .withTimeout(0.5)
         .withName("Shoot");
   }
@@ -466,18 +483,32 @@ public class RobotContainer {
   // into the Amp
   // We found that we get good Amp deposits if we also
   // Rotate the arm forward another 10 degrees
-  // While simultaneously slowly backing away from the Amp (driving forward, since intake faces
-  // away)
+  // While simultaneously slowly driving away from the Amp (forward, since intake faces away)
   // After depositing the Note, lower the arm and stop the shooter
-  public Command ampExtrasCommand() {
+  public Command depositAmpCommand() {
+    // Two main groups of things to do
     return new SequentialCommandGroup(
+        // Group 1 of things to do simultaneously
         new ParallelCommandGroup(
+            // Push the arm forward even more than the fully up position - stop when it reaches goal
             new FunctionalCommand(
-                () -> arm.setGoalDeg(93.0), () -> {}, (interrupted) -> {}, () -> arm.atGoal(), arm),
-            DriveCommands.driveByValues(drive, 0.08, 0.0, 0.0, () -> false).withTimeout(0.5)),
+                () -> arm.setGoalDeg(ArmConstants.ARM_AMP_ANGLE2_DEG),
+                () -> {},
+                (interrupted) -> {},
+                () -> arm.atGoal(),
+                arm),
+            // Drive slowly forward for 1/2 second in robot-centric - this is away from the Amp
+            DriveCommands.driveByValues(drive, 0.08, 0.0, 0.0, () -> false).withTimeout(0.5),
+            // Wait for 1/4 second for the arm and base to move, then shoot the Note into the Amp
+            new SequentialCommandGroup(new WaitCommand(0.25), shootCommand())),
+        // Group 2 of things to do after all the previous group finishes
         new ParallelCommandGroup(
+            // Stop the drive - may not be necessary
             new InstantCommand(() -> drive.stop()),
+            // Stop the shooter
             new InstantCommand(() -> shooter.stop()),
+            // Lower the arm to the loading angle - do not wait for it to finish
+            // This overall command can finish immediately and the robot can get back to driving
             new InstantCommand(() -> arm.setGoalDeg(ArmConstants.ARM_LOAD_ANGLE_DEG))));
   }
 
