@@ -242,11 +242,11 @@ public class RobotContainer {
                     drive)
                 .ignoringDisable(true));
 
-    // Left Bumper
+    // Right Bumper
     // Run the intake and conveyor
     // For now, this is set to toggle to be able to turn these motors off while testing
     controller
-        .leftBumper()
+        .rightBumper()
         .toggleOnTrue(
             Commands.parallel(
                 new SmartIntakeCommand(intake, arm::armIsDown, convey::noteIsLoaded),
@@ -256,6 +256,27 @@ public class RobotContainer {
                     convey::noteIsLoaded,
                     shooter::shooterIsRunning,
                     () -> controller.getRightTriggerAxis() > 0.5)));
+
+    // Left Bumper
+    // Hold down to drive to a staging location for a lob shot
+    // Will not avoid any obstacles in the way!!
+    // Simultaneously raise the arm and run the shooter as needed for a lob shot
+    // When bumper is released, stop shooter and lower arm
+    controller
+        .leftBumper()
+        .whileTrue(
+            new DriveToPoseCommand(
+                    drive,
+                    drive::getPose, // could also use () -> drive.getPose()
+                    new Pose2d(9.5, 1.75, Rotation2d.fromDegrees(-35.0)),
+                    true)
+                .alongWith(prepareForLobCommand()))
+        .onFalse(
+            new ParallelCommandGroup(
+                // Stop the shooter
+                new InstantCommand(() -> shooter.stop()),
+                // Lower the arm to the loading angle - do not wait for it to finish
+                new InstantCommand(() -> arm.setGoalDeg(ArmConstants.ARM_LOAD_ANGLE_DEG))));
 
     // Left Trigger
     // Continuous chassis rotation to face speaker but allow joystick chassis translation
@@ -440,6 +461,32 @@ public class RobotContainer {
             .alongWith(
                 new InstantCommand(
                     () -> shooter.runVolts(ShooterConstants.AMP_SHOOT_VOLTS), shooter)));
+  }
+
+  // prepareForLob will do two things in parallel after a Note is detected as being loaded
+  // Raise the arm to the angle for a lob shot
+  // Spin up the shooter to the correct voltage for a lob shot
+  // Finish only when arm angle is at target
+  // Assume shooter will spin up before arm command finishes
+  public Command prepareForLobCommand() {
+    return new SequentialCommandGroup(
+        // wait until note is loaded
+        new FunctionalCommand(
+            () -> {},
+            () -> {},
+            (interrupted) -> {},
+            () -> (convey.noteIsLoaded() || RobotBase.isSimulation())),
+        // then raise the arm to the angle needed for the amp
+        new FunctionalCommand(
+                () -> arm.setGoalDeg(ArmConstants.ARM_LOB_ANGLE_DEG),
+                () -> {},
+                (interrupted) -> {},
+                () -> arm.atGoal(),
+                arm)
+            // and in parallel, get the shooter running at the rpm needed for the amp
+            .alongWith(
+                new InstantCommand(
+                    () -> shooter.runVolts(ShooterConstants.LOB_SHOOT_VOLTS), shooter)));
   }
 
   // Use getVectorFaceSpeaker to find the angle between the current robot pose

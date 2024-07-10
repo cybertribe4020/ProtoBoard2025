@@ -124,6 +124,7 @@ public final class Constants {
     public static final double ARM_LOAD_ANGLE_DEG = -31.0;
     public static final double ARM_AMP_ANGLE_DEG = 83.0;
     public static final double ARM_AMP_ANGLE2_DEG = 93.0;
+    public static final double ARM_LOB_ANGLE_DEG = 8.0;
     // External encoder reading in degrees when the arm is parallel to the floor
     public static final double ARM_ENCODER_OFFSET_DEG = 187.0;
 
@@ -135,6 +136,7 @@ public final class Constants {
     // shoot wider than the direct angle to the speaker Apriltag to give more clearance for the Note
     public static final double ANGLE_BIAS_MULTIPLIER = 1.1;
     public static final double AMP_SHOOT_VOLTS = 2.0;
+    public static final double LOB_SHOOT_VOLTS = 8.0;
 
     // x: distance (meters) from rear camera lens to center of speaker opening projected down
     // Code will take care of offset from camera lens to center of robot
