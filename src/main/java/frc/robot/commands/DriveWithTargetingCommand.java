@@ -21,6 +21,7 @@ import frc.robot.subsystems.shooter.Shooter;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 public class DriveWithTargetingCommand extends Command {
 
@@ -35,7 +36,7 @@ public class DriveWithTargetingCommand extends Command {
 
   private final ProfiledPIDController thetaController;
 
-  private double distToSpeaker;
+  private double distToTarget;
 
   private final Drive drive;
   private final Shooter shooter;
@@ -44,6 +45,11 @@ public class DriveWithTargetingCommand extends Command {
   private final DoubleSupplier ySupplier;
   private final Supplier<Pose2d> poseProvider;
   private final Supplier<Translation2d> goalVector;
+  private final boolean lobShot;
+
+  private LoggedDashboardNumber lobShooterVolts =
+      new LoggedDashboardNumber("Lob Shooter Volts", 8.0);
+  private LoggedDashboardNumber lobArmAngle = new LoggedDashboardNumber("Lob Arm Angle", 8.0);
 
   public DriveWithTargetingCommand(
       Drive drive,
@@ -52,7 +58,8 @@ public class DriveWithTargetingCommand extends Command {
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
       Supplier<Pose2d> poseProvider,
-      Supplier<Translation2d> goalVector) {
+      Supplier<Translation2d> goalVector,
+      boolean lobShot) {
     this(
         drive,
         shooter,
@@ -61,6 +68,7 @@ public class DriveWithTargetingCommand extends Command {
         ySupplier,
         poseProvider,
         goalVector,
+        lobShot,
         DEFAULT_OMEGA_CONSTRAINTS);
   }
 
@@ -72,6 +80,7 @@ public class DriveWithTargetingCommand extends Command {
       DoubleSupplier ySupplier,
       Supplier<Pose2d> poseProvider,
       Supplier<Translation2d> goalVector,
+      boolean lobShot,
       TrapezoidProfile.Constraints omegaConstraints) {
     this.drive = drive;
     this.shooter = shooter;
@@ -80,6 +89,7 @@ public class DriveWithTargetingCommand extends Command {
     this.ySupplier = ySupplier;
     this.poseProvider = poseProvider;
     this.goalVector = goalVector;
+    this.lobShot = lobShot;
 
     thetaController = new ProfiledPIDController(5.0, 0.02, 0.0, omegaConstraints);
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
@@ -109,15 +119,25 @@ public class DriveWithTargetingCommand extends Command {
     Logger.recordOutput("Arm/thetaOP", omegaSpeed);
 
     // set the shooter speed and angle
-    // get distance to center of robot and subtract 0.28 meters of offset to camera lens
-    // distance to camera lens is how the calibration data was recorded
-    distToSpeaker = goalVector.get().getNorm() - 0.28;
-    shooter.runVolts(12.0 * ShooterConstants.SPEED_MAP.get(distToSpeaker));
-    arm1.setGoalDeg(ShooterConstants.ANGLE_MAP.get(distToSpeaker));
+    if (lobShot) {
+      // if a lob shot, distance was calibrated to the center of the robot
+      distToTarget = goalVector.get().getNorm();
+      // shooter.runVolts(12.0 * ShooterConstants.LOB_SPEED_MAP.get(distToTarget));
+      // arm1.setGoalDeg(ShooterConstants.LOB_ANGLE_MAP.get(distToTarget));
+      shooter.runVolts(12.0 * lobShooterVolts.get());
+      arm1.setGoalDeg(lobArmAngle.get());
+    } else {
+      // if a speaker shot (not a lob shot)
+      // get distance to center of robot and subtract 0.28 meters of offset to camera lens
+      // distance to camera lens is how the calibration data was recorded
+      distToTarget = goalVector.get().getNorm() - 0.28;
+      shooter.runVolts(12.0 * ShooterConstants.SPEED_MAP.get(distToTarget));
+      arm1.setGoalDeg(ShooterConstants.ANGLE_MAP.get(distToTarget));
+    }
 
-    Logger.recordOutput("Shooter/feetToSpeaker", Units.metersToFeet(distToSpeaker));
-    Logger.recordOutput("Shooter/speedMapValue", ShooterConstants.SPEED_MAP.get(distToSpeaker));
-    Logger.recordOutput("Shooter/angleMapValue", ShooterConstants.ANGLE_MAP.get(distToSpeaker));
+    Logger.recordOutput("Shooter/feetToTarget", Units.metersToFeet(distToTarget));
+    Logger.recordOutput("Shooter/speedMapValue", ShooterConstants.SPEED_MAP.get(distToTarget));
+    Logger.recordOutput("Shooter/angleMapValue", ShooterConstants.ANGLE_MAP.get(distToTarget));
 
     // Apply deadband to translation inputs
     double linearMagnitude =

@@ -66,7 +66,6 @@ import frc.robot.subsystems.shooter.ShooterIOSim;
 import frc.robot.subsystems.shooter.ShooterIOSparkMax;
 import frc.robot.subsystems.vision.Vision;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
-import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -88,14 +87,6 @@ public class RobotContainer {
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
-  private final LoggedDashboardNumber shooterSpeedInput =
-      new LoggedDashboardNumber("Shooter RPM", 1500.0);
-  private final LoggedDashboardNumber intakeSpeedInput =
-      new LoggedDashboardNumber("Intake RPM", 1300);
-  private final LoggedDashboardNumber conveySpeedInput =
-      new LoggedDashboardNumber("Convey RPM", 900);
-  private LoggedDashboardNumber intakeVoltsInput = new LoggedDashboardNumber("Intake Volts", 4.0);
-  private LoggedDashboardNumber conveyVoltsInput = new LoggedDashboardNumber("Convey Volts", 4.0);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -262,21 +253,37 @@ public class RobotContainer {
     // Will not avoid any obstacles in the way!!
     // Simultaneously raise the arm and run the shooter as needed for a lob shot
     // When bumper is released, stop shooter and lower arm
+    /* controller
+    .leftBumper()
+    .whileTrue(
+        new DriveToPoseCommand(
+                drive,
+                drive::getPose, // could also use () -> drive.getPose()
+                new Pose2d(9.5, 1.75, Rotation2d.fromDegrees(-35.0)),
+                true)
+            .alongWith(prepareForLobCommand()))
+    .onFalse(
+        new ParallelCommandGroup(
+            // Stop the shooter
+            new InstantCommand(() -> shooter.stop()),
+            // Lower the arm to the loading angle - do not wait for it to finish
+            new InstantCommand(() -> arm.setGoalDeg(ArmConstants.ARM_LOAD_ANGLE_DEG)))); */
+
+    // Left Bumper
+    // Continuous chassis rotation to face lob target but allow joystick chassis translation
+    // Set shooter speed and angle continouously based on range to lob target
     controller
         .leftBumper()
         .whileTrue(
-            new DriveToPoseCommand(
-                    drive,
-                    drive::getPose, // could also use () -> drive.getPose()
-                    new Pose2d(9.5, 1.75, Rotation2d.fromDegrees(-35.0)),
-                    true)
-                .alongWith(prepareForLobCommand()))
-        .onFalse(
-            new ParallelCommandGroup(
-                // Stop the shooter
-                new InstantCommand(() -> shooter.stop()),
-                // Lower the arm to the loading angle - do not wait for it to finish
-                new InstantCommand(() -> arm.setGoalDeg(ArmConstants.ARM_LOAD_ANGLE_DEG))));
+            new DriveWithTargetingCommand(
+                drive,
+                shooter,
+                arm,
+                () -> -controller.getLeftY(),
+                () -> -controller.getLeftX(),
+                drive::getPose,
+                drive::getVectorForLob,
+                true));
 
     // Left Trigger
     // Continuous chassis rotation to face speaker but allow joystick chassis translation
@@ -291,7 +298,8 @@ public class RobotContainer {
                 () -> -controller.getLeftY(),
                 () -> -controller.getLeftX(),
                 drive::getPose,
-                drive::getVectorFaceSpeaker));
+                drive::getVectorFaceSpeaker,
+                false));
 
     // Right Trigger
     // Shoot a Note into the Speaker or Amp by running the conveyor

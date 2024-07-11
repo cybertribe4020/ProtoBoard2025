@@ -94,6 +94,8 @@ public class Drive extends SubsystemBase {
 
   private Translation2d speakerPosition;
   private Translation2d vectorFaceSpeaker;
+  private Translation2d lobTarget;
+  private Translation2d vectorForLob;
 
   public Pose2d currentPathEndpoint;
 
@@ -300,6 +302,17 @@ public class Drive extends SubsystemBase {
     vectorFaceSpeaker = speakerPosition.minus(getPose().getTranslation());
     // Logger.recordOutput("vectorFaceSpeaker", vectorFaceSpeaker);
     return vectorFaceSpeaker;
+  }
+
+  public Translation2d getVectorForLob() {
+    if (FieldConstants.isBlue()) {
+      lobTarget = new Translation2d(1.9, 6.5);
+    } else {
+      lobTarget = new Translation2d(VisionConstants.FIELD_LENGTH - 1.9, 6.5);
+    }
+    vectorForLob = lobTarget.minus(getPose().getTranslation());
+    Logger.recordOutput("distanceForLob", vectorForLob.getNorm());
+    return vectorForLob;
   }
 
   public double getDistToSpeaker() {
