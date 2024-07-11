@@ -124,7 +124,7 @@ public class DriveWithTargetingCommand extends Command {
       distToTarget = goalVector.get().getNorm();
       // shooter.runVolts(12.0 * ShooterConstants.LOB_SPEED_MAP.get(distToTarget));
       // arm1.setGoalDeg(ShooterConstants.LOB_ANGLE_MAP.get(distToTarget));
-      shooter.runVolts(12.0 * lobShooterVolts.get());
+      shooter.runVolts(lobShooterVolts.get());
       arm1.setGoalDeg(lobArmAngle.get());
     } else {
       // if a speaker shot (not a lob shot)
