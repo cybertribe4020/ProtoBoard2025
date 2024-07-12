@@ -107,6 +107,8 @@ public class Arm1 extends SubsystemBase {
     }
 
     Logger.recordOutput("Arm/angleInternalRad", inputs.arm1InternalPositionRad);
+    Logger.recordOutput(
+        "Arm/angleInternalDeg", Units.radiansToDegrees(inputs.arm1InternalPositionRad));
     Logger.recordOutput("Arm/motorVolts", inputs.arm1AppliedVolts);
     Logger.recordOutput("Arm/armIsUp", armIsUp());
 

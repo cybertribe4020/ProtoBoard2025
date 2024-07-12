@@ -54,6 +54,8 @@ public class Intake extends SubsystemBase {
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Intake", inputs);
+    Logger.recordOutput("Intake/RPMLower", inputs.velocityRPM[0]);
+    Logger.recordOutput("Intake/RPMUpper", inputs.velocityRPM[1]);
   }
 
   /** Stops the intake. */
