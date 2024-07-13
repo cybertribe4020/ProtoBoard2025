@@ -182,6 +182,26 @@ public final class Constants {
       SPEED_MAP.put(Units.feetToMeters(16.0), 0.81);
     }
 
+    public static final InterpolatingDoubleTreeMap LOB_ANGLE_MAP = new InterpolatingDoubleTreeMap();
+
+    static {
+      LOB_ANGLE_MAP.put(Units.feetToMeters(10.0), 1.5);
+      LOB_ANGLE_MAP.put(Units.feetToMeters(15.0), 3.75);
+      LOB_ANGLE_MAP.put(Units.feetToMeters(20.0), 6.0);
+      LOB_ANGLE_MAP.put(Units.feetToMeters(25.0), 8.25);
+      LOB_ANGLE_MAP.put(Units.feetToMeters(30.0), 10.5);
+    }
+
+    public static final InterpolatingDoubleTreeMap LOB_SPEED_MAP = new InterpolatingDoubleTreeMap();
+
+    static {
+      LOB_SPEED_MAP.put(Units.feetToMeters(10.0), 3.5);
+      LOB_SPEED_MAP.put(Units.feetToMeters(15.0), 4.2);
+      LOB_SPEED_MAP.put(Units.feetToMeters(20.0), 5.0);
+      LOB_SPEED_MAP.put(Units.feetToMeters(25.0), 5.7);
+      LOB_SPEED_MAP.put(Units.feetToMeters(30.0), 6.5);
+    }
+
     private ShooterConstants() {}
   }
 }

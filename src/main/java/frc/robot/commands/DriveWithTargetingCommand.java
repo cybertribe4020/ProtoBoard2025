@@ -122,10 +122,10 @@ public class DriveWithTargetingCommand extends Command {
     if (lobShot) {
       // if a lob shot, distance was calibrated to the center of the robot
       distToTarget = goalVector.get().getNorm();
-      // shooter.runVolts(12.0 * ShooterConstants.LOB_SPEED_MAP.get(distToTarget));
-      // arm1.setGoalDeg(ShooterConstants.LOB_ANGLE_MAP.get(distToTarget));
-      shooter.runVolts(lobShooterVolts.get());
-      arm1.setGoalDeg(lobArmAngle.get());
+      shooter.runVolts(ShooterConstants.LOB_SPEED_MAP.get(distToTarget));
+      arm1.setGoalDeg(ShooterConstants.LOB_ANGLE_MAP.get(distToTarget));
+      // shooter.runVolts(lobShooterVolts.get());
+      // arm1.setGoalDeg(lobArmAngle.get());
     } else {
       // if a speaker shot (not a lob shot)
       // get distance to center of robot and subtract 0.28 meters of offset to camera lens
@@ -138,6 +138,10 @@ public class DriveWithTargetingCommand extends Command {
     Logger.recordOutput("Shooter/feetToTarget", Units.metersToFeet(distToTarget));
     Logger.recordOutput("Shooter/speedMapValue", ShooterConstants.SPEED_MAP.get(distToTarget));
     Logger.recordOutput("Shooter/angleMapValue", ShooterConstants.ANGLE_MAP.get(distToTarget));
+    Logger.recordOutput(
+        "Shooter/lobSpeedMapValue", ShooterConstants.LOB_SPEED_MAP.get(distToTarget));
+    Logger.recordOutput(
+        "Shooter/lobAngleMapValue", ShooterConstants.LOB_ANGLE_MAP.get(distToTarget));
 
     // Apply deadband to translation inputs
     double linearMagnitude =
