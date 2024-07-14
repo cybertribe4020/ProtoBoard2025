@@ -166,6 +166,19 @@ public class CameraIOPhoton implements CameraIO {
           // Logger.recordOutput("Vision/" + cameraName + "/rawBytes", latestFrame);
         }
       }
+
+      if (pipelineResult.hasTargets()) {
+        var target = pipelineResult.getBestTarget();
+        Logger.recordOutput("Vision/" + cameraName + "/id", target.getFiducialId());
+        Logger.recordOutput("Vision/" + cameraName + "/ambiguity", target.getPoseAmbiguity());
+        Logger.recordOutput(
+            "Vision/" + cameraName + "/distance",
+            target.getBestCameraToTarget().getTranslation().getNorm());
+      } else {
+        Logger.recordOutput("Vision/" + cameraName + "/id", Double.NaN);
+        Logger.recordOutput("Vision/" + cameraName + "/ambiguity", Double.NaN);
+        Logger.recordOutput("Vision/" + cameraName + "/distance", Double.NaN);
+      }
     }
   }
 }
