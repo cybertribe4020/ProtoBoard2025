@@ -13,6 +13,7 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.*;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.Constants;
+import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.drive.Drive;
 import java.util.Optional;
 import org.littletonrobotics.junction.Logger;
@@ -169,13 +170,14 @@ public class CameraIOPhoton implements CameraIO {
 
       if (pipelineResult.hasTargets()) {
         var target = pipelineResult.getBestTarget();
-        Logger.recordOutput("Vision/" + cameraName + "/id", target.getFiducialId());
+        Logger.recordOutput(
+            "Vision/" + cameraName + "/id", VisionConstants.TAG_DESC.get(target.getFiducialId()));
         Logger.recordOutput("Vision/" + cameraName + "/ambiguity", target.getPoseAmbiguity());
         Logger.recordOutput(
             "Vision/" + cameraName + "/distance",
             target.getBestCameraToTarget().getTranslation().getNorm());
       } else {
-        Logger.recordOutput("Vision/" + cameraName + "/id", Double.NaN);
+        Logger.recordOutput("Vision/" + cameraName + "/id", "NoTag");
         Logger.recordOutput("Vision/" + cameraName + "/ambiguity", Double.NaN);
         Logger.recordOutput("Vision/" + cameraName + "/distance", Double.NaN);
       }

@@ -21,7 +21,7 @@ import frc.robot.subsystems.shooter.Shooter;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
+// import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 public class DriveWithTargetingCommand extends Command {
 
@@ -47,9 +47,9 @@ public class DriveWithTargetingCommand extends Command {
   private final Supplier<Translation2d> goalVector;
   private final boolean lobShot;
 
-  private LoggedDashboardNumber lobShooterVolts =
-      new LoggedDashboardNumber("Lob Shooter Volts", 8.0);
-  private LoggedDashboardNumber lobArmAngle = new LoggedDashboardNumber("Lob Arm Angle", 8.0);
+  // private LoggedDashboardNumber lobShooterVolts =
+  //     new LoggedDashboardNumber("Lob Shooter Volts", 8.0);
+  // private LoggedDashboardNumber lobArmAngle = new LoggedDashboardNumber("Lob Arm Angle", 8.0);
 
   public DriveWithTargetingCommand(
       Drive drive,

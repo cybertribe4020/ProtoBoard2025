@@ -86,8 +86,4 @@ public class FieldConstants {
         new Transform2d(new Translation2d(Units.inchesToMeters(18), 0), Rotation2d.fromDegrees(0));
     return tagPose.plus(offset);
   }
-
-  public static enum TagDescription {
-    
-  }
 }

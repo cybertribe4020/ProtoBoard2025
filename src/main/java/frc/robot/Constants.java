@@ -25,6 +25,8 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -110,6 +112,28 @@ public final class Constants {
 
     public static final double VISION_AUTO_MULTIPLIER =
         1.0; // multiply std_devs in auto to trust them less (>1) or more (<1)
+
+    public static final Map<Integer, String> TAG_DESC = new HashMap<Integer, String>();
+
+    static {
+      TAG_DESC.put(-1, "NotSet");
+      TAG_DESC.put(1, "BlueSourceR");
+      TAG_DESC.put(2, "BlueSourceL");
+      TAG_DESC.put(3, "RedSpeakerR");
+      TAG_DESC.put(4, "RedSpeakerL");
+      TAG_DESC.put(5, "RedAmp");
+      TAG_DESC.put(6, "BlueAmp");
+      TAG_DESC.put(7, "BlueSpeakerR");
+      TAG_DESC.put(8, "BlueSpeakerL");
+      TAG_DESC.put(9, "RedSourceR");
+      TAG_DESC.put(10, "RedSourceL");
+      TAG_DESC.put(11, "RedStageLeft");
+      TAG_DESC.put(12, "RedStageRight");
+      TAG_DESC.put(13, "RedCenterStage");
+      TAG_DESC.put(14, "BlueCenterStage");
+      TAG_DESC.put(15, "BlueStageLeft");
+      TAG_DESC.put(16, "BlueStageRight");
+    }
 
     private VisionConstants() {}
   }
