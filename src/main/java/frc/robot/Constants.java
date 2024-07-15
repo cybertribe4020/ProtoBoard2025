@@ -37,8 +37,8 @@ import java.util.Map;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static final Mode currentMode = Mode.SIM;
-  public static final Integer NUM_CAMS = 2;
+  public static final Mode currentMode = Mode.REAL;
+  public static final Integer NUM_CAMS = 3;
 
   public static enum Mode {
     REAL, // running on a real robot
@@ -219,11 +219,11 @@ public final class Constants {
     public static final InterpolatingDoubleTreeMap LOB_SPEED_MAP = new InterpolatingDoubleTreeMap();
 
     static {
-      LOB_SPEED_MAP.put(Units.feetToMeters(10.0), 3.5);
-      LOB_SPEED_MAP.put(Units.feetToMeters(15.0), 4.2);
-      LOB_SPEED_MAP.put(Units.feetToMeters(20.0), 5.0);
-      LOB_SPEED_MAP.put(Units.feetToMeters(25.0), 5.7);
-      LOB_SPEED_MAP.put(Units.feetToMeters(30.0), 6.5);
+      LOB_SPEED_MAP.put(Units.feetToMeters(10.0), 3.3);
+      LOB_SPEED_MAP.put(Units.feetToMeters(15.0), 4.0);
+      LOB_SPEED_MAP.put(Units.feetToMeters(20.0), 4.8);
+      LOB_SPEED_MAP.put(Units.feetToMeters(25.0), 5.5);
+      LOB_SPEED_MAP.put(Units.feetToMeters(30.0), 6.3);
     }
 
     private ShooterConstants() {}
