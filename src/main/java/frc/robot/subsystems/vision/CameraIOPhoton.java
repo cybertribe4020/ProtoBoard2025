@@ -12,6 +12,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.*;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.util.Color;
 import frc.robot.Constants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.drive.Drive;
@@ -163,9 +164,19 @@ public class CameraIOPhoton implements CameraIO {
             inputs.poseDetected = true;
           }
 
+          double robotToCamXYDiff = drive.getPose().minus(estPose2d).getTranslation().getNorm();
+          int diffHue = Math.max((int) (60 - (robotToCamXYDiff / 0.3 * 60.0)), 0);
+          Logger.recordOutput("Vision/" + cameraName + "/robotToCam", robotToCamXYDiff);
+          Logger.recordOutput(
+              "Vision/" + cameraName + "/robotToCamColor",
+              Color.fromHSV(diffHue, 200, 230).toHexString());
+
           Logger.recordOutput("Vision/" + cameraName, estPose2d);
           // Logger.recordOutput("Vision/" + cameraName + "/rawBytes", latestFrame);
         }
+      } else {
+        Logger.recordOutput("Vision/" + cameraName + "/robotToCam", Double.NaN);
+        Logger.recordOutput("Vision/" + cameraName + "/robotToCamColor", "#222222");
       }
 
       if (pipelineResult.hasTargets()) {
