@@ -97,10 +97,14 @@ public class ModuleIOSparkMax implements ModuleIO {
     turnSparkMax.enableVoltageCompensation(12.0);
 
     driveEncoder.setPosition(0.0);
+    // default encoder sensor filtering may be too much filtering for good control
+    // reduce filtering substantially compared to defaults
     driveEncoder.setMeasurementPeriod(10);
     driveEncoder.setAverageDepth(2);
 
     turnRelativeEncoder.setPosition(0.0);
+    // default encoder sensor filtering may be too much filtering for good control
+    // reduce filtering substantially compared to defaults
     turnRelativeEncoder.setMeasurementPeriod(10);
     turnRelativeEncoder.setAverageDepth(2);
 
@@ -118,19 +122,22 @@ public class ModuleIOSparkMax implements ModuleIO {
     inputs.driveVelocityRadPerSec =
         Units.rotationsPerMinuteToRadiansPerSecond(driveEncoder.getVelocity()) / DRIVE_GEAR_RATIO;
     inputs.driveAppliedVolts = driveSparkMax.getAppliedOutput() * driveSparkMax.getBusVoltage();
-    inputs.driveCurrentAmps = new double[] {driveSparkMax.getOutputCurrent()};
+    inputs.driveCurrentAmps = driveSparkMax.getOutputCurrent();
 
     inputs.turnAbsolutePosition =
         new Rotation2d(
                 turnAbsoluteEncoder.getVoltage() / RobotController.getVoltage5V() * 2.0 * Math.PI)
             .minus(absoluteEncoderOffset);
+    inputs.turnAbsolutePositionRaw =
+        new Rotation2d(
+            turnAbsoluteEncoder.getVoltage() / RobotController.getVoltage5V() * 2.0 * Math.PI);
     inputs.turnPosition =
         Rotation2d.fromRotations(turnRelativeEncoder.getPosition() / TURN_GEAR_RATIO);
     inputs.turnVelocityRadPerSec =
         Units.rotationsPerMinuteToRadiansPerSecond(turnRelativeEncoder.getVelocity())
             / TURN_GEAR_RATIO;
     inputs.turnAppliedVolts = turnSparkMax.getAppliedOutput() * turnSparkMax.getBusVoltage();
-    inputs.turnCurrentAmps = new double[] {turnSparkMax.getOutputCurrent()};
+    inputs.turnCurrentAmps = turnSparkMax.getOutputCurrent();
   }
 
   @Override

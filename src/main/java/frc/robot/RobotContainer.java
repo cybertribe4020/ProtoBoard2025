@@ -471,32 +471,6 @@ public class RobotContainer {
                     () -> shooter.runVolts(ShooterConstants.AMP_SHOOT_VOLTS), shooter)));
   }
 
-  // prepareForLob will do two things in parallel after a Note is detected as being loaded
-  // Raise the arm to the angle for a lob shot
-  // Spin up the shooter to the correct voltage for a lob shot
-  // Finish only when arm angle is at target
-  // Assume shooter will spin up before arm command finishes
-  public Command prepareForLobCommand() {
-    return new SequentialCommandGroup(
-        // wait until note is loaded
-        new FunctionalCommand(
-            () -> {},
-            () -> {},
-            (interrupted) -> {},
-            () -> (convey.noteIsLoaded() || RobotBase.isSimulation())),
-        // then raise the arm to the angle needed for the amp
-        new FunctionalCommand(
-                () -> arm.setGoalDeg(ArmConstants.ARM_LOB_ANGLE_DEG),
-                () -> {},
-                (interrupted) -> {},
-                () -> arm.atGoal(),
-                arm)
-            // and in parallel, get the shooter running at the rpm needed for the amp
-            .alongWith(
-                new InstantCommand(
-                    () -> shooter.runVolts(ShooterConstants.LOB_SHOOT_VOLTS), shooter)));
-  }
-
   // Use getVectorFaceSpeaker to find the angle between the current robot pose
   // and the pose of the center of the speaker opening
   // Need to add PI and wrap if needed to get the correct angle to face the back

@@ -115,6 +115,8 @@ public class ModuleIO4020 implements ModuleIO {
     turnAbsolutePosition = cancoder.getAbsolutePosition();
 
     turnRelativeEncoder.setPosition(0.0);
+    // default encoder sensor filtering may be too much filtering for good control
+    // reduce filtering substantially compared to defaults
     turnRelativeEncoder.setMeasurementPeriod(10);
     turnRelativeEncoder.setAverageDepth(2);
 
@@ -136,19 +138,20 @@ public class ModuleIO4020 implements ModuleIO {
     inputs.driveVelocityRadPerSec =
         Units.rotationsToRadians(driveVelocity.getValueAsDouble()) / DRIVE_GEAR_RATIO;
     inputs.driveAppliedVolts = driveAppliedVolts.getValueAsDouble();
-    inputs.driveCurrentAmps = new double[] {driveCurrent.getValueAsDouble()};
+    inputs.driveCurrentAmps = driveCurrent.getValueAsDouble();
 
     inputs.turnAbsolutePosition =
         Rotation2d.fromRotations(turnAbsolutePosition.getValueAsDouble())
             .minus(absoluteEncoderOffset);
-
+    inputs.turnAbsolutePositionRaw =
+        Rotation2d.fromRotations(turnAbsolutePosition.getValueAsDouble());
     inputs.turnPosition =
         Rotation2d.fromRotations(turnRelativeEncoder.getPosition() / TURN_GEAR_RATIO);
     inputs.turnVelocityRadPerSec =
         Units.rotationsPerMinuteToRadiansPerSecond(turnRelativeEncoder.getVelocity())
             / TURN_GEAR_RATIO;
     inputs.turnAppliedVolts = turnSparkMax.getAppliedOutput() * turnSparkMax.getBusVoltage();
-    inputs.turnCurrentAmps = new double[] {turnSparkMax.getOutputCurrent()};
+    inputs.turnCurrentAmps = turnSparkMax.getOutputCurrent();
   }
 
   @Override

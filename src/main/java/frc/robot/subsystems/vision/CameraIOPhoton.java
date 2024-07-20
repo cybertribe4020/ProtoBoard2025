@@ -77,39 +77,63 @@ public class CameraIOPhoton implements CameraIO {
     return photonEstimator.update(pipelineResult);
   }
 
+  // Standard deviations of vision pose estimates determine how much weight they are given
+  // relative to odometry pose estimates in the Kalman filter calculations
   public Matrix<N3, N1> getEstimationStdDevs(
       Pose2d estimatedPose, PhotonPipelineResult cameraResult) {
+    // start the standard deviation calculation with the single tag values
+    // and modify as needed
     var estStdDevs = STD_DEVS_SINGLE_TAG;
+
     var targets = cameraResult.getTargets();
     int numTags = 0;
-
     double avgDist = 0;
+    String visibleTags = "";
+    double xyStdDev = estStdDevs.get(0, 0);
 
+    // count number of visible tags and the sum of the distances to those tags
     for (var tgt : targets) {
       var tagPose = photonEstimator.getFieldTags().getTagPose(tgt.getFiducialId());
+      visibleTags += String.valueOf(tgt.getFiducialId()) + "_";
       if (tagPose.isEmpty()) continue;
       numTags++;
       avgDist +=
           tagPose.get().toPose2d().getTranslation().getDistance(estimatedPose.getTranslation());
     }
 
+    Logger.recordOutput("Vision/" + cameraName + "/visibleTags", visibleTags);
+
+    // if there are no visible tags, exit and return the single tag standard deviations
+    // it doesn't really matter what values are returned since there is no pose to fuse
     if (numTags == 0) return estStdDevs;
 
-    avgDist /= numTags;
-    Logger.recordOutput("Vision/avgDistance", avgDist);
+    // If there is just one tag visible and it is more than the cutoff distance away
+    // exit and return super large standard deviations to ignore that camera/tag
+    if (numTags == 1 && avgDist > VISION_CUTOFF_DIST_M) {
+      Logger.recordOutput("Vision/" + cameraName + "/avgDistance", avgDist);
+      Logger.recordOutput("Vision/" + cameraName + "/xyStdDev", 999.0);
+      return VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
+    }
 
-    // Decrease std devs if multiple targets are visible
+    // If more than one tag is visible, use the multi tag standard deviations as a
+    // calculation base rather than the single tag values
     if (numTags > 1) estStdDevs = STD_DEVS_MULTI_TAG;
 
-    // Increase std devs based on (average) distance
-    if (numTags == 1 && avgDist > 4)
-      return VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
-    else estStdDevs = estStdDevs.times(1 + (avgDist * avgDist / 32));
+    // compute the average distance to the visible tags
+    // already checked for divide by zero above
+    avgDist /= numTags;
+    Logger.recordOutput("Vision/" + cameraName + "/avgDistance", avgDist);
 
+    // Increase the base standard deviation based on the square of average distance
+    estStdDevs =
+        estStdDevs.times(1 + ((avgDist * avgDist) / (DIST_TO_DOUBLE_SD_M * DIST_TO_DOUBLE_SD_M)));
+
+    // If in auto, apply one last multiplier to the standard deviations
     if (DriverStation.isAutonomous()) {
       estStdDevs = estStdDevs.times(VISION_AUTO_MULTIPLIER);
     }
 
+    Logger.recordOutput("Vision/" + cameraName + "/xyStdDev", estStdDevs.get(0, 0));
     return estStdDevs;
   }
 

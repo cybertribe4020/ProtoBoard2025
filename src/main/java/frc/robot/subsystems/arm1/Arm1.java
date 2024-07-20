@@ -117,7 +117,7 @@ public class Arm1 extends SubsystemBase {
     arm.setAngle(Units.radiansToDegrees(inputs.internalPositionRad));
   }
 
-  /** Run closed loop control to move the arm to the desired position */
+  /** Set the goal for the arm angle. Put controller in auto if not already. */
   public void setGoalDeg(double setpointDeg) {
     armClosedLoop = true;
     angleGoalRad =
@@ -132,15 +132,17 @@ public class Arm1 extends SubsystemBase {
     armClosedLoop = false;
   }
 
-  /** Returns the current position in degrees. */
+  /** Returns the current arm angle in degrees. */
   @AutoLogOutput(key = "Arm/angleInternalDeg")
   public double getPositionDeg() {
     return Units.radiansToDegrees(inputs.internalPositionRad);
   }
 
+  // Check if arm is within a tolerance of the down/load position.
+  // Typically used as a permissive in commands.
   public boolean armIsDown() {
     return Units.radiansToDegrees(inputs.internalPositionRad)
-        <= ArmConstants.ARM_LOAD_ANGLE_DEG + 1.0;
+        <= ArmConstants.ARM_LOAD_ANGLE_DEG + ArmConstants.ARM_IS_DOWN_TOLERANCE_DEG;
   }
 
   // Define "up" as an angle greater than 0 radians - currently no
@@ -149,15 +151,18 @@ public class Arm1 extends SubsystemBase {
     return inputs.internalPositionRad >= 0.0;
   }
 
-  // Define arm up for Amp to be >= 75 degrees - not Amped is less than 75
+  // If the arm is less than 75 degrees it is not in an amp position
   public boolean armIsNotAmped() {
     return inputs.internalPositionRad < Units.degreesToRadians(75.0);
   }
 
+  // Has the arm reached the closed-loop goal?
+  // Tolerance is set separately with ARM_ANGLE_TOLERANCE_DEG.
   public boolean atGoal() {
     return pid.atGoal();
   }
 
+  // Move the arm to the stow/loading position.
   public Command armToLoadCommand() {
     return new RunCommand(() -> setGoalDeg(ArmConstants.ARM_LOAD_ANGLE_DEG))
         .until(() -> armIsDown());

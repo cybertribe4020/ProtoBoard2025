@@ -28,7 +28,9 @@ public class IntakeIOSparkMax implements IntakeIO {
   private static final double GEAR_RATIO =
       (24.0 / 16.0); // this is the gear reduction (driven/driving)
 
+  // lower is also the back roller
   private final CANSparkMax lower = new CANSparkMax(12, MotorType.kBrushless);
+  // upper is alos the front roller
   private final CANSparkMax upper = new CANSparkMax(13, MotorType.kBrushless);
   private final RelativeEncoder encLower = lower.getEncoder();
   private final RelativeEncoder encUpper = upper.getEncoder();
@@ -38,13 +40,10 @@ public class IntakeIOSparkMax implements IntakeIO {
   public IntakeIOSparkMax() {
     lower.restoreFactoryDefaults();
     upper.restoreFactoryDefaults();
-
     lower.setCANTimeout(250);
     upper.setCANTimeout(250);
-
     lower.setInverted(true);
     upper.setInverted(true);
-
     lower.enableVoltageCompensation(12.0);
     lower.setSmartCurrentLimit(40);
     upper.enableVoltageCompensation(12.0);
@@ -53,16 +52,19 @@ public class IntakeIOSparkMax implements IntakeIO {
     // for velocity control with low inertia, reduce the encoder sensor filtering
     // default filter values add so much effective dead time that P control is almost impossible
     encLower.setMeasurementPeriod(16);
-    encLower.setAverageDepth(2);
     encUpper.setMeasurementPeriod(16);
+    encLower.setAverageDepth(2);
     encUpper.setAverageDepth(2);
 
+    lower.setCANTimeout(0);
+    upper.setCANTimeout(0);
     lower.burnFlash();
     upper.burnFlash();
   }
 
   @Override
   public void updateInputs(IntakeIOInputs inputs) {
+    // Note that the 0 list position is the lower/back roller and 1 is upper/front
     inputs.positionRot =
         new double[] {encLower.getPosition() / GEAR_RATIO, encUpper.getPosition() / GEAR_RATIO};
     inputs.velocityRPM =

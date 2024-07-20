@@ -23,7 +23,10 @@ import frc.robot.Constants;
 import org.littletonrobotics.junction.Logger;
 
 public class Module {
-  private static final double WHEEL_RADIUS = Units.inchesToMeters(1.90);
+  // calibrate wheel radius by driving a measured distance and adjusting the radium
+  // until the end-beginning distance in odometry logging matches the measurement
+  // this may need to change when putting on fresh tread
+  private static final double WHEEL_RADIUS_M = Units.inchesToMeters(1.90);
 
   private final ModuleIO io;
   private final ModuleIOInputsAutoLogged inputs = new ModuleIOInputsAutoLogged();
@@ -33,7 +36,7 @@ public class Module {
   private final PIDController driveFeedback;
   private final PIDController turnFeedback;
   private Rotation2d angleSetpoint = null; // Setpoint for closed loop control, null for open loop
-  private Double speedSetpoint = null; // Setpoint for closed loop control, null for open loop
+  private Double speedSetpointMPS = null; // Setpoint for closed loop control, null for open loop
   private Rotation2d turnRelativeOffset = null; // Relative + Offset = Absolute
 
   public Module(ModuleIO io, int index) {
@@ -86,19 +89,20 @@ public class Module {
 
       // Run closed loop drive control
       // Only allowed if closed loop turn control is running
-      if (speedSetpoint != null) {
+      if (speedSetpointMPS != null) {
         // Scale velocity based on turn error
         //
         // When the error is 90°, the velocity setpoint should be 0. As the wheel turns
         // towards the setpoint, its velocity should increase. This is achieved by
         // taking the component of the velocity in the direction of the setpoint.
-        double adjustSpeedSetpoint = speedSetpoint * Math.cos(turnFeedback.getPositionError());
+        double adjustSpeedSetpointMPS =
+            speedSetpointMPS * Math.cos(turnFeedback.getPositionError());
 
         // Run drive controller
-        double velocityRadPerSec = adjustSpeedSetpoint / WHEEL_RADIUS;
+        double speedSetpointRadPerSec = adjustSpeedSetpointMPS / WHEEL_RADIUS_M;
         io.setDriveVoltage(
-            driveFeedforward.calculate(velocityRadPerSec)
-                + driveFeedback.calculate(inputs.driveVelocityRadPerSec, velocityRadPerSec));
+            driveFeedforward.calculate(speedSetpointRadPerSec)
+                + driveFeedback.calculate(inputs.driveVelocityRadPerSec, speedSetpointRadPerSec));
       }
     }
   }
@@ -111,7 +115,7 @@ public class Module {
 
     // Update setpoints, controllers run in "periodic"
     angleSetpoint = optimizedState.angle;
-    speedSetpoint = optimizedState.speedMetersPerSecond;
+    speedSetpointMPS = optimizedState.speedMetersPerSecond;
 
     return optimizedState;
   }
@@ -123,7 +127,7 @@ public class Module {
 
     // Open loop drive control
     io.setDriveVoltage(volts);
-    speedSetpoint = null;
+    speedSetpointMPS = null;
   }
 
   /** Disables all outputs to motors. */
@@ -133,7 +137,7 @@ public class Module {
 
     // Disable closed loop control for turn and drive
     angleSetpoint = null;
-    speedSetpoint = null;
+    speedSetpointMPS = null;
   }
 
   /** Sets whether brake mode is enabled. */
@@ -153,12 +157,12 @@ public class Module {
 
   /** Returns the current drive position of the module in meters. */
   public double getPositionMeters() {
-    return inputs.drivePositionRad * WHEEL_RADIUS;
+    return inputs.drivePositionRad * WHEEL_RADIUS_M;
   }
 
   /** Returns the current drive velocity of the module in meters per second. */
   public double getVelocityMetersPerSec() {
-    return inputs.driveVelocityRadPerSec * WHEEL_RADIUS;
+    return inputs.driveVelocityRadPerSec * WHEEL_RADIUS_M;
   }
 
   /** Returns the module position (turn angle and drive position). */

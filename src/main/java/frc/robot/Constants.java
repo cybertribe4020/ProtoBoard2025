@@ -57,6 +57,9 @@ public final class Constants {
     public static final double MAX_ANGULAR_SPEED =
         MAX_LINEAR_SPEED / DRIVE_BASE_RADIUS; // radians per second
 
+    public static final double DRIVE_CURRENT_LIMIT = 40.0;
+    public static final int TURN_CURRENT_LIMIT = 30;
+
     private DriveConstants() {}
   }
 
@@ -106,12 +109,13 @@ public final class Constants {
             new Rotation3d(0.0, Math.toRadians(-26.0), Units.degreesToRadians(270.0)));
 
     public static final Matrix<N3, N1> STD_DEVS_VISION_DEFAULT = VecBuilder.fill(1, 1, 1.5);
-    public static final Matrix<N3, N1> STD_DEVS_SINGLE_TAG = VecBuilder.fill(4, 4, 8);
+    public static final Matrix<N3, N1> STD_DEVS_SINGLE_TAG = VecBuilder.fill(1.5, 1.5, 8);
     public static final Matrix<N3, N1> STD_DEVS_MULTI_TAG = VecBuilder.fill(0.5, 0.5, 1);
     public static final Matrix<N3, N1> STD_DEVS_ODOMETRY = VecBuilder.fill(0.05, 0.05, 0.05);
-
-    public static final double VISION_AUTO_MULTIPLIER =
-        1.0; // multiply std_devs in auto to trust them less (>1) or more (<1)
+    public static final double VISION_CUTOFF_DIST_M = 4.0;
+    public static final double DIST_TO_DOUBLE_SD_M = 5.5;
+    // multiply std_devs in auto to trust them less (>1) or more (<1)
+    public static final double VISION_AUTO_MULTIPLIER = 1.0;
 
     public static final Map<Integer, String> TAG_DESC = new HashMap<Integer, String>();
 
@@ -148,7 +152,6 @@ public final class Constants {
     public static final double ARM_LOAD_ANGLE_DEG = -31.0;
     public static final double ARM_AMP_ANGLE_DEG = 83.0;
     public static final double ARM_AMP_ANGLE2_DEG = 93.0;
-    public static final double ARM_LOB_ANGLE_DEG = 8.0;
     // how close to the PID goal to be considered at goal?
     public static final double ARM_ANGLE_TOLERANCE_DEG = 0.2;
     // how close to the load angle to be considered down?
@@ -164,7 +167,6 @@ public final class Constants {
     // shoot wider than the direct angle to the speaker Apriltag to give more clearance for the Note
     public static final double ANGLE_BIAS_MULTIPLIER = 1.1;
     public static final double AMP_SHOOT_VOLTS = 2.0;
-    public static final double LOB_SHOOT_VOLTS = 8.0;
 
     // x: distance (meters) from rear camera lens to center of speaker opening projected down
     // Code will take care of offset from camera lens to center of robot

@@ -33,11 +33,8 @@ public class ConveyIOSparkMax implements ConveyIO {
 
   public ConveyIOSparkMax() {
     leader.restoreFactoryDefaults();
-
     leader.setCANTimeout(250);
-
     leader.setInverted(false);
-
     leader.enableVoltageCompensation(12.0);
     leader.setSmartCurrentLimit(30);
 
@@ -46,6 +43,7 @@ public class ConveyIOSparkMax implements ConveyIO {
     encoder.setMeasurementPeriod(16);
     encoder.setAverageDepth(2);
 
+    leader.setCANTimeout(0);
     leader.burnFlash();
   }
 

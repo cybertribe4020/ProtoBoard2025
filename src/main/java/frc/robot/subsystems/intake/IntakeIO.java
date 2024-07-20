@@ -18,6 +18,7 @@ import org.littletonrobotics.junction.AutoLog;
 public interface IntakeIO {
   @AutoLog
   public static class IntakeIOInputs {
+    // Note that the 0 list position is the lower/back roller and 1 is upper/front
     public double[] positionRot = new double[] {};
     public double[] velocityRPM = new double[] {};
     public double[] appliedVolts = new double[] {};

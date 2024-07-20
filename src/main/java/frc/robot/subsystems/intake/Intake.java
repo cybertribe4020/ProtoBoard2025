@@ -94,6 +94,8 @@ public class Intake extends SubsystemBase {
     return inputs.velocityRPM[1];
   }
 
+  // If arm is down and a Note is not detected at the sensor, run the intake
+  // Any time the arm is up, run the upper/front roller in reverse with lower/back stopped
   public void smartIntakeControl(
       double intakeRPMFwd,
       double intakeRPMRev,
@@ -112,6 +114,8 @@ public class Intake extends SubsystemBase {
     Logger.recordOutput("Intake/intakeDirection", intakeDirection);
   }
 
+  // If arm is down and a Note is not detected at the sensor, run the intake
+  // Any time the arm is up, run the upper/front roller in reverse with lower/back stopped
   public void smartIntakeOpenLoop(
       double intakeVoltsFwd,
       double intakeVoltsRev,

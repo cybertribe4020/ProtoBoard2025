@@ -34,7 +34,6 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Time;
 import edu.wpi.first.units.Velocity;
@@ -44,6 +43,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.FieldConstants;
@@ -52,14 +52,6 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Drive extends SubsystemBase {
-  private static final double MAX_LINEAR_SPEED = Units.feetToMeters(17.0);
-  private static final double TRACK_WIDTH_X =
-      Units.inchesToMeters(24.75); // 5.25 inches less than frame for MK4i
-  private static final double TRACK_WIDTH_Y =
-      Units.inchesToMeters(23.75); // 5.25 inches less than frame for MK4i
-  private static final double DRIVE_BASE_RADIUS =
-      Math.hypot(TRACK_WIDTH_X / 2.0, TRACK_WIDTH_Y / 2.0);
-  private static final double MAX_ANGULAR_SPEED = MAX_LINEAR_SPEED / DRIVE_BASE_RADIUS;
 
   // configuration settings for SysID
   private final Measure<Velocity<Voltage>> rampRate = Volts.of(1.5).per(Seconds.of(1));
@@ -118,7 +110,9 @@ public class Drive extends SubsystemBase {
         () -> kinematics.toChassisSpeeds(getModuleStates()),
         this::runVelocity,
         new HolonomicPathFollowerConfig(
-            MAX_LINEAR_SPEED, DRIVE_BASE_RADIUS, new ReplanningConfig()),
+            DriveConstants.MAX_LINEAR_SPEED,
+            DriveConstants.DRIVE_BASE_RADIUS,
+            new ReplanningConfig()),
         () ->
             DriverStation.getAlliance().isPresent()
                 && DriverStation.getAlliance().get() == Alliance.Red,
@@ -198,6 +192,7 @@ public class Drive extends SubsystemBase {
 
     // Apply odometry update
     poseEstimator.update(rawGyroRotation, modulePositions);
+
     Logger.recordOutput("Is Using Vision?", isUsingVision);
     Logger.recordOutput("driveFieldCentric", driveFieldCentric);
   }
@@ -211,7 +206,7 @@ public class Drive extends SubsystemBase {
     // Calculate module setpoints
     ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
     SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(discreteSpeeds);
-    SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, MAX_LINEAR_SPEED);
+    SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, DriveConstants.MAX_LINEAR_SPEED);
 
     // Send setpoints to modules
     SwerveModuleState[] optimizedSetpointStates = new SwerveModuleState[4];
@@ -297,6 +292,7 @@ public class Drive extends SubsystemBase {
     poseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
   }
 
+  // What is the distance and angle to the speaker from the current robot pose?
   public Translation2d getVectorFaceSpeaker() {
     speakerPosition = FieldConstants.getSpeakerPosition();
     vectorFaceSpeaker = speakerPosition.minus(getPose().getTranslation());
@@ -304,6 +300,7 @@ public class Drive extends SubsystemBase {
     return vectorFaceSpeaker;
   }
 
+  // What is the distance and angle to the lob target from the current robot pose
   public Translation2d getVectorForLob() {
     if (FieldConstants.isBlue()) {
       lobTarget = new Translation2d(1.9, 6.5);
@@ -315,16 +312,23 @@ public class Drive extends SubsystemBase {
     return vectorForLob;
   }
 
+  // extract just the distance to the speaker from the vector relative to the robot position
+  // this method adjusts the distance to be equivalent to the back camera lens
+  // rather than the robot center, since the speaker shooting calibration
+  // that uses this value uses the distance from the back camera lens
   public double getDistToSpeaker() {
-    return getVectorFaceSpeaker().getNorm()
-        - 0.28; // distance calibration was recorded from rear camera lens, not bot center
+    return getVectorFaceSpeaker().getNorm() - 0.28;
   }
 
+  // extract just the distance to the speaker from the endpoint of the current
+  // PathPlanner path segment
+  // this method adjusts the distance to be equivalent to the back camera lens
+  // rather than the robot center, since the speaker shooting calibration
+  // that uses this value uses the distance from the back camera lens
   public double getPathEndToSpeaker() {
     speakerPosition = FieldConstants.getSpeakerPosition();
     vectorFaceSpeaker = speakerPosition.minus(currentPathEndpoint.getTranslation());
-    return vectorFaceSpeaker.getNorm()
-        - 0.28; // distance calibration was recorded from rear camera lens, not bot center
+    return vectorFaceSpeaker.getNorm() - 0.28;
   }
 
   // Shoot wider than the direct angle to the speaker Apriltag to give more clearance for the Note
@@ -356,21 +360,21 @@ public class Drive extends SubsystemBase {
 
   /** Returns the maximum linear speed in meters per sec. */
   public double getMaxLinearSpeedMetersPerSec() {
-    return MAX_LINEAR_SPEED;
+    return DriveConstants.MAX_LINEAR_SPEED;
   }
 
   /** Returns the maximum angular speed in radians per sec. */
   public double getMaxAngularSpeedRadPerSec() {
-    return MAX_ANGULAR_SPEED;
+    return DriveConstants.MAX_ANGULAR_SPEED;
   }
 
   /** Returns an array of module translations. */
   public static Translation2d[] getModuleTranslations() {
     return new Translation2d[] {
-      new Translation2d(TRACK_WIDTH_X / 2.0, TRACK_WIDTH_Y / 2.0),
-      new Translation2d(TRACK_WIDTH_X / 2.0, -TRACK_WIDTH_Y / 2.0),
-      new Translation2d(-TRACK_WIDTH_X / 2.0, TRACK_WIDTH_Y / 2.0),
-      new Translation2d(-TRACK_WIDTH_X / 2.0, -TRACK_WIDTH_Y / 2.0)
+      new Translation2d(DriveConstants.TRACK_WIDTH_X / 2.0, DriveConstants.TRACK_WIDTH_Y / 2.0),
+      new Translation2d(DriveConstants.TRACK_WIDTH_X / 2.0, -DriveConstants.TRACK_WIDTH_Y / 2.0),
+      new Translation2d(-DriveConstants.TRACK_WIDTH_X / 2.0, DriveConstants.TRACK_WIDTH_Y / 2.0),
+      new Translation2d(-DriveConstants.TRACK_WIDTH_X / 2.0, -DriveConstants.TRACK_WIDTH_Y / 2.0)
     };
   }
 

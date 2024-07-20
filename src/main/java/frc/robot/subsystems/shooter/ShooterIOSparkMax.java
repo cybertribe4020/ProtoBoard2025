@@ -21,13 +21,11 @@ import com.revrobotics.SparkPIDController;
 import com.revrobotics.SparkPIDController.ArbFFUnits;
 import edu.wpi.first.math.util.Units;
 
-/**
- * NOTE: To use the Spark Flex / NEO Vortex, replace all instances of "CANSparkMax" with
- * "CANSparkFlex".
- */
 public class ShooterIOSparkMax implements ShooterIO {
   private static final double GEAR_RATIO = 1.0; // this is the gear reduction (driven/driving)
 
+  // motor on the lower shooter axle is CAN 20 and set as the leader here
+  // motor on the upper shooter axle is CAN 21 and set as the follower
   private final CANSparkMax leader = new CANSparkMax(20, MotorType.kBrushless);
   private final CANSparkMax follower = new CANSparkMax(21, MotorType.kBrushless);
   private final RelativeEncoder encoder = leader.getEncoder();
@@ -36,13 +34,10 @@ public class ShooterIOSparkMax implements ShooterIO {
   public ShooterIOSparkMax() {
     leader.restoreFactoryDefaults();
     follower.restoreFactoryDefaults();
-
     leader.setCANTimeout(250);
     follower.setCANTimeout(250);
-
-    leader.setInverted(false);
     follower.follow(leader, false);
-
+    leader.setInverted(false);
     leader.enableVoltageCompensation(12.0);
     leader.setSmartCurrentLimit(30);
 
@@ -51,6 +46,8 @@ public class ShooterIOSparkMax implements ShooterIO {
     encoder.setMeasurementPeriod(16);
     encoder.setAverageDepth(2);
 
+    leader.setCANTimeout(0);
+    follower.setCANTimeout(0);
     leader.burnFlash();
     follower.burnFlash();
   }

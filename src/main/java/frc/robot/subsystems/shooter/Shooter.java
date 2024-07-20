@@ -111,6 +111,7 @@ public class Shooter extends SubsystemBase {
     return inputs.velocityRadPerSec;
   }
 
+  // Define the shooter to be running if it is 500 rpm or more
   public boolean shooterIsRunning() {
     return getVelocityRPM() >= 500.0;
   }

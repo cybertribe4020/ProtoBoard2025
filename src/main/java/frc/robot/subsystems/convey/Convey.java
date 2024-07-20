@@ -72,7 +72,6 @@ public class Convey extends SubsystemBase {
   public void runVelocity(double velocityRPM) {
     io.setVelocity(velocityRPM, ffModel.calculate(velocityRPM));
 
-    // Log convey setpoint
     Logger.recordOutput("Convey/SetpointRPM", velocityRPM);
     Logger.recordOutput("Convey/ffVolts", ffModel.calculate(velocityRPM));
   }
@@ -88,17 +87,14 @@ public class Convey extends SubsystemBase {
     return inputs.velocityRPM;
   }
 
-  /** Returns the current velocity in radians per second. */
-  public double getCharacterizationVelocity() {
-    return inputs.velocityRPM;
-  }
-
   // The note sensor reads True without a note present and False when it sees a note
   @AutoLogOutput
   public boolean noteIsLoaded() {
     return !conveyNoteSensor.get();
   }
 
+  // Run conveyor until the Note sensor detects the Note
+  // There is no simulation of the Note sensor, so just stop the simulated conveyor immediately
   public Command loadCommand() {
     return new StartEndCommand(() -> runVelocity(conveyVelocityInput.get()), () -> stop(), this)
         .until(() -> (noteIsLoaded() || RobotBase.isSimulation()))
