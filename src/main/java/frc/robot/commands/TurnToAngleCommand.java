@@ -2,6 +2,10 @@ package frc.robot.commands;
 
 import static frc.robot.Constants.DriveConstants.MAX_ANGULAR_SPEED;
 
+import static frc.robot.Constants.AutoConstants.THETA_kD;
+import static frc.robot.Constants.AutoConstants.THETA_kI;
+import static frc.robot.Constants.AutoConstants.THETA_kP;
+
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -15,10 +19,14 @@ public class TurnToAngleCommand extends ProfiledPIDCommand {
 
   public TurnToAngleCommand(Drive drive, DoubleSupplier targetAngleRad) {
     super(
+        // Theta controller uses autonomous tuning
+        // Can import some different tuning if desired
+        // There is also currently just default trapezoid profile constraints
+        // Could add a separate constructor with passed-in constraints if desired
         new ProfiledPIDController(
-            5.0,
-            0.02,
-            0.0,
+            THETA_kP,
+            THETA_kI,
+            THETA_kD,
             new TrapezoidProfile.Constraints(MAX_ANGULAR_SPEED * 0.6, MAX_ANGULAR_SPEED * 1.2)),
         () -> drive.getRotation().getRadians(),
         targetAngleRad,

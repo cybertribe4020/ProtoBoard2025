@@ -26,12 +26,15 @@ public class SmartIntakeCommand extends Command {
     var armIsDown = armIsDownSupplier.getAsBoolean();
     var noteIsLoaded = noteIsLoadedSupplier.getAsBoolean();
     var intakeDirection = "undefined";
+    // if the arm is down and a Note has not tripped the sensor in the shooter
+    // run both intake axles at their intaking speed and direction
     if (armIsDown && !noteIsLoaded) {
       intake.runVolts(intakeVoltsInput.get(), intakeVoltsInput.get());
       // intake.runVelocity(intakeVelocityInput.get(), intakeVelocityInput.get());
       intakeDirection = "intake";
     } else {
       // if arm is up, run lower/back axle stopped and upper/front axle backwards
+      // this will hopefully keep extra Notes out of the robot if one is already present
       intake.runVolts(0.0, -3.0);
       intakeDirection = "reject";
     }

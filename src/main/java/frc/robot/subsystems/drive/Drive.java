@@ -53,20 +53,8 @@ import org.littletonrobotics.junction.Logger;
 
 public class Drive extends SubsystemBase {
 
-  // configuration settings for SysID
-  private final Measure<Velocity<Voltage>> rampRate = Volts.of(1.5).per(Seconds.of(1));
-  private final Measure<Voltage> stepVoltage = Volts.of(7);
-  private final Measure<Time> timeout = Seconds.of(4);
-
-  private final GyroIO gyroIO;
-  private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
   private final Module[] modules = new Module[4]; // FL, FR, BL, BR
-  private final SysIdRoutine sysId;
-  public boolean isUsingVision = true;
-  public boolean driveFieldCentric = true;
-
   private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(getModuleTranslations());
-  private Rotation2d rawGyroRotation = new Rotation2d();
   private SwerveModulePosition[] lastModulePositions = // For delta tracking
       new SwerveModulePosition[] {
         new SwerveModulePosition(),
@@ -75,6 +63,10 @@ public class Drive extends SubsystemBase {
         new SwerveModulePosition()
       };
 
+  private final GyroIO gyroIO;
+  private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
+  private Rotation2d rawGyroRotation = new Rotation2d();
+  
   private SwerveDrivePoseEstimator poseEstimator =
       new SwerveDrivePoseEstimator(
           kinematics,
@@ -84,12 +76,23 @@ public class Drive extends SubsystemBase {
           VisionConstants.STD_DEVS_ODOMETRY,
           VisionConstants.STD_DEVS_VISION_DEFAULT);
 
+  public boolean isUsingVision = true;
+  public boolean driveFieldCentric = true;
+
   private Translation2d speakerPosition;
   private Translation2d vectorFaceSpeaker;
   private Translation2d lobTarget;
   private Translation2d vectorForLob;
 
   public Pose2d currentPathEndpoint;
+
+  private final SysIdRoutine sysId;
+  // configuration settings for SysID
+  // Be careful how large your ramp and step voltage is along with how long the test will run
+  // You need to provide enough space to let the robot run the test
+  private final Measure<Velocity<Voltage>> rampRate = Volts.of(1.5).per(Seconds.of(1));
+  private final Measure<Voltage> stepVoltage = Volts.of(7);
+  private final Measure<Time> timeout = Seconds.of(4);
 
   public Drive(
       GyroIO gyroIO,
@@ -103,7 +106,8 @@ public class Drive extends SubsystemBase {
     modules[2] = new Module(blModuleIO, 2);
     modules[3] = new Module(brModuleIO, 3);
 
-    // Configure AutoBuilder for PathPlanner
+    // Create an AutoBuilder for PathPlanner
+    // This is a swerve drivetrain, so you need the holonomic configuration
     AutoBuilder.configureHolonomic(
         this::getPose,
         this::setPose,
@@ -131,7 +135,9 @@ public class Drive extends SubsystemBase {
           Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
         });
 
-    // Configure SysId
+    // Create infrastructure to run system identification using the WPILib class
+    // The swerve module class needs a runCharacterization method to send the voltages
+    // from sys ID to the drive motors and to keep the wheels pointed forward
     sysId =
         new SysIdRoutine(
             new SysIdRoutine.Config(
@@ -238,12 +244,12 @@ public class Drive extends SubsystemBase {
     stop();
   }
 
-  /** Returns a command to run a quasistatic test in the specified direction. */
+  /** Returns a command to run a quasistatic sysID test in the specified direction. */
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
     return sysId.quasistatic(direction);
   }
 
-  /** Returns a command to run a dynamic test in the specified direction. */
+  /** Returns a command to run a dynamic sysID test in the specified direction. */
   public Command sysIdDynamic(SysIdRoutine.Direction direction) {
     return sysId.dynamic(direction);
   }
@@ -276,7 +282,8 @@ public class Drive extends SubsystemBase {
     return states;
   }
 
-  /** Returns the current odometry pose. */
+  /** Returns the current odometry pose. This pose is fused with estimates from vision
+   * if vision is being used */
   @AutoLogOutput(key = "Odometry/Robot")
   public Pose2d getPose() {
     return poseEstimator.getEstimatedPosition();
@@ -285,6 +292,22 @@ public class Drive extends SubsystemBase {
   /** Returns the current odometry rotation. */
   public Rotation2d getRotation() {
     return getPose().getRotation();
+  }
+
+  /**
+   * Adds a vision measurement to the pose estimator.
+   *
+   * @param visionPose The pose of the robot as measured by the vision camera.
+   * @param timestamp The timestamp of the vision measurement in seconds.
+   */
+  public void addVisionMeasurement(Pose2d visionPose, double timestamp) {
+    if (isUsingVision) poseEstimator.addVisionMeasurement(visionPose, timestamp);
+  }
+
+  public void addVisionMeasurement(Pose2d visionPose, double timestamp, Matrix<N3, N1> estStdDevs) {
+    if (isUsingVision) poseEstimator.addVisionMeasurement(visionPose, timestamp, estStdDevs);
+    // SmartDashboard.putNumber("Vision pose X:", visionPose.getX());
+    // SmartDashboard.putNumber("Vision pose Y:", visionPose.getY());
   }
 
   /** Resets the current odometry pose. */
@@ -342,22 +365,6 @@ public class Drive extends SubsystemBase {
     }
   }
 
-  /**
-   * Adds a vision measurement to the pose estimator.
-   *
-   * @param visionPose The pose of the robot as measured by the vision camera.
-   * @param timestamp The timestamp of the vision measurement in seconds.
-   */
-  public void addVisionMeasurement(Pose2d visionPose, double timestamp) {
-    if (isUsingVision) poseEstimator.addVisionMeasurement(visionPose, timestamp);
-  }
-
-  public void addVisionMeasurement(Pose2d visionPose, double timestamp, Matrix<N3, N1> estStdDevs) {
-    if (isUsingVision) poseEstimator.addVisionMeasurement(visionPose, timestamp, estStdDevs);
-    // SmartDashboard.putNumber("Vision pose X:", visionPose.getX());
-    // SmartDashboard.putNumber("Vision pose Y:", visionPose.getY());
-  }
-
   /** Returns the maximum linear speed in meters per sec. */
   public double getMaxLinearSpeedMetersPerSec() {
     return DriveConstants.MAX_LINEAR_SPEED;
@@ -368,7 +375,7 @@ public class Drive extends SubsystemBase {
     return DriveConstants.MAX_ANGULAR_SPEED;
   }
 
-  /** Returns an array of module translations. */
+  /** Returns an array of swerve module translations relative to the center of the robot. */
   public static Translation2d[] getModuleTranslations() {
     return new Translation2d[] {
       new Translation2d(DriveConstants.TRACK_WIDTH_X / 2.0, DriveConstants.TRACK_WIDTH_Y / 2.0),
@@ -378,6 +385,9 @@ public class Drive extends SubsystemBase {
     };
   }
 
+  // Get an array of individual module poses
+  // This can be used to visualize the robot on the field, showing each module
+  // and the angle of each wheel
   public Pose2d[] getModulePoses() {
     Pose2d[] modulePoses = new Pose2d[modules.length];
     for (int i = 0; i < modules.length; i++) {

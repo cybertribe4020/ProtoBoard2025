@@ -20,11 +20,9 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.FieldConstants;
 import frc.robot.subsystems.drive.Drive;
-import java.util.Optional;
 import java.util.function.Supplier;
 
 public class DriveToPoseCommand extends Command {
@@ -32,6 +30,7 @@ public class DriveToPoseCommand extends Command {
   private static final double TRANSLATION_TOLERANCE = 0.02;
   private static final double THETA_TOLERANCE = Units.degreesToRadians(2.0);
 
+  // Default profile constraints are used if constraints are not passed to the method
   private static final TrapezoidProfile.Constraints DEFAULT_XY_CONSTRAINTS =
       new TrapezoidProfile.Constraints(MAX_LINEAR_SPEED * 0.5, MAX_LINEAR_SPEED);
   private static final TrapezoidProfile.Constraints DEFAULT_OMEGA_CONSTRAINTS =
@@ -69,6 +68,8 @@ public class DriveToPoseCommand extends Command {
     this.goalPose = goalPose;
     this.useAllianceColor = useAllianceColor;
 
+    // Controllers are currently using the autonomous tuning for the profiled PID
+    // If different tuning is needed for teleop, a different set of constants could be imported
     xController = new ProfiledPIDController(X_kP, X_kI, X_kD, xyConstraints);
     yController = new ProfiledPIDController(Y_kP, Y_kI, Y_kD, xyConstraints);
     xController.setTolerance(TRANSLATION_TOLERANCE);
@@ -81,54 +82,42 @@ public class DriveToPoseCommand extends Command {
   public void initialize() {
     resetPIDControllers();
     var pose = goalPose;
-    boolean allianceRed = false;
-    Optional<Alliance> ally = DriverStation.getAlliance();
-    if (ally.isPresent()) {
-      if (ally.get() == Alliance.Red) {
-        allianceRed = true;
-      }
-    }
-    if (useAllianceColor && allianceRed) {
+    
+    // If red alliance and we are asking to flip a blue (default) pose
+    // to red when on the red alliance, then flip the pose
+    if (useAllianceColor && FieldConstants.shouldFlip()) {
       Translation2d transformedTranslation =
           new Translation2d(FIELD_LENGTH - pose.getX(), pose.getY());
       Rotation2d transformedHeading =
           pose.getRotation().times(-1).plus(Rotation2d.fromDegrees(180));
       pose = new Pose2d(transformedTranslation, transformedHeading);
     }
+
+    // Set the goal for each of the controllers to the appropriate
+    // component of the goal pose
     thetaController.setGoal(pose.getRotation().getRadians());
     xController.setGoal(pose.getX());
     yController.setGoal(pose.getY());
   }
 
-  public boolean atGoal() {
-    return xController.atGoal() && yController.atGoal() && thetaController.atGoal();
-  }
-
-  private void resetPIDControllers() {
-    var robotPose = poseProvider.get();
-    thetaController.reset(robotPose.getRotation().getRadians());
-    xController.reset(robotPose.getX());
-    yController.reset(robotPose.getY());
-  }
-
   public void execute() {
     var robotPose = poseProvider.get();
-    // Drive to the goal
+
+    // Drive to each component of the goal pose simultaneously
+    // x translation, y translation, and rotation
     var xSpeed = xController.calculate(robotPose.getX());
     if (xController.atGoal()) {
       xSpeed = 0;
     }
-
     var ySpeed = yController.calculate(robotPose.getY());
     if (yController.atGoal()) {
       ySpeed = 0;
     }
-
     var omegaSpeed = thetaController.calculate(robotPose.getRotation().getRadians());
     if (thetaController.atGoal()) {
       omegaSpeed = 0;
     }
-
+    // Pass the controller speed targets to the drive
     drive.runVelocity(
         ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, omegaSpeed, robotPose.getRotation()));
   }
@@ -139,5 +128,18 @@ public class DriveToPoseCommand extends Command {
 
   public void end(boolean interrupted) {
     drive.stop();
+  }
+
+  // The move is completely finished when all three controllers reach goal
+  public boolean atGoal() {
+    return xController.atGoal() && yController.atGoal() && thetaController.atGoal();
+  }
+
+  // initializaton
+  private void resetPIDControllers() {
+    var robotPose = poseProvider.get();
+    thetaController.reset(robotPose.getRotation().getRadians());
+    xController.reset(robotPose.getX());
+    yController.reset(robotPose.getY());
   }
 }

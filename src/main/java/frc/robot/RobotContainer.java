@@ -140,7 +140,8 @@ public class RobotContainer {
         break;
     }
 
-    // Set up auto routines
+    // Register commands that will be used in PathPlanner
+    // If a command is not registered, it is not available for use
     NamedCommands.registerCommand(
         "smartIntake",
         new SmartIntakeCommand(intake, () -> arm.armIsDown(), () -> convey.noteIsLoaded()));
@@ -154,9 +155,12 @@ public class RobotContainer {
     NamedCommands.registerCommand("stopIntake", new InstantCommand(() -> intake.stop(), intake));
     NamedCommands.registerCommand("stopConvey", new InstantCommand(() -> convey.stop(), convey));
 
+    // PathPlanner will build a chooser for the auto routines that have been created in the application
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
-    // Set up SysId routines
+    // If you want to use the sys ID capability in WPILib to compute PID tuning for the drive base
+    // one way is to create auto routines to run each of the four necessary tests
+    // The tests are defined in the subsystem to be ID'd 
     autoChooser.addOption(
         "Drive SysId (Quasistatic Forward)",
         drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
@@ -167,17 +171,6 @@ public class RobotContainer {
         "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-
-    /* autoChooser.addOption(
-        "Shooter SysId (Quasistatic Forward)",
-        shooter.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-    autoChooser.addOption(
-        "Shooter SysId (Quasistatic Reverse)",
-        shooter.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-    autoChooser.addOption(
-        "Shooter SysId (Dynamic Forward)", shooter.sysIdDynamic(SysIdRoutine.Direction.kForward));
-    autoChooser.addOption(
-        "Shooter SysId (Dynamic Reverse)", shooter.sysIdDynamic(SysIdRoutine.Direction.kReverse)); */
 
     // Configure the button bindings
     configureButtonBindings();
@@ -247,27 +240,6 @@ public class RobotContainer {
                     convey::noteIsLoaded,
                     shooter::shooterIsRunning,
                     () -> controller.getRightTriggerAxis() > 0.5)));
-
-    // Left Bumper
-    // Hold down to drive to a staging location for a lob shot
-    // Will not avoid any obstacles in the way!!
-    // Simultaneously raise the arm and run the shooter as needed for a lob shot
-    // When bumper is released, stop shooter and lower arm
-    /* controller
-    .leftBumper()
-    .whileTrue(
-        new DriveToPoseCommand(
-                drive,
-                drive::getPose, // could also use () -> drive.getPose()
-                new Pose2d(9.5, 1.75, Rotation2d.fromDegrees(-35.0)),
-                true)
-            .alongWith(prepareForLobCommand()))
-    .onFalse(
-        new ParallelCommandGroup(
-            // Stop the shooter
-            new InstantCommand(() -> shooter.stop()),
-            // Lower the arm to the loading angle - do not wait for it to finish
-            new InstantCommand(() -> arm.setGoalDeg(ArmConstants.ARM_LOAD_ANGLE_DEG)))); */
 
     // Left Bumper
     // Continuous chassis rotation to face lob target but allow joystick chassis translation
@@ -356,14 +328,14 @@ public class RobotContainer {
             Commands.runOnce(() -> drive.isUsingVision = !drive.isUsingVision, drive)
                 .ignoringDisable(true));
 
-    // Left stick button
+    // Left stick press-down button
     // Drive robot centric
     controller
         .leftStick()
         .onTrue(
             Commands.runOnce(() -> drive.driveFieldCentric = false, drive).ignoringDisable(true));
 
-    // Right stick button
+    // Right stick press-down button
     // Drive field centric
     controller
         .rightStick()

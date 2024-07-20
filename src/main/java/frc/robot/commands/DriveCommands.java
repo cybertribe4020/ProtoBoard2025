@@ -100,7 +100,8 @@ public class DriveCommands {
         drive);
   }
 
-  // Drive robot-centric using passed parameters for x, y, and omega speeds
+  // Drive using passed parameters for x, y, and omega speeds
+  // Can choose if the parameters represent field or robot centric directions
   public static Command driveByValues(
       Drive drive, double xFrac, double yFrac, double omegaFrac, BooleanSupplier fieldCentric) {
     return Commands.run(
@@ -116,7 +117,7 @@ public class DriveCommands {
 
           // Turn inputs into robot chassis speed requests
           if (fieldCentric.getAsBoolean()) {
-            // Inputs need to be converted into robot-centric chassis speeds
+            // Field-centric inputs need to be converted into robot-centric chassis speeds
             // Current robot rotation from the gyro is required to make this conversion
             boolean isFlipped =
                 DriverStation.getAlliance().isPresent()
@@ -130,6 +131,7 @@ public class DriveCommands {
                         ? drive.getRotation().plus(new Rotation2d(Math.PI))
                         : drive.getRotation()));
           } else {
+            // if inputs are already robot-centric, just send them
             drive.runVelocity(
                 new ChassisSpeeds(
                     linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),

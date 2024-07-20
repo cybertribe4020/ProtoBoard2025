@@ -2,6 +2,10 @@ package frc.robot.commands;
 
 import static frc.robot.Constants.DriveConstants.MAX_ANGULAR_SPEED;
 
+import static frc.robot.Constants.AutoConstants.THETA_kD;
+import static frc.robot.Constants.AutoConstants.THETA_kI;
+import static frc.robot.Constants.AutoConstants.THETA_kP;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -21,7 +25,6 @@ import frc.robot.subsystems.shooter.Shooter;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
-// import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 public class DriveWithTargetingCommand extends Command {
 
@@ -29,6 +32,7 @@ public class DriveWithTargetingCommand extends Command {
   private static final double THETA_TOLERANCE = Units.degreesToRadians(1.0);
   private static final double ANGLE_BIAS_MULTIPLIER = 1.1;
 
+  // Default trapezoid profile constraints are used if none are passed with the call
   private static final TrapezoidProfile.Constraints DEFAULT_OMEGA_CONSTRAINTS =
       new TrapezoidProfile.Constraints(MAX_ANGULAR_SPEED * 0.6, MAX_ANGULAR_SPEED * 1.2);
 
@@ -46,10 +50,6 @@ public class DriveWithTargetingCommand extends Command {
   private final Supplier<Pose2d> poseProvider;
   private final Supplier<Translation2d> goalVector;
   private final boolean lobShot;
-
-  // private LoggedDashboardNumber lobShooterVolts =
-  //     new LoggedDashboardNumber("Lob Shooter Volts", 8.0);
-  // private LoggedDashboardNumber lobArmAngle = new LoggedDashboardNumber("Lob Arm Angle", 8.0);
 
   public DriveWithTargetingCommand(
       Drive drive,
@@ -91,7 +91,9 @@ public class DriveWithTargetingCommand extends Command {
     this.goalVector = goalVector;
     this.lobShot = lobShot;
 
-    thetaController = new ProfiledPIDController(5.0, 0.02, 0.0, omegaConstraints);
+    // Theta controller uses the autonomous tuning
+    // Separate tuning could be defined for teleop if needed
+    thetaController = new ProfiledPIDController(THETA_kP, THETA_kI, THETA_kD, omegaConstraints);
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
     thetaController.setTolerance(THETA_TOLERANCE);
   }
@@ -105,10 +107,18 @@ public class DriveWithTargetingCommand extends Command {
   public void execute() {
     var robotPose = poseProvider.get();
 
-    // Turn towards the target
+    // Set the goal as the angle towards the target
+    if (lobShot) {
+      thetaController.setGoal(
+        goalVector.get().getAngle().plus(facingBackwards).getRadians());
+    } else {
+    // if a speaker shot, bias the rotation to use the hood sidewall
     thetaController.setGoal(
         biasedRotation(goalVector.get().getAngle().plus(facingBackwards).getRadians()));
+    }
+    // Let the controller turn the robot towards the goal angle
     var omegaSpeed = thetaController.calculate(robotPose.getRotation().getRadians());
+    // Stop turning when within tolerance of the goal angle
     if (thetaController.atGoal()) {
       omegaSpeed = 0;
     }
@@ -124,8 +134,6 @@ public class DriveWithTargetingCommand extends Command {
       distToTarget = goalVector.get().getNorm();
       shooter.runVolts(ShooterConstants.LOB_SPEED_MAP.get(distToTarget));
       arm1.setGoalDeg(ShooterConstants.LOB_ANGLE_MAP.get(distToTarget));
-      // shooter.runVolts(lobShooterVolts.get());
-      // arm1.setGoalDeg(lobArmAngle.get());
     } else {
       // if a speaker shot (not a lob shot)
       // get distance to center of robot and subtract 0.28 meters of offset to camera lens
@@ -171,10 +179,13 @@ public class DriveWithTargetingCommand extends Command {
 
   public void end(boolean interrupted) {
     drive.stop();
+    // turn the shooter off until we need it again - it spins up very fast
     shooter.stop();
+    // put the arm down so the driver doesn't have to
     arm1.setGoalDeg(ArmConstants.ARM_LOAD_ANGLE_DEG);
   }
 
+  // initialization
   private void resetPIDControllers() {
     var robotPose = poseProvider.get();
     thetaController.reset(robotPose.getRotation().getRadians());
@@ -184,6 +195,9 @@ public class DriveWithTargetingCommand extends Command {
     return thetaController.atGoal();
   }
 
+  // Shooting "beyond" the center of the speaker gives more clearance to score
+  // since the speaker has a hood and sidewalls that extend out from the speaker
+  // face.  Use the far sidewall to your advantage.
   private double biasedRotation(double directRotation) {
     if (FieldConstants.isBlue()) {
       return directRotation * ANGLE_BIAS_MULTIPLIER;
