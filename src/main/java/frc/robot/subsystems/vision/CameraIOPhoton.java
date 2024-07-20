@@ -89,7 +89,6 @@ public class CameraIOPhoton implements CameraIO {
     int numTags = 0;
     double avgDist = 0;
     String visibleTags = "";
-    double xyStdDev = estStdDevs.get(0, 0);
 
     // count number of visible tags and the sum of the distances to those tags
     for (var tgt : targets) {
