@@ -15,8 +15,11 @@ public class Arm1IOSparkFlex implements Arm1IO {
   private final DutyCycleEncoder extAbsoluteEncoder = new DutyCycleEncoder(8);
 
   private final boolean isMotorInverted = true;
+
+  // Offset so through-bore encoder will read 0 when the arm is parallel to the floor
   private final double absoluteEncoderOffsetRad =
       Units.degreesToRadians(ArmConstants.ARM_ENCODER_OFFSET_DEG);
+
   // Power on the robot with the arm fully down against the physical stops
   // This position is the ARM_MIN_ANGLE_DEG
   // Initialize the internal motor encoder to the shaft revolutions corresponding to this angle
@@ -25,12 +28,9 @@ public class Arm1IOSparkFlex implements Arm1IO {
 
   public Arm1IOSparkFlex() {
     leader.restoreFactoryDefaults();
-
     leader.setCANTimeout(250);
-
     leader.setInverted(isMotorInverted);
     setBrakeMode(true);
-
     leader.enableVoltageCompensation(12.0);
     leader.setSmartCurrentLimit(30);
 
@@ -42,7 +42,6 @@ public class Arm1IOSparkFlex implements Arm1IO {
     motorInternalEncoder.setAverageDepth(8); // was 2 if need to go back
 
     leader.setCANTimeout(0);
-
     leader.burnFlash();
 
     extAbsoluteEncoder.setDutyCycleRange(1.0 / 1025.0, 1024.0 / 1025.0);
@@ -50,17 +49,17 @@ public class Arm1IOSparkFlex implements Arm1IO {
 
   @Override
   public void updateInputs(Arm1IOInputs inputs) {
-    inputs.arm1AbsolutePositionRad =
+    inputs.absolutePositionRad =
         (extAbsoluteEncoder.getAbsolutePosition() * 2.0 * Math.PI) - absoluteEncoderOffsetRad;
-    inputs.arm1InternalPositionRad =
+    inputs.internalPositionRad =
         Units.rotationsToRadians(motorInternalEncoder.getPosition())
             / ArmConstants.ARM_GEAR_REDUCTION;
-    inputs.arm1InternalVelocityRadPerSec =
+    inputs.internalVelocityRadPerSec =
         Units.rotationsPerMinuteToRadiansPerSecond(motorInternalEncoder.getVelocity())
             / ArmConstants.ARM_GEAR_REDUCTION;
-    inputs.arm1AppliedVolts = leader.getAppliedOutput() * leader.getBusVoltage();
-    inputs.arm1CurrentAmps = new double[] {leader.getOutputCurrent()};
-    inputs.arm1TempCelsius = new double[] {leader.getMotorTemperature()};
+    inputs.appliedVolts = leader.getAppliedOutput() * leader.getBusVoltage();
+    inputs.currentAmps = leader.getOutputCurrent();
+    inputs.tempCelsius = leader.getMotorTemperature();
   }
 
   @Override

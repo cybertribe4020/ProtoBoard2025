@@ -52,7 +52,7 @@ public class Arm1 extends SubsystemBase {
           new MechanismLigament2d(
               "Arm",
               30,
-              Units.radiansToDegrees(inputs.arm1InternalPositionRad),
+              Units.radiansToDegrees(inputs.internalPositionRad),
               6,
               new Color8Bit(Color.kYellow)));
 
@@ -84,7 +84,7 @@ public class Arm1 extends SubsystemBase {
         pid = new ProfiledPIDController(0.0, 0.0, 0.0, new TrapezoidProfile.Constraints(0.0, 0.0));
         break;
     }
-    pid.setTolerance(Units.degreesToRadians(0.2));
+    pid.setTolerance(Units.degreesToRadians(ArmConstants.ARM_ANGLE_TOLERANCE_DEG));
   }
 
   @Override
@@ -93,27 +93,28 @@ public class Arm1 extends SubsystemBase {
     Logger.processInputs("Arm", inputs);
 
     if (armClosedLoop) {
-      pidOutput = pid.calculate(inputs.arm1InternalPositionRad, angleGoalRad);
+      pidOutput = pid.calculate(inputs.internalPositionRad, angleGoalRad);
       feedforwardOutput = ffModel.calculate(pid.getSetpoint().position, pid.getSetpoint().velocity);
       io.setVoltage(pidOutput + feedforwardOutput);
+
       Logger.recordOutput("Arm/atGoal", pid.atGoal());
       Logger.recordOutput("Arm/angleGoalRad", angleGoalRad);
       Logger.recordOutput("Arm/angleSPRad", pid.getSetpoint().position);
       Logger.recordOutput("Arm/angleSPRadPerSec", pid.getSetpoint().velocity);
       Logger.recordOutput("Arm/feedbackOP", pidOutput);
       Logger.recordOutput("Arm/feedforwardOP", feedforwardOutput);
+
     } else {
-      pid.reset(inputs.arm1InternalPositionRad);
+      pid.reset(inputs.internalPositionRad);
     }
 
-    Logger.recordOutput("Arm/angleInternalRad", inputs.arm1InternalPositionRad);
-    Logger.recordOutput(
-        "Arm/angleInternalDeg", Units.radiansToDegrees(inputs.arm1InternalPositionRad));
-    Logger.recordOutput("Arm/motorVolts", inputs.arm1AppliedVolts);
+    Logger.recordOutput("Arm/angleInternalRad", inputs.internalPositionRad);
+    Logger.recordOutput("Arm/angleInternalDeg", Units.radiansToDegrees(inputs.internalPositionRad));
+    Logger.recordOutput("Arm/motorVolts", inputs.appliedVolts);
     Logger.recordOutput("Arm/armIsUp", armIsUp());
 
     // Update the Mechanism Arm angle based on the simulated arm angle
-    arm.setAngle(Units.radiansToDegrees(inputs.arm1InternalPositionRad));
+    arm.setAngle(Units.radiansToDegrees(inputs.internalPositionRad));
   }
 
   /** Run closed loop control to move the arm to the desired position */
@@ -134,23 +135,23 @@ public class Arm1 extends SubsystemBase {
   /** Returns the current position in degrees. */
   @AutoLogOutput(key = "Arm/angleInternalDeg")
   public double getPositionDeg() {
-    return Units.radiansToDegrees(inputs.arm1InternalPositionRad);
+    return Units.radiansToDegrees(inputs.internalPositionRad);
   }
 
   public boolean armIsDown() {
-    return Units.radiansToDegrees(inputs.arm1InternalPositionRad)
+    return Units.radiansToDegrees(inputs.internalPositionRad)
         <= ArmConstants.ARM_LOAD_ANGLE_DEG + 1.0;
   }
 
   // Define "up" as an angle greater than 0 radians - currently no
   // shooting position would be lower than that
   public boolean armIsUp() {
-    return inputs.arm1InternalPositionRad >= 0.0;
+    return inputs.internalPositionRad >= 0.0;
   }
 
   // Define arm up for Amp to be >= 75 degrees - not Amped is less than 75
   public boolean armIsNotAmped() {
-    return inputs.arm1InternalPositionRad < Units.degreesToRadians(75.0);
+    return inputs.internalPositionRad < Units.degreesToRadians(75.0);
   }
 
   public boolean atGoal() {

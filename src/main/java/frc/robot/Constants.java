@@ -37,8 +37,8 @@ import java.util.Map;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static final Mode currentMode = Mode.REAL;
-  public static final Integer NUM_CAMS = 3;
+  public static final Mode currentMode = Mode.SIM;
+  public static final Integer NUM_CAMS = 2;
 
   public static enum Mode {
     REAL, // running on a real robot
@@ -149,6 +149,10 @@ public final class Constants {
     public static final double ARM_AMP_ANGLE_DEG = 83.0;
     public static final double ARM_AMP_ANGLE2_DEG = 93.0;
     public static final double ARM_LOB_ANGLE_DEG = 8.0;
+    // how close to the PID goal to be considered at goal?
+    public static final double ARM_ANGLE_TOLERANCE_DEG = 0.2;
+    // how close to the load angle to be considered down?
+    public static final double ARM_IS_DOWN_TOLERANCE_DEG = 1.0;
     // External encoder reading in degrees when the arm is parallel to the floor
     public static final double ARM_ENCODER_OFFSET_DEG = 187.0;
 

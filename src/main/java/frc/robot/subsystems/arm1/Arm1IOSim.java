@@ -14,7 +14,7 @@ public class Arm1IOSim implements Arm1IO {
 
   private SingleJointedArmSim arm1Sim;
   private boolean lastEnabled = false;
-  private double arm1AppliedVolts = 0.0;
+  private double appliedVolts = 0.0;
 
   public Arm1IOSim() {
 
@@ -52,18 +52,18 @@ public class Arm1IOSim implements Arm1IO {
     arm1Sim.update(LOOP_PERIOD_SEC);
 
     // Log sim data
-    inputs.arm1AbsolutePositionRad = arm1Sim.getAngleRads();
-    inputs.arm1InternalPositionRad = arm1Sim.getAngleRads();
-    inputs.arm1InternalVelocityRadPerSec = arm1Sim.getVelocityRadPerSec();
-    inputs.arm1AppliedVolts = arm1AppliedVolts;
-    inputs.arm1CurrentAmps = new double[] {arm1Sim.getCurrentDrawAmps()};
-    inputs.arm1TempCelsius = new double[] {};
+    inputs.absolutePositionRad = arm1Sim.getAngleRads();
+    inputs.internalPositionRad = arm1Sim.getAngleRads();
+    inputs.internalVelocityRadPerSec = arm1Sim.getVelocityRadPerSec();
+    inputs.appliedVolts = appliedVolts;
+    inputs.currentAmps = arm1Sim.getCurrentDrawAmps();
+    inputs.tempCelsius = 0.0;
   }
 
   @Override
   public void setVoltage(double volts) {
-    arm1AppliedVolts = MathUtil.clamp(volts, -12, 12);
-    arm1Sim.setInputVoltage(arm1AppliedVolts);
+    appliedVolts = MathUtil.clamp(volts, -12, 12);
+    arm1Sim.setInputVoltage(appliedVolts);
   }
 
   @Override

@@ -5,12 +5,12 @@ import org.littletonrobotics.junction.AutoLog;
 public interface Arm1IO {
   @AutoLog
   public static class Arm1IOInputs {
-    public double arm1AbsolutePositionRad = 0.0;
-    public double arm1InternalPositionRad = 0.0;
-    public double arm1InternalVelocityRadPerSec = 0.0;
-    public double arm1AppliedVolts = 0.0;
-    public double[] arm1CurrentAmps = new double[] {};
-    public double[] arm1TempCelsius = new double[] {};
+    public double absolutePositionRad = 0.0;
+    public double internalPositionRad = 0.0;
+    public double internalVelocityRadPerSec = 0.0;
+    public double appliedVolts = 0.0;
+    public double currentAmps = 0.0;
+    public double tempCelsius = 0.0;
   }
 
   /** Updates the set of loggable inputs. */
