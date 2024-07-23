@@ -66,7 +66,7 @@ public class Drive extends SubsystemBase {
   private final GyroIO gyroIO;
   private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
   private Rotation2d rawGyroRotation = new Rotation2d();
-  
+
   private SwerveDrivePoseEstimator poseEstimator =
       new SwerveDrivePoseEstimator(
           kinematics,
@@ -282,8 +282,10 @@ public class Drive extends SubsystemBase {
     return states;
   }
 
-  /** Returns the current odometry pose. This pose is fused with estimates from vision
-   * if vision is being used */
+  /**
+   * Returns the current odometry pose. This pose is fused with estimates from vision if vision is
+   * being used
+   */
   @AutoLogOutput(key = "Odometry/Robot")
   public Pose2d getPose() {
     return poseEstimator.getEstimatedPosition();

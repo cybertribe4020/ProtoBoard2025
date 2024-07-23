@@ -1,10 +1,9 @@
 package frc.robot.commands;
 
-import static frc.robot.Constants.DriveConstants.MAX_ANGULAR_SPEED;
-
 import static frc.robot.Constants.AutoConstants.THETA_kD;
 import static frc.robot.Constants.AutoConstants.THETA_kI;
 import static frc.robot.Constants.AutoConstants.THETA_kP;
+import static frc.robot.Constants.DriveConstants.MAX_ANGULAR_SPEED;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -109,12 +108,11 @@ public class DriveWithTargetingCommand extends Command {
 
     // Set the goal as the angle towards the target
     if (lobShot) {
-      thetaController.setGoal(
-        goalVector.get().getAngle().plus(facingBackwards).getRadians());
+      thetaController.setGoal(goalVector.get().getAngle().plus(facingBackwards).getRadians());
     } else {
-    // if a speaker shot, bias the rotation to use the hood sidewall
-    thetaController.setGoal(
-        biasedRotation(goalVector.get().getAngle().plus(facingBackwards).getRadians()));
+      // if a speaker shot, bias the rotation to use the hood sidewall
+      thetaController.setGoal(
+          biasedRotation(goalVector.get().getAngle().plus(facingBackwards).getRadians()));
     }
     // Let the controller turn the robot towards the goal angle
     var omegaSpeed = thetaController.calculate(robotPose.getRotation().getRadians());

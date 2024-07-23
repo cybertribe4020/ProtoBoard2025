@@ -42,13 +42,13 @@ public class SmartConveyCommand extends Command {
     if (shootTriggerPulled && shooterIsRunning) {
       convey.runVolts(12.0);
       conveyStatus = "shooting";
-    // Run the conveyor at normal convey speed to accept a Note from the intake
-    // if the arm is down and a Note has not tripped the loading sensor in the shooter
+      // Run the conveyor at normal convey speed to accept a Note from the intake
+      // if the arm is down and a Note has not tripped the loading sensor in the shooter
     } else if (armIsDown && !noteIsLoaded) {
       // convey.runVolts(conveyVoltsInput.get());
       convey.runVelocity(conveyVelocityInput.get());
       conveyStatus = "runToLoad";
-    // in any other state stop the conveyor
+      // in any other state stop the conveyor
     } else {
       convey.runVolts(0.0);
       conveyStatus = "stopped";

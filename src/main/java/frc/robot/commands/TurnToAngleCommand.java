@@ -1,10 +1,9 @@
 package frc.robot.commands;
 
-import static frc.robot.Constants.DriveConstants.MAX_ANGULAR_SPEED;
-
 import static frc.robot.Constants.AutoConstants.THETA_kD;
 import static frc.robot.Constants.AutoConstants.THETA_kI;
 import static frc.robot.Constants.AutoConstants.THETA_kP;
+import static frc.robot.Constants.DriveConstants.MAX_ANGULAR_SPEED;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;

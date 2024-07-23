@@ -82,7 +82,7 @@ public class DriveToPoseCommand extends Command {
   public void initialize() {
     resetPIDControllers();
     var pose = goalPose;
-    
+
     // If red alliance and we are asking to flip a blue (default) pose
     // to red when on the red alliance, then flip the pose
     if (useAllianceColor && FieldConstants.shouldFlip()) {

@@ -65,6 +65,10 @@ import frc.robot.subsystems.shooter.ShooterIO;
 import frc.robot.subsystems.shooter.ShooterIOSim;
 import frc.robot.subsystems.shooter.ShooterIOSparkMax;
 import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.winch.Winch;
+import frc.robot.subsystems.winch.WinchIO;
+import frc.robot.subsystems.winch.WinchIOSim;
+import frc.robot.subsystems.winch.WinchIOSparkMax;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -81,6 +85,8 @@ public class RobotContainer {
   private final Intake intake;
   private final Convey convey;
   private final Arm1 arm;
+  private final Winch winchLeft;
+  private final Winch winchRight;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -105,6 +111,8 @@ public class RobotContainer {
         intake = new Intake(new IntakeIOSparkMax());
         convey = new Convey(new ConveyIOSparkMax());
         arm = new Arm1(new Arm1IOSparkFlex());
+        winchLeft = new Winch(new WinchIOSparkMax(30, true), "Left");
+        winchRight = new Winch(new WinchIOSparkMax(31, false), "Right");
         break;
 
       case SIM:
@@ -121,6 +129,8 @@ public class RobotContainer {
         intake = new Intake(new IntakeIOSim());
         convey = new Convey(new ConveyIOSim());
         arm = new Arm1(new Arm1IOSim());
+        winchLeft = new Winch(new WinchIOSim(), "Left");
+        winchRight = new Winch(new WinchIOSim(), "Right");
         break;
 
       default:
@@ -137,6 +147,8 @@ public class RobotContainer {
         intake = new Intake(new IntakeIO() {});
         convey = new Convey(new ConveyIO() {});
         arm = new Arm1(new Arm1IO() {});
+        winchLeft = new Winch(new WinchIO() {}, "Left");
+        winchRight = new Winch(new WinchIO() {}, "Right");
         break;
     }
 
@@ -155,12 +167,13 @@ public class RobotContainer {
     NamedCommands.registerCommand("stopIntake", new InstantCommand(() -> intake.stop(), intake));
     NamedCommands.registerCommand("stopConvey", new InstantCommand(() -> convey.stop(), convey));
 
-    // PathPlanner will build a chooser for the auto routines that have been created in the application
+    // PathPlanner will build a chooser for the auto routines that have been created in the
+    // application
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     // If you want to use the sys ID capability in WPILib to compute PID tuning for the drive base
     // one way is to create auto routines to run each of the four necessary tests
-    // The tests are defined in the subsystem to be ID'd 
+    // The tests are defined in the subsystem to be ID'd
     autoChooser.addOption(
         "Drive SysId (Quasistatic Forward)",
         drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
@@ -212,7 +225,37 @@ public class RobotContainer {
 
     // X button
     // Stop the drivetrain and turn the wheels to an X position
-    controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+    // controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+
+    // X button
+    // Test running the winches to the 0 inch point
+    // fully extended to catch the chain
+    controller
+        .x()
+        .onTrue(
+            Commands.parallel(
+                    // Tuning for extension has less load and moves more slowly
+                    new InstantCommand(() -> winchLeft.winchTuning(false), winchLeft),
+                    new InstantCommand(() -> winchRight.winchTuning(false), winchRight))
+                .andThen(
+                    Commands.parallel(
+                        new InstantCommand(() -> winchLeft.setGoalInch(0.0), winchLeft),
+                        new InstantCommand(() -> winchRight.setGoalInch(0.0), winchRight))));
+
+    // A button
+    // Test running the winches to the 26 inch point
+    // mostly retracted all the way to the frame
+    controller
+        .a()
+        .onTrue(
+            Commands.parallel(
+                    // Tuning for climbing has more load and moves more quickly
+                    new InstantCommand(() -> winchLeft.winchTuning(true), winchLeft),
+                    new InstantCommand(() -> winchRight.winchTuning(true), winchRight))
+                .andThen(
+                    Commands.parallel(
+                        new InstantCommand(() -> winchLeft.setGoalInch(26.0), winchLeft),
+                        new InstantCommand(() -> winchRight.setGoalInch(26.0), winchRight))));
 
     // B button
     //

@@ -162,6 +162,25 @@ public final class Constants {
     private ArmConstants() {}
   }
 
+  public static class WinchConstants {
+    public static final double WINCH_GEAR_REDUCTION = 25.0;
+    public static final double WINCH_TENSION_LOAD_LB = 1.0; // tension from the gas spring
+    public static final double WINCH_ROBOT_LOAD_LB =
+        117.0 / 2.0; // each winch gets 1/2 the total robot weight
+    public static final double WINCH_SPOOL_DIA_IN = 1.125;
+    public static final double WINCH_MIN_HEIGHT_IN = 0.0;
+    public static final double WINCH_MAX_HEIGHT_IN = 26.85;
+    public static final double WINCH_START_HEIGHT_IN = 8.34;
+    public static final int WINCH_CURRENT_LIMIT = 30;
+    public static final double WINCH_HEIGHT_TOLERANCE_IN = 0.2;
+    public static final double WINCH_VELOCITY_CLIMB_IPS = 4.0;
+    public static final double WINCH_ACCEL_CLIMB_IPS2 = 20.0;
+    public static final double WINCH_VELOCITY_EXTEND_IPS = 2.0;
+    public static final double WINCH_ACCEL_EXTEND_IPS2 = 20.0;
+
+    private WinchConstants() {}
+  }
+
   public static class ShooterConstants {
 
     // shoot wider than the direct angle to the speaker Apriltag to give more clearance for the Note
