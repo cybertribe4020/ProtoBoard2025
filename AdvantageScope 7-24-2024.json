@@ -1,0 +1,603 @@
+{
+  "hubs": [
+    {
+      "x": -1928,
+      "y": -8,
+      "width": 1936,
+      "height": 1056,
+      "state": {
+        "sidebar": {
+          "width": 383,
+          "expanded": [
+            "/AdvantageKit/Drive/Module0/TurnAbsolutePosition",
+            "/AdvantageKit/Drive/Module0/TurnPosition",
+            "/AdvantageKit/RealOutputs/Odometry/Robot",
+            "/AdvantageKit/RealOutputs/Odometry/Robot/rotation",
+            "/LiveWindow/.status",
+            "/AdvantageKit/RealOutputs/SwerveStates/Measured",
+            "/AdvantageKit/RealOutputs/SwerveStates/Setpoints/0",
+            "/AdvantageKit/RealOutputs/SwerveStates/SetpointsOptimized",
+            "/AdvantageKit/RealOutputs/SwerveStates/SetpointsOptimized/0",
+            "/AdvantageKit/RealOutputs/Odometry/Robot/translation",
+            "/AdvantageKit/RealOutputs/SwerveStates/Setpoints",
+            "/AdvantageKit/RealOutputs/SwerveStates/Measured/1",
+            "/AdvantageKit/DriverStation/Joystick0/AxisValues",
+            "/AdvantageKit/Vision/Camera0",
+            "/AdvantageKit/RealOutputs/Vision/CamRear",
+            "/AdvantageKit/RealOutputs/Vision/CamRear/rotation",
+            "/AdvantageKit/RealOutputs/Vision/CamRear/translation",
+            "/RealOutputs",
+            "/RealOutputs/SwerveStates",
+            "/RealOutputs/SwerveStates/Measured",
+            "/RealOutputs/SwerveStates/SetpointsOptimized",
+            "/RealOutputs/SwerveStates/Measured/0",
+            "/RealOutputs/SwerveStates/SetpointsOptimized/0",
+            "/Drive",
+            "/Drive/Module0",
+            "/AdvantageKit/Vision/Camera1",
+            "/AdvantageKit/Vision/Camera2",
+            "/AdvantageKit/RealOutputs/Vision/aprilTagRight",
+            "/AdvantageKit/RealOutputs/Vision/aprilTagRight/rotation",
+            "/AdvantageKit/RealOutputs/Vision/aprilTagRight/translation",
+            "/photonvision/aprilTagRight",
+            "/AdvantageKit/Drive/Module0/DriveCurrentAmps",
+            "/AdvantageKit/RealOutputs/Flywheel",
+            "/AdvantageKit/Flywheel/CurrentAmps",
+            "/AdvantageKit/Intake/CurrentAmps",
+            "/AdvantageKit/Intake/AppliedVolts",
+            "/AdvantageKit/Flywheel",
+            "/photonvision/aprilTagData/targetPose",
+            "/AdvantageKit/Intake/VelocityRadPerSec",
+            "/AdvantageKit/RealOutputs",
+            "/AdvantageKit/RealOutputs/rotFaceSpeaker",
+            "/AdvantageKit/RealOutputs/rotCurrent",
+            "/AdvantageKit/RealOutputs/speakerPostion",
+            "/AdvantageKit/RealOutputs/blueSpeaker",
+            "/AdvantageKit/RealOutputs/redSpeaker",
+            "/AdvantageKit/Intake/VelocityRPM",
+            "/AdvantageKit/Drive/Gyro/YawPosition",
+            "/AdvantageKit/RealOutputs/SwerveStates/Measured/0/angle",
+            "/AdvantageKit/RealOutputs/Turn",
+            "/AdvantageKit/RealOutputs/vectorFaceSpeaker",
+            "/PathPlanner/vel",
+            "/AdvantageKit",
+            "/PathPlanner/currentPose",
+            "/PathPlanner/targetPose",
+            "/PathPlanner/activePath",
+            "/AdvantageKit/RealOutputs/currentPathEndpoint/translation",
+            "/AdvantageKit/RealOutputs/currentPathEndpoint/rotation",
+            "/AdvantageKit/RealOutputs/ChassisSpeeds/Measured",
+            "/AdvantageKit/RealOutputs/Arm1",
+            "/AdvantageKit/Intake/PositionRot",
+            "/AdvantageKit/DriverStation/Joystick0",
+            "/AdvantageKit/DriverStation/Joystick1",
+            "/AdvantageKit/DriverStation/Joystick0/AxisTypes",
+            "/AdvantageKit/Winch{side}",
+            "/AdvantageKit/RealOutputs/Winch{side}",
+            "/AdvantageKit/RealOutputs/WinchLeft",
+            "/AdvantageKit/RealOutputs/WinchRight",
+            "/AdvantageKit/WinchLeft",
+            "/AdvantageKit/PowerDistribution",
+            "/AdvantageKit/SystemStats"
+          ]
+        },
+        "tabs": {
+          "selected": 9,
+          "tabs": [
+            {
+              "type": 0,
+              "path": "../docs/INDEX.md"
+            },
+            {
+              "type": 9,
+              "uuid": "woc1ricp5valbp2l7wj1ka70vdlfe4nz",
+              "fields": [
+                {
+                  "key": "NT:/AdvantageKit/RealOutputs/SwerveStates/Measured",
+                  "sourceTypeIndex": 1,
+                  "sourceType": "SwerveModuleState[]"
+                },
+                {
+                  "key": "NT:/AdvantageKit/RealOutputs/SwerveStates/SetpointsOptimized",
+                  "sourceTypeIndex": 1,
+                  "sourceType": "SwerveModuleState[]"
+                },
+                {
+                  "key": "NT:/AdvantageKit/RealOutputs/Odometry/Robot/rotation/value",
+                  "sourceTypeIndex": 0,
+                  "sourceType": 2
+                }
+              ],
+              "listFields": [],
+              "options": {
+                "maxSpeed": 4.5,
+                "rotationUnits": "radians",
+                "arrangement": "0,1,2,3",
+                "sizeLeftRight": 0.65,
+                "sizeFrontBack": 0.65,
+                "forwardDirection": "up"
+              },
+              "configHidden": false,
+              "visualizer": null,
+              "title": "Swerve"
+            },
+            {
+              "type": 1,
+              "legendHeight": 0.3,
+              "legends": {
+                "left": {
+                  "lockedRange": null,
+                  "unitConversion": {
+                    "type": null,
+                    "factor": 1
+                  },
+                  "fields": [
+                    {
+                      "key": "NT:/AdvantageKit/RealOutputs/ChassisSpeeds/LinearVelocity",
+                      "color": "#2b66a2",
+                      "show": true
+                    },
+                    {
+                      "key": "NT:/AdvantageKit/RealOutputs/ChassisSpeeds/Measured/vx",
+                      "color": "#e5b31b",
+                      "show": true
+                    },
+                    {
+                      "key": "NT:/AdvantageKit/RealOutputs/ChassisSpeeds/Measured/vy",
+                      "color": "#af2437",
+                      "show": true
+                    }
+                  ]
+                },
+                "discrete": {
+                  "fields": []
+                },
+                "right": {
+                  "lockedRange": null,
+                  "unitConversion": {
+                    "type": null,
+                    "factor": 1
+                  },
+                  "fields": []
+                }
+              },
+              "title": "Drive"
+            },
+            {
+              "type": 6,
+              "uuid": "wqrzecbgfs8xsxgrr4im91ojj354ho6a",
+              "fields": [],
+              "listFields": [
+                [],
+                [
+                  {
+                    "type": "Robot",
+                    "key": "NT:/AdvantageKit/RealOutputs/Odometry/Robot",
+                    "sourceTypeIndex": 1,
+                    "sourceType": "Pose2d"
+                  },
+                  {
+                    "type": "Yellow Ghost",
+                    "key": "NT:/AdvantageKit/RealOutputs/Vision/aprilTagLeft",
+                    "sourceTypeIndex": 1,
+                    "sourceType": "Pose2d"
+                  },
+                  {
+                    "type": "Red Ghost",
+                    "key": "NT:/AdvantageKit/RealOutputs/Vision/aprilTagRight",
+                    "sourceTypeIndex": 1,
+                    "sourceType": "Pose2d"
+                  },
+                  {
+                    "type": "Green Ghost",
+                    "key": "NT:/AdvantageKit/RealOutputs/Vision/aprilTagData",
+                    "sourceTypeIndex": 1,
+                    "sourceType": "Pose2d"
+                  }
+                ]
+              ],
+              "options": {
+                "field": "2024 Field",
+                "alliance": "blue",
+                "robot": "2024 KitBot",
+                "unitDistance": "meters",
+                "unitRotation": "radians"
+              },
+              "configHidden": false,
+              "visualizer": {
+                "cameraIndex": -1,
+                "orbitFov": 50,
+                "cameraPosition": [
+                  1.0649050424350726,
+                  19.8245946863942,
+                  1.5718456277110415
+                ],
+                "cameraTarget": [
+                  0.471089721612659,
+                  -11.740583465143448,
+                  1.5820865195534284
+                ]
+              },
+              "title": "3D Field"
+            },
+            {
+              "type": 1,
+              "legendHeight": 0.3,
+              "legends": {
+                "left": {
+                  "lockedRange": null,
+                  "unitConversion": {
+                    "type": null,
+                    "factor": 1
+                  },
+                  "fields": [
+                    {
+                      "key": "NT:/AdvantageKit/RealOutputs/TurnToAngle/thetaSP",
+                      "color": "#2b66a2",
+                      "show": true
+                    }
+                  ]
+                },
+                "discrete": {
+                  "fields": [
+                    {
+                      "key": "NT:/AdvantageKit/RealOutputs/TurnToAngle/atGoal",
+                      "color": "#e5b31b",
+                      "show": true
+                    },
+                    {
+                      "key": "NT:/AdvantageKit/RealOutputs/Arm/atGoal",
+                      "color": "#af2437",
+                      "show": true
+                    }
+                  ]
+                },
+                "right": {
+                  "lockedRange": null,
+                  "unitConversion": {
+                    "type": null,
+                    "factor": 1
+                  },
+                  "fields": [
+                    {
+                      "key": "NT:/AdvantageKit/RealOutputs/TurnToAngle/thetaOP",
+                      "color": "#80588e",
+                      "show": true
+                    }
+                  ]
+                }
+              },
+              "title": "TurnToAngle"
+            },
+            {
+              "type": 1,
+              "legendHeight": 0.3,
+              "legends": {
+                "left": {
+                  "lockedRange": null,
+                  "unitConversion": {
+                    "type": null,
+                    "factor": 1
+                  },
+                  "fields": [
+                    {
+                      "key": "NT:/AdvantageKit/Arm/Arm1InternalPositionRad",
+                      "color": "#2b66a2",
+                      "show": true
+                    },
+                    {
+                      "key": "NT:/AdvantageKit/RealOutputs/Arm/angleGoalRad",
+                      "color": "#e5b31b",
+                      "show": true
+                    },
+                    {
+                      "key": "NT:/AdvantageKit/RealOutputs/Arm/angleSPRad",
+                      "color": "#af2437",
+                      "show": true
+                    }
+                  ]
+                },
+                "discrete": {
+                  "fields": [
+                    {
+                      "key": "NT:/AdvantageKit/RealOutputs/Arm/atGoal",
+                      "color": "#80588e",
+                      "show": true
+                    },
+                    {
+                      "key": "NT:/AdvantageKit/RealOutputs/Arm/armIsUp",
+                      "color": "#e48b32",
+                      "show": true
+                    }
+                  ]
+                },
+                "right": {
+                  "lockedRange": null,
+                  "unitConversion": {
+                    "type": null,
+                    "factor": 1
+                  },
+                  "fields": [
+                    {
+                      "key": "NT:/AdvantageKit/Arm/Arm1AppliedVolts",
+                      "color": "#aacaee",
+                      "show": true
+                    },
+                    {
+                      "key": "NT:/AdvantageKit/RealOutputs/Arm/feedbackOP",
+                      "color": "#c0b487",
+                      "show": true
+                    },
+                    {
+                      "key": "NT:/AdvantageKit/RealOutputs/Arm/feedforwardOP",
+                      "color": "#858584",
+                      "show": true
+                    }
+                  ]
+                }
+              },
+              "title": "Arm"
+            },
+            {
+              "type": 1,
+              "legendHeight": 0.3,
+              "legends": {
+                "left": {
+                  "lockedRange": null,
+                  "unitConversion": {
+                    "type": null,
+                    "factor": 1
+                  },
+                  "fields": [
+                    {
+                      "key": "NT:/AdvantageKit/RealOutputs/Shooter/VelocityRPM",
+                      "color": "#2b66a2",
+                      "show": true
+                    }
+                  ]
+                },
+                "discrete": {
+                  "fields": []
+                },
+                "right": {
+                  "lockedRange": null,
+                  "unitConversion": {
+                    "type": null,
+                    "factor": 1
+                  },
+                  "fields": [
+                    {
+                      "key": "NT:/AdvantageKit/Shooter/AppliedVolts",
+                      "color": "#e5b31b",
+                      "show": true
+                    }
+                  ]
+                }
+              },
+              "title": "Shooter"
+            },
+            {
+              "type": 1,
+              "legendHeight": 0.3,
+              "legends": {
+                "left": {
+                  "lockedRange": null,
+                  "unitConversion": {
+                    "type": null,
+                    "factor": 1
+                  },
+                  "fields": [
+                    {
+                      "key": "NT:/AdvantageKit/Intake/VelocityRPM/0",
+                      "color": "#2b66a2",
+                      "show": true
+                    },
+                    {
+                      "key": "NT:/AdvantageKit/Intake/VelocityRPM/1",
+                      "color": "#e5b31b",
+                      "show": true
+                    }
+                  ]
+                },
+                "discrete": {
+                  "fields": []
+                },
+                "right": {
+                  "lockedRange": null,
+                  "unitConversion": {
+                    "type": null,
+                    "factor": 1
+                  },
+                  "fields": [
+                    {
+                      "key": "NT:/AdvantageKit/Intake/AppliedVolts/0",
+                      "color": "#af2437",
+                      "show": true
+                    },
+                    {
+                      "key": "NT:/AdvantageKit/Intake/AppliedVolts/1",
+                      "color": "#80588e",
+                      "show": true
+                    }
+                  ]
+                }
+              },
+              "title": "Intake"
+            },
+            {
+              "type": 1,
+              "legendHeight": 0.3,
+              "legends": {
+                "left": {
+                  "lockedRange": null,
+                  "unitConversion": {
+                    "type": null,
+                    "factor": 1
+                  },
+                  "fields": [
+                    {
+                      "key": "NT:/AdvantageKit/RealOutputs/Convey/VelocityRPM",
+                      "color": "#2b66a2",
+                      "show": true
+                    }
+                  ]
+                },
+                "discrete": {
+                  "fields": []
+                },
+                "right": {
+                  "lockedRange": null,
+                  "unitConversion": {
+                    "type": null,
+                    "factor": 1
+                  },
+                  "fields": [
+                    {
+                      "key": "NT:/AdvantageKit/Convey/AppliedVolts",
+                      "color": "#e5b31b",
+                      "show": true
+                    },
+                    {
+                      "key": "NT:/AdvantageKit/DriverStation/Joystick0/AxisValues/3",
+                      "color": "#af2437",
+                      "show": true
+                    }
+                  ]
+                }
+              },
+              "title": "Convey"
+            },
+            {
+              "type": 1,
+              "legendHeight": 0.3,
+              "legends": {
+                "left": {
+                  "lockedRange": null,
+                  "unitConversion": {
+                    "type": null,
+                    "factor": 1
+                  },
+                  "fields": [
+                    {
+                      "key": "NT:/AdvantageKit/RealOutputs/WinchLeft/heightInch",
+                      "color": "#2b66a2",
+                      "show": true
+                    },
+                    {
+                      "key": "NT:/AdvantageKit/RealOutputs/WinchLeft/heightSPInch",
+                      "color": "#e5b31b",
+                      "show": true
+                    },
+                    {
+                      "key": "NT:/AdvantageKit/RealOutputs/WinchLeft/heightGoalInch",
+                      "color": "#af2437",
+                      "show": true
+                    },
+                    {
+                      "key": "NT:/AdvantageKit/WinchLeft/CurrentAmps",
+                      "color": "#80588e",
+                      "show": true
+                    }
+                  ]
+                },
+                "discrete": {
+                  "fields": []
+                },
+                "right": {
+                  "lockedRange": null,
+                  "unitConversion": {
+                    "type": null,
+                    "factor": 1
+                  },
+                  "fields": [
+                    {
+                      "key": "NT:/AdvantageKit/RealOutputs/WinchLeft/motorVolts",
+                      "color": "#e48b32",
+                      "show": true
+                    },
+                    {
+                      "key": "NT:/AdvantageKit/RealOutputs/WinchLeft/feedbackOP",
+                      "color": "#aacaee",
+                      "show": true
+                    },
+                    {
+                      "key": "NT:/AdvantageKit/RealOutputs/WinchLeft/feedforwardOP",
+                      "color": "#c0b487",
+                      "show": true
+                    }
+                  ]
+                }
+              },
+              "title": "WinchLeft"
+            },
+            {
+              "type": 1,
+              "legendHeight": 0.3,
+              "legends": {
+                "left": {
+                  "lockedRange": null,
+                  "unitConversion": {
+                    "type": null,
+                    "factor": 1
+                  },
+                  "fields": [
+                    {
+                      "key": "NT:/AdvantageKit/RealOutputs/WinchRight/heightInch",
+                      "color": "#2b66a2",
+                      "show": true
+                    },
+                    {
+                      "key": "NT:/AdvantageKit/RealOutputs/WinchRight/heightSPInch",
+                      "color": "#e5b31b",
+                      "show": true
+                    },
+                    {
+                      "key": "NT:/AdvantageKit/RealOutputs/WinchRight/heightGoalInch",
+                      "color": "#af2437",
+                      "show": true
+                    },
+                    {
+                      "key": "NT:/AdvantageKit/WinchLeft/CurrentAmps",
+                      "color": "#80588e",
+                      "show": true
+                    }
+                  ]
+                },
+                "discrete": {
+                  "fields": []
+                },
+                "right": {
+                  "lockedRange": null,
+                  "unitConversion": {
+                    "type": null,
+                    "factor": 1
+                  },
+                  "fields": [
+                    {
+                      "key": "NT:/AdvantageKit/RealOutputs/WinchRight/motorVolts",
+                      "color": "#e48b32",
+                      "show": true
+                    },
+                    {
+                      "key": "NT:/AdvantageKit/RealOutputs/WinchRight/feedbackOP",
+                      "color": "#aacaee",
+                      "show": true
+                    },
+                    {
+                      "key": "NT:/AdvantageKit/RealOutputs/WinchRight/feedforwardOP",
+                      "color": "#c0b487",
+                      "show": true
+                    }
+                  ]
+                }
+              },
+              "title": "WinchRight"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "satellites": [],
+  "version": "3.2.1"
+}

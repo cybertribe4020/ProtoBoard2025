@@ -36,6 +36,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.ShooterConstants;
+import frc.robot.Constants.WinchConstants;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.DriveToPoseCommand;
 import frc.robot.commands.DriveWithTargetingCommand;
@@ -243,10 +244,28 @@ public class RobotContainer {
                         new InstantCommand(() -> winchRight.setGoalInch(0.0), winchRight))));
 
     // A button
+    // Test running the winches to the starting point (8.34 inches)
+    controller
+        .a()
+        .onTrue(
+            Commands.parallel(
+                    // Run at the slow extension rate for testing
+                    new InstantCommand(() -> winchLeft.winchTuning(false), winchLeft),
+                    new InstantCommand(() -> winchRight.winchTuning(false), winchRight))
+                .andThen(
+                    Commands.parallel(
+                        new InstantCommand(
+                            () -> winchLeft.setGoalInch(WinchConstants.WINCH_START_HEIGHT_IN),
+                            winchLeft),
+                        new InstantCommand(
+                            () -> winchRight.setGoalInch(WinchConstants.WINCH_START_HEIGHT_IN),
+                            winchRight))));
+
+    // B button
     // Test running the winches to the 26 inch point
     // mostly retracted all the way to the frame
     controller
-        .a()
+        .b()
         .onTrue(
             Commands.parallel(
                     // Tuning for climbing has more load and moves more quickly
@@ -257,7 +276,7 @@ public class RobotContainer {
                         new InstantCommand(() -> winchLeft.setGoalInch(26.0), winchLeft),
                         new InstantCommand(() -> winchRight.setGoalInch(26.0), winchRight))));
 
-    // B button
+    /* // B button
     //
     controller
         .b()
@@ -267,7 +286,7 @@ public class RobotContainer {
                         drive.setPose(
                             new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
                     drive)
-                .ignoringDisable(true));
+                .ignoringDisable(true)); */
 
     // Right Bumper
     // Run the intake and conveyor
