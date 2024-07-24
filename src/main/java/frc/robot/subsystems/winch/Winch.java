@@ -57,7 +57,7 @@ public class Winch extends SubsystemBase {
         ffModel = new ElevatorFeedforward(0.0, 0.0, 0.87, 0.0);
         pid =
             new ProfiledPIDController(
-                20.0,
+                10.0,
                 0.0,
                 0.0,
                 new TrapezoidProfile.Constraints(
@@ -68,7 +68,7 @@ public class Winch extends SubsystemBase {
         ffModel = new ElevatorFeedforward(0.0, 0.0, 0.87, 0.0);
         pid =
             new ProfiledPIDController(
-                20.0,
+                10.0,
                 0.0,
                 0.0,
                 new TrapezoidProfile.Constraints(
@@ -79,7 +79,7 @@ public class Winch extends SubsystemBase {
         ffModel = new ElevatorFeedforward(0.0, 0.0, 0.87, 0.0);
         pid =
             new ProfiledPIDController(
-                20.0,
+                10.0,
                 0.0,
                 0.0,
                 new TrapezoidProfile.Constraints(

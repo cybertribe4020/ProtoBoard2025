@@ -112,8 +112,8 @@ public class RobotContainer {
         intake = new Intake(new IntakeIOSparkMax());
         convey = new Convey(new ConveyIOSparkMax());
         arm = new Arm1(new Arm1IOSparkFlex());
-        winchLeft = new Winch(new WinchIOSparkMax(30, true), "Left");
-        winchRight = new Winch(new WinchIOSparkMax(31, false), "Right");
+        winchLeft = new Winch(new WinchIOSparkMax(30, false), "Left");
+        winchRight = new Winch(new WinchIOSparkMax(31, true), "Right");
         break;
 
       case SIM:
@@ -273,8 +273,8 @@ public class RobotContainer {
                     new InstantCommand(() -> winchRight.winchTuning(true), winchRight))
                 .andThen(
                     Commands.parallel(
-                        new InstantCommand(() -> winchLeft.setGoalInch(26.0), winchLeft),
-                        new InstantCommand(() -> winchRight.setGoalInch(26.0), winchRight))));
+                        new InstantCommand(() -> winchLeft.setGoalInch(25.5), winchLeft),
+                        new InstantCommand(() -> winchRight.setGoalInch(25.5), winchRight))));
 
     /* // B button
     //

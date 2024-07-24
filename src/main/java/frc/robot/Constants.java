@@ -169,7 +169,7 @@ public final class Constants {
         117.0 / 2.0; // each winch gets 1/2 the total robot weight
     public static final double WINCH_SPOOL_DIA_IN = 1.125;
     public static final double WINCH_MIN_HEIGHT_IN = 0.0;
-    public static final double WINCH_MAX_HEIGHT_IN = 26.85;
+    public static final double WINCH_MAX_HEIGHT_IN = 26.0;
     public static final double WINCH_START_HEIGHT_IN = 8.34;
     public static final int WINCH_CURRENT_LIMIT = 30;
     public static final double WINCH_HEIGHT_TOLERANCE_IN = 0.2;
