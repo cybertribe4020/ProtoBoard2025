@@ -38,6 +38,7 @@ import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Time;
 import edu.wpi.first.units.Velocity;
 import edu.wpi.first.units.Voltage;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -76,6 +77,8 @@ public class Drive extends SubsystemBase {
           VisionConstants.STD_DEVS_ODOMETRY,
           VisionConstants.STD_DEVS_VISION_DEFAULT);
 
+  private final DigitalInput stageSensor = new DigitalInput(8);
+
   public boolean isUsingVision = true;
   public boolean driveFieldCentric = true;
 
@@ -83,6 +86,7 @@ public class Drive extends SubsystemBase {
   private Translation2d vectorFaceSpeaker;
   private Translation2d lobTarget;
   private Translation2d vectorForLob;
+  private Translation2d referencePoint = new Translation2d(0, 0);
 
   public Pose2d currentPathEndpoint;
 
@@ -365,6 +369,20 @@ public class Drive extends SubsystemBase {
       return MathUtil.angleModulus(
           (flippedRotation * ShooterConstants.ANGLE_BIAS_MULTIPLIER) - Math.PI);
     }
+  }
+
+  // The stage sensor reads True with clear space overhead and False when it is under the stage
+  @AutoLogOutput
+  public boolean underStage() {
+    return !stageSensor.get();
+  }
+
+  public double getDistFromPointM() {
+    return getPose().getTranslation().minus(referencePoint).getNorm();
+  }
+
+  public void setReferencePoint() {
+    referencePoint = getPose().getTranslation();
   }
 
   /** Returns the maximum linear speed in meters per sec. */

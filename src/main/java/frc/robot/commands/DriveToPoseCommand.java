@@ -42,11 +42,14 @@ public class DriveToPoseCommand extends Command {
 
   private final Drive drive;
   private final Supplier<Pose2d> poseProvider;
-  private final Pose2d goalPose;
+  private final Supplier<Pose2d> goalPose;
   private final boolean useAllianceColor;
 
   public DriveToPoseCommand(
-      Drive drive, Supplier<Pose2d> poseProvider, Pose2d goalPose, boolean useAllianceColor) {
+      Drive drive,
+      Supplier<Pose2d> poseProvider,
+      Supplier<Pose2d> goalPose,
+      boolean useAllianceColor) {
     this(
         drive,
         poseProvider,
@@ -59,7 +62,7 @@ public class DriveToPoseCommand extends Command {
   public DriveToPoseCommand(
       Drive drive,
       Supplier<Pose2d> poseProvider,
-      Pose2d goalPose,
+      Supplier<Pose2d> goalPose,
       TrapezoidProfile.Constraints xyConstraints,
       TrapezoidProfile.Constraints omegaConstraints,
       boolean useAllianceColor) {
@@ -81,7 +84,7 @@ public class DriveToPoseCommand extends Command {
 
   public void initialize() {
     resetPIDControllers();
-    var pose = goalPose;
+    var pose = goalPose.get();
 
     // If red alliance and we are asking to flip a blue (default) pose
     // to red when on the red alliance, then flip the pose

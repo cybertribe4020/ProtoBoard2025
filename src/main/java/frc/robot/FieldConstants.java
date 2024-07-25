@@ -70,20 +70,11 @@ public class FieldConstants {
     RIGHT(12, 16),
     LEFT(11, 15),
     MIDDLE(13, 14);
-    private int tagIdRed, tagIdBlue;
+    public int tagIdRed, tagIdBlue;
 
     StageLocation(int red, int blue) {
       this.tagIdBlue = blue;
       this.tagIdRed = red;
     }
-  }
-
-  public static Pose2d getStagePose(StageLocation stage) {
-    int tagId = shouldFlip() ? stage.tagIdRed : stage.tagIdBlue;
-    Pose2d tagPose =
-        AprilTagFields.k2024Crescendo.loadAprilTagLayoutField().getTagPose(tagId).get().toPose2d();
-    Transform2d offset =
-        new Transform2d(new Translation2d(Units.inchesToMeters(18), 0), Rotation2d.fromDegrees(0));
-    return tagPose.plus(offset);
   }
 }

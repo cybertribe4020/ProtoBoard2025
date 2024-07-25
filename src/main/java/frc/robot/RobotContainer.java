@@ -16,8 +16,11 @@ package frc.robot;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.path.PathConstraints;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -28,6 +31,7 @@ import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -36,7 +40,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.ShooterConstants;
-import frc.robot.Constants.WinchConstants;
+import frc.robot.FieldConstants.StageLocation;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.DriveToPoseCommand;
 import frc.robot.commands.DriveWithTargetingCommand;
@@ -243,7 +247,7 @@ public class RobotContainer {
                         new InstantCommand(() -> winchLeft.setGoalInch(0.0), winchLeft),
                         new InstantCommand(() -> winchRight.setGoalInch(0.0), winchRight))));
 
-    // A button
+    /* // A button
     // Test running the winches to the starting point (8.34 inches)
     controller
         .a()
@@ -259,10 +263,48 @@ public class RobotContainer {
                             winchLeft),
                         new InstantCommand(
                             () -> winchRight.setGoalInch(WinchConstants.WINCH_START_HEIGHT_IN),
-                            winchRight))));
+                            winchRight)))); */
+
+    // A button
+    // Drive to the climb start location in front of stage left
+    // Will avoid stage trusses with PathPlanner
+    // Note that pathfindToPoseFlipped could not be used becuase stage left is
+    // rotationally symmetric about the field center, not "flipped"
+    // about the center line
+    // When done driving, put robot in robot-centric drive mode to enable sideways adjustment
+    controller
+        .a()
+        .whileTrue(
+            Commands.either(
+                    AutoBuilder.pathfindToPose(
+                        getStagePose(FieldConstants.StageLocation.LEFT, false, 44.0),
+                        new PathConstraints(
+                            3.0, 4.0, Units.degreesToRadians(540), Units.degreesToRadians(720)),
+                        0.0,
+                        0.0),
+                    AutoBuilder.pathfindToPose(
+                        getStagePose(FieldConstants.StageLocation.LEFT, true, 44.0),
+                        new PathConstraints(
+                            3.0, 4.0, Units.degreesToRadians(540), Units.degreesToRadians(720)),
+                        0.0,
+                        0.0),
+                    FieldConstants::isBlue)
+                .andThen(
+                    new DriveToPoseCommand(
+                        drive,
+                        drive::getPose, // could also use () -> drive.getPose()
+                        () ->
+                            getStagePose(
+                                FieldConstants.StageLocation.LEFT, !FieldConstants.isBlue(), 44.0),
+                        false))
+                .andThen(new InstantCommand(() -> drive.driveFieldCentric = false, drive)));
 
     // B button
-    // Test running the winches to the 26 inch point
+    // Climb sequence
+    controller.b().toggleOnTrue(ClimbCommand());
+
+    /* // B button
+    // Test running the winches to the 25.5 inch point
     // mostly retracted all the way to the frame
     controller
         .b()
@@ -274,7 +316,7 @@ public class RobotContainer {
                 .andThen(
                     Commands.parallel(
                         new InstantCommand(() -> winchLeft.setGoalInch(25.5), winchLeft),
-                        new InstantCommand(() -> winchRight.setGoalInch(25.5), winchRight))));
+                        new InstantCommand(() -> winchRight.setGoalInch(25.5), winchRight)))); */
 
     /* // B button
     //
@@ -358,7 +400,7 @@ public class RobotContainer {
             new DriveToPoseCommand(
                     drive,
                     drive::getPose, // could also use () -> drive.getPose()
-                    new Pose2d(1.82, 7.49, Rotation2d.fromDegrees(270.0)),
+                    () -> new Pose2d(1.82, 7.49, Rotation2d.fromDegrees(270.0)),
                     true)
                 .alongWith(prepareForAmpCommand()));
 
@@ -379,7 +421,7 @@ public class RobotContainer {
                     new DriveToPoseCommand(
                         drive,
                         drive::getPose, // could also use () -> drive.getPose()
-                        new Pose2d(12.6, 2.4, Rotation2d.fromDegrees(300.0)),
+                        () -> new Pose2d(12.6, 2.4, Rotation2d.fromDegrees(300.0)),
                         false)));
 
     // Back button
@@ -403,6 +445,17 @@ public class RobotContainer {
         .rightStick()
         .onTrue(
             Commands.runOnce(() -> drive.driveFieldCentric = true, drive).ignoringDisable(true));
+  }
+
+  // Compute the pose where the robot should start a climb sequence
+  public Pose2d getStagePose(StageLocation stage, boolean isRedAlliance, double offsetInches) {
+    int tagId = isRedAlliance ? stage.tagIdRed : stage.tagIdBlue;
+    Pose2d tagPose =
+        AprilTagFields.k2024Crescendo.loadAprilTagLayoutField().getTagPose(tagId).get().toPose2d();
+    Transform2d offset =
+        new Transform2d(
+            new Translation2d(Units.inchesToMeters(offsetInches), 0), Rotation2d.fromDegrees(0));
+    return tagPose.plus(offset);
   }
 
   /**
@@ -573,6 +626,26 @@ public class RobotContainer {
             // Lower the arm to the loading angle - do not wait for it to finish
             // This overall command can finish immediately and the robot can get back to driving
             new InstantCommand(() -> arm.setGoalDeg(ArmConstants.ARM_LOAD_ANGLE_DEG))));
+  }
+
+  public Command ClimbCommand() {
+    return new SequentialCommandGroup(
+        new ParallelCommandGroup(
+            new InstantCommand(intake::stop),
+            new InstantCommand(drive::setReferencePoint),
+            new InstantCommand(() -> drive.isUsingVision = false)),
+        // drive to clear chain before starting to look for the stage
+        new ParallelDeadlineGroup(
+            new WaitUntilCommand(() -> drive.getDistFromPointM() > 0.61),
+            DriveCommands.driveByValues(drive, -0.19, 0.0, 0.0, () -> false)),
+        // drive until sensing the stage
+        new ParallelDeadlineGroup(
+            new WaitUntilCommand(
+                () ->
+                    drive.underStage()
+                        || (Constants.currentMode == Constants.Mode.SIM
+                            && drive.getDistFromPointM() > 0.76)),
+            DriveCommands.driveByValues(drive, -0.19, 0.0, 0.0, () -> false)));
   }
 
   public void disableInitialize() {
