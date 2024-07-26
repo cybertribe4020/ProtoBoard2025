@@ -30,6 +30,9 @@ public interface ShooterIO {
   /** Run open loop at the specified voltage. */
   public default void setVoltage(double volts) {}
 
+  /** Run open loop at the specified voltage per axle. */
+  public default void setVoltageSeparate(double voltsTop, double voltsBottom) {}
+
   /** Run closed loop at the specified velocity. */
   public default void setVelocity(double velocityRadPerSec, double ffVolts) {}
 

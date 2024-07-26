@@ -173,7 +173,7 @@ public final class Constants {
     public static final double WINCH_START_HEIGHT_IN = 8.34;
     public static final int WINCH_CURRENT_LIMIT = 30;
     public static final double WINCH_HEIGHT_TOLERANCE_IN = 0.2;
-    public static final double WINCH_VELOCITY_CLIMB_IPS = 10.0;
+    public static final double WINCH_VELOCITY_CLIMB_IPS = 4.0;
     public static final double WINCH_ACCEL_CLIMB_IPS2 = 40.0;
     public static final double WINCH_VELOCITY_EXTEND_IPS = 5.0;
     public static final double WINCH_ACCEL_EXTEND_IPS2 = 40.0;
