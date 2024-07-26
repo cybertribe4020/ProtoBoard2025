@@ -378,7 +378,9 @@ public class Drive extends SubsystemBase {
   }
 
   public double getDistFromPointM() {
-    return getPose().getTranslation().minus(referencePoint).getNorm();
+    var distance = getPose().getTranslation().minus(referencePoint).getNorm();
+    Logger.recordOutput("Drive/distFromRef", distance);
+    return distance;
   }
 
   public void setReferencePoint() {

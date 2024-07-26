@@ -21,6 +21,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -32,6 +33,7 @@ import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -628,6 +630,13 @@ public class RobotContainer {
             new InstantCommand(() -> arm.setGoalDeg(ArmConstants.ARM_LOAD_ANGLE_DEG))));
   }
 
+  public static final InterpolatingDoubleTreeMap CLIMB_MAP = new InterpolatingDoubleTreeMap();
+
+  static {
+    CLIMB_MAP.put(Units.feetToMeters(0.0), 23.0);
+    CLIMB_MAP.put(Units.feetToMeters(1.33), 63.0);
+  }
+
   public Command ClimbCommand() {
     return new SequentialCommandGroup(
         new ParallelCommandGroup(
@@ -644,8 +653,55 @@ public class RobotContainer {
                 () ->
                     drive.underStage()
                         || (Constants.currentMode == Constants.Mode.SIM
-                            && drive.getDistFromPointM() > 0.76)),
-            DriveCommands.driveByValues(drive, -0.19, 0.0, 0.0, () -> false)));
+                            && drive.getDistFromPointM() > 1.0)),
+            DriveCommands.driveByValues(drive, -0.19, 0.0, 0.0, () -> false)),
+        // reset reference point for drive-out
+        // tuck Note into shooter and raise arm to pre-drive angle
+        new ParallelDeadlineGroup(
+            new WaitUntilCommand(() -> arm.atGoal()),
+            new InstantCommand(drive::stop),
+            new InstantCommand(() -> convey.runVolts(1.2)),
+            new InstantCommand(() -> arm.setGoalDeg(23.0))),
+        new InstantCommand(drive::setReferencePoint),
+        // drive out step 1 and raise arm on the distance curve
+        // raise the hooks
+        new ParallelDeadlineGroup(
+            new WaitUntilCommand(() -> drive.getDistFromPointM() > 0.15),
+            new InstantCommand(() -> convey.runVolts(0.0)),
+            DriveCommands.driveByValues(drive, 0.1, 0.0, 0.0, () -> false),
+            new InstantCommand(() -> winchLeft.setGoalInch(0.0)),
+            new InstantCommand(() -> winchRight.setGoalInch(0.0)),
+            new RunCommand(() -> arm.setGoalDeg(CLIMB_MAP.get(drive.getDistFromPointM())))),
+        // continue to drive out a little slower while raising the arm on the curve
+        new ParallelDeadlineGroup(
+            new WaitUntilCommand(() -> drive.getDistFromPointM() > 0.41),
+            DriveCommands.driveByValues(drive, 0.09, 0.0, 0.0, () -> false),
+            new RunCommand(() -> arm.setGoalDeg(CLIMB_MAP.get(drive.getDistFromPointM())))),
+        // if hooks are not yet fully up, give time for that to complete
+        new ParallelDeadlineGroup(
+            new WaitUntilCommand(() -> (winchLeft.atGoal() && winchRight.atGoal())),
+            new InstantCommand(drive::stop)),
+        // drive far enough to latch hooks on chain and pull them off the uprights
+        // also raise the arm to the final position for shooting in the trap
+        new ParallelDeadlineGroup(
+            new WaitUntilCommand(() -> drive.getDistFromPointM() > 0.69),
+            DriveCommands.driveByValues(drive, 0.15, 0.0, 0.0, () -> false),
+            new InstantCommand(() -> arm.setGoalDeg(93.0))),
+        // climb by retracting both winches
+        new ParallelCommandGroup(
+            new InstantCommand(drive::stop),
+            new FunctionalCommand(
+                () -> winchLeft.setGoalInch(25.5),
+                () -> {},
+                (interrupted) -> {},
+                () -> winchLeft.atGoal(),
+                winchLeft),
+            new FunctionalCommand(
+                () -> winchRight.setGoalInch(25.5),
+                () -> {},
+                (interrupted) -> {},
+                () -> winchRight.atGoal(),
+                winchRight)));
   }
 
   public void disableInitialize() {
