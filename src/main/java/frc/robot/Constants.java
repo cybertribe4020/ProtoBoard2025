@@ -159,6 +159,11 @@ public final class Constants {
     // External encoder reading in degrees when the arm is parallel to the floor
     public static final double ARM_ENCODER_OFFSET_DEG = 187.0;
 
+    public static final double OUTRIGGER_LEFT_UP = 0.0;
+    public static final double OUTRIGGER_LEFT_DOWN = 1.0;
+    public static final double OUTRIGGER_RIGHT_UP = 0.05;
+    public static final double OUTRIGGER_RIGHT_DOWN = 0.97;
+
     private ArmConstants() {}
   }
 

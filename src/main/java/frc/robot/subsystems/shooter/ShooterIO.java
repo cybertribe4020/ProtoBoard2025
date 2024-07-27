@@ -18,10 +18,14 @@ import org.littletonrobotics.junction.AutoLog;
 public interface ShooterIO {
   @AutoLog
   public static class ShooterIOInputs {
-    public double positionRad = 0.0;
-    public double velocityRadPerSec = 0.0;
-    public double appliedVolts = 0.0;
-    public double[] currentAmps = new double[] {};
+    public double positionLowerRad = 0.0;
+    public double velocityLowerRadPerSec = 0.0;
+    public double appliedVoltsLower = 0.0;
+    public double currentAmpsLower = 0.0;
+    public double positionUpperRad = 0.0;
+    public double velocityUpperRadPerSec = 0.0;
+    public double appliedVoltsUpper = 0.0;
+    public double currentAmpsUpper = 0.0;
   }
 
   /** Updates the set of loggable inputs. */
@@ -31,7 +35,7 @@ public interface ShooterIO {
   public default void setVoltage(double volts) {}
 
   /** Run open loop at the specified voltage per axle. */
-  public default void setVoltageSeparate(double voltsTop, double voltsBottom) {}
+  public default void setVoltageEach(double voltsLower, double voltsUpper) {}
 
   /** Run closed loop at the specified velocity. */
   public default void setVelocity(double velocityRadPerSec, double ffVolts) {}

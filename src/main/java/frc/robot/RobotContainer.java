@@ -234,7 +234,7 @@ public class RobotContainer {
     // Stop the drivetrain and turn the wheels to an X position
     // controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
-    // X button
+    /* // X button
     // Test running the winches to the 0 inch point
     // fully extended to catch the chain
     controller
@@ -247,7 +247,11 @@ public class RobotContainer {
                 .andThen(
                     Commands.parallel(
                         new InstantCommand(() -> winchLeft.setGoalInch(0.0), winchLeft),
-                        new InstantCommand(() -> winchRight.setGoalInch(0.0), winchRight))));
+                        new InstantCommand(() -> winchRight.setGoalInch(0.0), winchRight)))); */
+
+    // X button
+    // reserved for manual shooting into the trap
+    // command is part of the climbing sequence
 
     /* // A button
     // Test running the winches to the starting point (8.34 inches)
@@ -681,6 +685,11 @@ public class RobotContainer {
             // speed was 0.09 for comp bot
             DriveCommands.driveByValues(drive, 0.05, 0.0, 0.0, () -> false),
             new RunCommand(() -> arm.setGoalDeg(CLIMB_MAP.get(drive.getDistFromPointM())))),
+        // start lowering the outriggers - servo internal controller handles the lowering
+        new InstantCommand(
+            () ->
+                arm.setOutriggerPos(
+                    ArmConstants.OUTRIGGER_LEFT_DOWN, ArmConstants.OUTRIGGER_RIGHT_DOWN)),
         // if hooks are not yet fully up, give time for that to complete
         new ParallelDeadlineGroup(
             new WaitUntilCommand(() -> (winchLeft.atGoal() && winchRight.atGoal())),
@@ -695,20 +704,33 @@ public class RobotContainer {
             new InstantCommand(() -> winchLeft.winchTuning(true), winchLeft),
             new InstantCommand(() -> winchRight.winchTuning(true), winchRight)),
         // climb by retracting both winches
+        // in case something happens with the rope winding and the climbers cannot get to goal
+        // use the X button to finish this group and move on to the shooting commands
         new ParallelCommandGroup(
             new InstantCommand(drive::stop),
             new FunctionalCommand(
                 () -> winchLeft.setGoalInch(25.5),
                 () -> {},
                 (interrupted) -> {},
-                () -> winchLeft.atGoal(),
+                () -> (winchLeft.atGoal() || controller.x().getAsBoolean()),
                 winchLeft),
             new FunctionalCommand(
                 () -> winchRight.setGoalInch(25.5),
                 () -> {},
                 (interrupted) -> {},
-                () -> winchRight.atGoal(),
-                winchRight)));
+                () -> (winchRight.atGoal() || controller.x().getAsBoolean()),
+                winchRight)),
+        // pass 1 at depositing note
+        // run convey and run shooter at 50% top, -5% bottom
+        // run this for 1/2 second
+        new ParallelDeadlineGroup(
+            new WaitCommand(0.5),
+            new InstantCommand(() -> convey.runVolts(4.5)),
+            new InstantCommand(() -> shooter.runVoltsEach(-0.6, 6.0))),
+        // pass 2 at depositing note
+        // in case pass 1 did not eject Note, run lower shooter axle at 20% forward
+        // conveyor and shooter will keep running until FMS disables at end of match
+        new InstantCommand(() -> shooter.runVoltsEach(2.4, 6.0)));
   }
 
   public void disableInitialize() {

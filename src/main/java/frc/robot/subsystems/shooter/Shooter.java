@@ -76,6 +76,11 @@ public class Shooter extends SubsystemBase {
     io.setVoltage(volts);
   }
 
+  /** Run open loop at the specified voltage for each axle separately. */
+  public void runVoltsEach(double voltsLower, double voltsUpper) {
+    io.setVoltageEach(voltsLower, voltsUpper);
+  }
+
   /** Run closed loop at the specified velocity. */
   public void runVelocity(double velocityRPM) {
     var velocityRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(velocityRPM);
@@ -102,17 +107,23 @@ public class Shooter extends SubsystemBase {
 
   /** Returns the current velocity in RPM. */
   @AutoLogOutput
-  public double getVelocityRPM() {
-    return Units.radiansPerSecondToRotationsPerMinute(inputs.velocityRadPerSec);
+  public double getVelocityLowerRPM() {
+    return Units.radiansPerSecondToRotationsPerMinute(inputs.velocityLowerRadPerSec);
+  }
+
+  /** Returns the current velocity in RPM. */
+  @AutoLogOutput
+  public double getVelocityUpperRPM() {
+    return Units.radiansPerSecondToRotationsPerMinute(inputs.velocityUpperRadPerSec);
   }
 
   /** Returns the current velocity in radians per second. */
   public double getCharacterizationVelocity() {
-    return inputs.velocityRadPerSec;
+    return inputs.velocityLowerRadPerSec;
   }
 
   // Define the shooter to be running if it is 500 rpm or more
   public boolean shooterIsRunning() {
-    return getVelocityRPM() >= 500.0;
+    return getVelocityUpperRPM() >= 500.0;
   }
 }

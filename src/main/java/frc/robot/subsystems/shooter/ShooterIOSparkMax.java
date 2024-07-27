@@ -24,51 +24,75 @@ import edu.wpi.first.math.util.Units;
 public class ShooterIOSparkMax implements ShooterIO {
   private static final double GEAR_RATIO = 1.0; // this is the gear reduction (driven/driving)
 
-  // motor on the lower shooter axle is CAN 20 and set as the leader here
-  // motor on the upper shooter axle is CAN 21 and set as the follower
-  private final CANSparkMax leader = new CANSparkMax(20, MotorType.kBrushless);
-  private final CANSparkMax follower = new CANSparkMax(21, MotorType.kBrushless);
-  private final RelativeEncoder encoder = leader.getEncoder();
-  private final SparkPIDController pid = leader.getPIDController();
+  // motor on the lower shooter axle is CAN 20 and set as the lower here
+  // motor on the upper shooter axle is CAN 21 and set as the upper
+  private final CANSparkMax lower = new CANSparkMax(20, MotorType.kBrushless);
+  private final CANSparkMax upper = new CANSparkMax(21, MotorType.kBrushless);
+  private final RelativeEncoder encoderLower = lower.getEncoder();
+  private final RelativeEncoder encoderUpper = upper.getEncoder();
+  private final SparkPIDController pidLower = lower.getPIDController();
+  private final SparkPIDController pidUpper = lower.getPIDController();
 
   public ShooterIOSparkMax() {
-    leader.restoreFactoryDefaults();
-    follower.restoreFactoryDefaults();
-    leader.setCANTimeout(250);
-    follower.setCANTimeout(250);
-    follower.follow(leader, false);
-    leader.setInverted(false);
-    leader.enableVoltageCompensation(12.0);
-    leader.setSmartCurrentLimit(30);
+    lower.restoreFactoryDefaults();
+    upper.restoreFactoryDefaults();
+    lower.setCANTimeout(250);
+    upper.setCANTimeout(250);
+    lower.setInverted(false);
+    upper.setInverted(false);
+    lower.enableVoltageCompensation(12.0);
+    upper.enableVoltageCompensation(12.0);
+    lower.setSmartCurrentLimit(30);
+    upper.setSmartCurrentLimit(30);
 
     // for velocity control with low inertia, reduce the encoder sensor filtering
     // default filter values add so much effective dead time that P control is almost impossible
-    encoder.setMeasurementPeriod(16);
-    encoder.setAverageDepth(2);
+    encoderLower.setMeasurementPeriod(16);
+    encoderLower.setAverageDepth(2);
+    encoderUpper.setMeasurementPeriod(16);
+    encoderUpper.setAverageDepth(2);
 
-    leader.setCANTimeout(0);
-    follower.setCANTimeout(0);
-    leader.burnFlash();
-    follower.burnFlash();
+    lower.setCANTimeout(0);
+    upper.setCANTimeout(0);
+    lower.burnFlash();
+    upper.burnFlash();
   }
 
   @Override
   public void updateInputs(ShooterIOInputs inputs) {
-    inputs.positionRad = Units.rotationsToRadians(encoder.getPosition() / GEAR_RATIO);
-    inputs.velocityRadPerSec =
-        Units.rotationsPerMinuteToRadiansPerSecond(encoder.getVelocity() / GEAR_RATIO);
-    inputs.appliedVolts = leader.getAppliedOutput() * leader.getBusVoltage();
-    inputs.currentAmps = new double[] {leader.getOutputCurrent(), follower.getOutputCurrent()};
+    inputs.positionLowerRad = Units.rotationsToRadians(encoderLower.getPosition() / GEAR_RATIO);
+    inputs.velocityLowerRadPerSec =
+        Units.rotationsPerMinuteToRadiansPerSecond(encoderLower.getVelocity() / GEAR_RATIO);
+    inputs.appliedVoltsLower = lower.getAppliedOutput() * lower.getBusVoltage();
+    inputs.currentAmpsLower = lower.getOutputCurrent();
+    inputs.positionUpperRad = Units.rotationsToRadians(encoderUpper.getPosition() / GEAR_RATIO);
+    inputs.velocityUpperRadPerSec =
+        Units.rotationsPerMinuteToRadiansPerSecond(encoderUpper.getVelocity() / GEAR_RATIO);
+    inputs.appliedVoltsUpper = upper.getAppliedOutput() * upper.getBusVoltage();
+    inputs.currentAmpsLower = upper.getOutputCurrent();
   }
 
   @Override
   public void setVoltage(double volts) {
-    leader.setVoltage(volts);
+    lower.setVoltage(volts);
+    upper.setVoltage(volts);
+  }
+
+  @Override
+  public void setVoltageEach(double voltsLower, double voltsUpper) {
+    lower.setVoltage(voltsLower);
+    upper.setVoltage(voltsUpper);
   }
 
   @Override
   public void setVelocity(double velocityRadPerSec, double ffVolts) {
-    pid.setReference(
+    pidLower.setReference(
+        Units.radiansPerSecondToRotationsPerMinute(velocityRadPerSec) * GEAR_RATIO,
+        ControlType.kVelocity,
+        0,
+        ffVolts,
+        ArbFFUnits.kVoltage);
+    pidUpper.setReference(
         Units.radiansPerSecondToRotationsPerMinute(velocityRadPerSec) * GEAR_RATIO,
         ControlType.kVelocity,
         0,
@@ -78,14 +102,19 @@ public class ShooterIOSparkMax implements ShooterIO {
 
   @Override
   public void stop() {
-    leader.stopMotor();
+    lower.stopMotor();
+    upper.stopMotor();
   }
 
   @Override
   public void configurePID(double kP, double kI, double kD) {
-    pid.setP(kP, 0);
-    pid.setI(kI, 0);
-    pid.setD(kD, 0);
-    pid.setFF(0, 0);
+    pidLower.setP(kP, 0);
+    pidLower.setI(kI, 0);
+    pidLower.setD(kD, 0);
+    pidLower.setFF(0, 0);
+    pidUpper.setP(kP, 0);
+    pidUpper.setI(kI, 0);
+    pidUpper.setD(kD, 0);
+    pidUpper.setFF(0, 0);
   }
 }

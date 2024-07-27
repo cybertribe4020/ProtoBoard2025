@@ -18,6 +18,7 @@ import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
@@ -37,6 +38,8 @@ public class Arm1 extends SubsystemBase {
   private final Arm1IOInputsAutoLogged inputs = new Arm1IOInputsAutoLogged();
   private final ArmFeedforward ffModel;
   private final ProfiledPIDController pid;
+  private final Servo outriggerLeft = new Servo(0);
+  private final Servo outriggerRight = new Servo(1);
   private Double pidOutput;
   private Double feedforwardOutput;
   private Double angleGoalRad = Units.degreesToRadians(ArmConstants.ARM_LOAD_ANGLE_DEG);
@@ -59,6 +62,12 @@ public class Arm1 extends SubsystemBase {
   /** Creates a new Arm. */
   public Arm1(Arm1IO io) {
     this.io = io;
+
+    // set pulse durations for servo range
+    // 1000 us = fully retracted
+    // 2000 us = fully extended
+    outriggerLeft.setBoundsMicroseconds(2000, 1500, 1500, 1500, 1000);
+    outriggerRight.setBoundsMicroseconds(2000, 1500, 1500, 1500, 1000);
 
     // Put Mechanism 2d to SmartDashboard
     SmartDashboard.putData("Arm Sim", mech2d);
@@ -160,6 +169,14 @@ public class Arm1 extends SubsystemBase {
   // Tolerance is set separately with ARM_ANGLE_TOLERANCE_DEG.
   public boolean atGoal() {
     return pid.atGoal();
+  }
+
+  // Set outriggers to desired fraction of full extension
+  // 0 = fully retracted
+  // 1 = fully extended
+  public void setOutriggerPos(double fracExtendLeft, double fracExtendRight) {
+    outriggerLeft.set(MathUtil.clamp(fracExtendLeft, 0.0, 1.0));
+    outriggerRight.set(MathUtil.clamp(fracExtendRight, 0.0, 1.0));
   }
 
   // Move the arm to the stow/loading position.
