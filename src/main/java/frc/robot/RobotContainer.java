@@ -302,7 +302,7 @@ public class RobotContainer {
                             getStagePose(
                                 FieldConstants.StageLocation.LEFT, !FieldConstants.isBlue(), 44.0),
                         false))
-                .andThen(new InstantCommand(() -> drive.driveFieldCentric = false, drive)));
+                .andThen(new InstantCommand(() -> drive.driveFieldCentric = false)));
 
     // B button
     // Climb sequence
@@ -434,22 +434,20 @@ public class RobotContainer {
     controller
         .back()
         .onTrue(
-            Commands.runOnce(() -> drive.isUsingVision = !drive.isUsingVision, drive)
+            Commands.runOnce(() -> drive.isUsingVision = !drive.isUsingVision)
                 .ignoringDisable(true));
 
     // Left stick press-down button
     // Drive robot centric
     controller
         .leftStick()
-        .onTrue(
-            Commands.runOnce(() -> drive.driveFieldCentric = false, drive).ignoringDisable(true));
+        .onTrue(Commands.runOnce(() -> drive.driveFieldCentric = false).ignoringDisable(true));
 
     // Right stick press-down button
     // Drive field centric
     controller
         .rightStick()
-        .onTrue(
-            Commands.runOnce(() -> drive.driveFieldCentric = true, drive).ignoringDisable(true));
+        .onTrue(Commands.runOnce(() -> drive.driveFieldCentric = true).ignoringDisable(true));
   }
 
   // Compute the pose where the robot should start a climb sequence
@@ -628,12 +626,12 @@ public class RobotContainer {
         // Group 2 of things to do after all the previous group finishes
         new ParallelCommandGroup(
             // Stop the drive - may not be necessary
-            new InstantCommand(() -> drive.stop()),
+            new InstantCommand(() -> drive.stop(), drive),
             // Stop the shooter
-            new InstantCommand(() -> shooter.stop()),
+            new InstantCommand(() -> shooter.stop(), shooter),
             // Lower the arm to the loading angle - do not wait for it to finish
             // This overall command can finish immediately and the robot can get back to driving
-            new InstantCommand(() -> arm.setGoalDeg(ArmConstants.ARM_LOAD_ANGLE_DEG))));
+            new InstantCommand(() -> arm.setGoalDeg(ArmConstants.ARM_LOAD_ANGLE_DEG), arm)));
   }
 
   public static final InterpolatingDoubleTreeMap CLIMB_MAP = new InterpolatingDoubleTreeMap();
@@ -646,7 +644,7 @@ public class RobotContainer {
   public Command ClimbCommand() {
     return new SequentialCommandGroup(
         new ParallelCommandGroup(
-            new InstantCommand(intake::stop),
+            new InstantCommand(intake::stop, intake),
             new InstantCommand(drive::setReferencePoint),
             new InstantCommand(() -> drive.isUsingVision = false)),
         // drive to clear chain before starting to look for the stage
@@ -667,26 +665,26 @@ public class RobotContainer {
         // tuck Note into shooter and raise arm to pre-drive angle
         new ParallelDeadlineGroup(
             new WaitUntilCommand(() -> arm.atGoal()),
-            new InstantCommand(drive::stop),
-            new InstantCommand(() -> convey.runVolts(1.2)),
-            new InstantCommand(() -> arm.setGoalDeg(23.0))),
+            new InstantCommand(drive::stop, drive),
+            new InstantCommand(() -> convey.runVolts(1.2), convey),
+            new InstantCommand(() -> arm.setGoalDeg(23.0), arm)),
         new InstantCommand(drive::setReferencePoint),
         // drive out step 1 and raise arm on the distance curve
         // raise the hooks
         new ParallelDeadlineGroup(
             new WaitUntilCommand(() -> drive.getDistFromPointM() > 0.15),
-            new InstantCommand(() -> convey.runVolts(0.0)),
+            new InstantCommand(() -> convey.runVolts(0.0), convey),
             // speed was 0.10 for comp bot
             DriveCommands.driveByValues(drive, 0.06, 0.0, 0.0, () -> false),
-            new InstantCommand(() -> winchLeft.setGoalInch(0.0)),
-            new InstantCommand(() -> winchRight.setGoalInch(0.0)),
-            new RunCommand(() -> arm.setGoalDeg(CLIMB_MAP.get(drive.getDistFromPointM())))),
+            new InstantCommand(() -> winchLeft.setGoalInch(0.0), winchLeft),
+            new InstantCommand(() -> winchRight.setGoalInch(0.0), winchRight),
+            new RunCommand(() -> arm.setGoalDeg(CLIMB_MAP.get(drive.getDistFromPointM())), arm)),
         // continue to drive out a little slower while raising the arm on the curve
         new ParallelDeadlineGroup(
             new WaitUntilCommand(() -> drive.getDistFromPointM() > 0.41),
             // speed was 0.09 for comp bot
             DriveCommands.driveByValues(drive, 0.05, 0.0, 0.0, () -> false),
-            new RunCommand(() -> arm.setGoalDeg(CLIMB_MAP.get(drive.getDistFromPointM())))),
+            new RunCommand(() -> arm.setGoalDeg(CLIMB_MAP.get(drive.getDistFromPointM())), arm)),
         // start lowering the outriggers - servo internal controller handles the lowering
         new InstantCommand(
             () ->
@@ -695,21 +693,21 @@ public class RobotContainer {
         // if hooks are not yet fully up, give time for that to complete
         new ParallelDeadlineGroup(
             new WaitUntilCommand(() -> (winchLeft.atGoal() && winchRight.atGoal())),
-            new InstantCommand(drive::stop)),
+            new InstantCommand(drive::stop, drive)),
         // drive far enough to latch hooks on chain and pull them off the uprights
         // also raise the arm to the final position for shooting in the trap
         new ParallelDeadlineGroup(
             new WaitUntilCommand(() -> drive.getDistFromPointM() > 0.69),
             // speed was 0.15 for comp bot
             DriveCommands.driveByValues(drive, 0.10, 0.0, 0.0, () -> false),
-            new InstantCommand(() -> arm.setGoalDeg(93.0)),
+            new InstantCommand(() -> arm.setGoalDeg(93.0), arm),
             new InstantCommand(() -> winchLeft.winchTuning(true), winchLeft),
             new InstantCommand(() -> winchRight.winchTuning(true), winchRight)),
         // climb by retracting both winches
         // in case something happens with the rope winding and the climbers cannot get to goal
         // use the X button to finish this group and move on to the shooting commands
         new ParallelCommandGroup(
-            new InstantCommand(drive::stop),
+            new InstantCommand(drive::stop, drive),
             new FunctionalCommand(
                 () -> winchLeft.setGoalInch(25.5),
                 () -> {},
@@ -727,12 +725,12 @@ public class RobotContainer {
         // run this for 1/2 second
         new ParallelDeadlineGroup(
             new WaitCommand(0.5),
-            new InstantCommand(() -> convey.runVolts(4.5)),
-            new InstantCommand(() -> shooter.runVoltsEach(-0.6, 6.0))),
+            new InstantCommand(() -> convey.runVolts(4.5), convey),
+            new InstantCommand(() -> shooter.runVoltsEach(-0.6, 6.0), shooter)),
         // pass 2 at depositing note
         // in case pass 1 did not eject Note, run lower shooter axle at 20% forward
         // conveyor and shooter will keep running until FMS disables at end of match
-        new InstantCommand(() -> shooter.runVoltsEach(2.4, 6.0)));
+        new InstantCommand(() -> shooter.runVoltsEach(2.4, 6.0), shooter));
   }
 
   // If there is anything that needs to happen when the robot enters disable,
