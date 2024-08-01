@@ -77,7 +77,7 @@ public class Drive extends SubsystemBase {
           VisionConstants.STD_DEVS_ODOMETRY,
           VisionConstants.STD_DEVS_VISION_DEFAULT);
 
-  private final DigitalInput stageSensor = new DigitalInput(8);
+  private final DigitalInput stageSensor = new DigitalInput(4);
 
   public boolean isUsingVision = true;
   public boolean driveFieldCentric = true;

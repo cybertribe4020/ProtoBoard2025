@@ -48,8 +48,8 @@ public class Module {
     switch (Constants.currentMode) {
       case REAL:
         driveFeedforward = new SimpleMotorFeedforward(0.1, 0.104);
-        driveFeedback = new PIDController(0.04, 0.5, 0);
-        turnFeedback = new PIDController(10.0, 0.0, 0.0);
+        driveFeedback = new PIDController(0.12, 0.0, 0.0);
+        turnFeedback = new PIDController(6.0, 0.0, 0.0);
         break;
       case REPLAY:
         driveFeedforward = new SimpleMotorFeedforward(0.1, 0.104);
