@@ -22,6 +22,8 @@ public class Module {
   private final SimpleMotorFeedforward driveFeedforward;
   private final PIDController driveFeedback;
   private final PIDController turnFeedback;
+  private double driveFBOutput;
+  private double driveFFOutput;
   private Rotation2d angleSetpoint = null; // Setpoint for closed loop control, null for open loop
   private Double speedSetpointMPS = null; // Setpoint for closed loop control, null for open loop
   private Rotation2d turnRelativeOffset = null; // Relative + Offset = Absolute
@@ -34,19 +36,22 @@ public class Module {
     // separate robot with different tuning)
     switch (Constants.currentMode) {
       case REAL:
+        // theoretical kV = ((volts-kS) * reduction * 60) / (motor shaft rpm @ volts * 2 * pi)
+        // Falcon 500 theoretical kV for this robot:
+        // ((12-0.1) * 5.903 * 60) / (6380 * 2 * pi) = 0.105
         driveFeedforward = new SimpleMotorFeedforward(0.1, 0.104);
         driveFeedback = new PIDController(0.12, 0.0, 0.0);
         turnFeedback = new PIDController(6.0, 0.0, 0.0);
         break;
       case REPLAY:
         driveFeedforward = new SimpleMotorFeedforward(0.1, 0.104);
-        driveFeedback = new PIDController(0.04, 0.5, 0.0);
-        turnFeedback = new PIDController(10.0, 0.0, 0.0);
+        driveFeedback = new PIDController(0.12, 0.0, 0.0);
+        turnFeedback = new PIDController(6.0, 0.0, 0.0);
         break;
       case SIM:
-        driveFeedforward = new SimpleMotorFeedforward(0.1, 0.135);
-        driveFeedback = new PIDController(0.5, 0.0, 0.0);
-        turnFeedback = new PIDController(10.0, 0.0, 0.0);
+        driveFeedforward = new SimpleMotorFeedforward(0.1, 0.104);
+        driveFeedback = new PIDController(0.12, 0.0, 0.0);
+        turnFeedback = new PIDController(6.0, 0.0, 0.0);
         break;
       default:
         driveFeedforward = new SimpleMotorFeedforward(0.0, 0.13);
@@ -87,9 +92,14 @@ public class Module {
 
         // Run drive controller
         double speedSetpointRadPerSec = adjustSpeedSetpointMPS / WHEEL_RADIUS_M;
-        io.setDriveVoltage(
-            driveFeedforward.calculate(speedSetpointRadPerSec)
-                + driveFeedback.calculate(inputs.driveVelocityRadPerSec, speedSetpointRadPerSec));
+        driveFFOutput = driveFeedforward.calculate(speedSetpointRadPerSec);
+        driveFBOutput =
+            driveFeedback.calculate(inputs.driveVelocityRadPerSec, speedSetpointRadPerSec);
+        io.setDriveVoltage(driveFFOutput + driveFBOutput);
+        Logger.recordOutput(
+            "Drive/Module" + Integer.toString(index) + "/feedforwardOP", driveFFOutput);
+        Logger.recordOutput(
+            "Drive/Module" + Integer.toString(index) + "/feedbackOP", driveFBOutput);
       }
     }
   }
