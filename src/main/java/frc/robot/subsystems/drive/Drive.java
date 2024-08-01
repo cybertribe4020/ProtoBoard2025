@@ -192,15 +192,15 @@ public class Drive extends SubsystemBase {
 
     // Update gyro angle
     if (gyroInputs.connected) {
-      // Use the real gyro angle
+      // Use the real gyro angle if running the real robot
       rawGyroRotation = gyroInputs.yawPosition;
     } else {
-      // Use the angle delta from the kinematics and module deltas
+      // Use the angle delta from the kinematics and module deltas if in simulation
       Twist2d twist = kinematics.toTwist2d(moduleDeltas);
       rawGyroRotation = rawGyroRotation.plus(new Rotation2d(twist.dtheta));
     }
 
-    // Apply odometry update
+    // Run an odometry update with the latest chassis information
     poseEstimator.update(rawGyroRotation, modulePositions);
 
     Logger.recordOutput("Is Using Vision?", isUsingVision);
@@ -377,12 +377,15 @@ public class Drive extends SubsystemBase {
     return !stageSensor.get();
   }
 
+  // returns distance from the estimated robot pose to a reference point
+  // distance in meters
   public double getDistFromPointM() {
     var distance = getPose().getTranslation().minus(referencePoint).getNorm();
     Logger.recordOutput("Drive/distFromRef", distance);
     return distance;
   }
 
+  // set a reference point for measuring the distance to the robot pose
   public void setReferencePoint() {
     referencePoint = getPose().getTranslation();
   }

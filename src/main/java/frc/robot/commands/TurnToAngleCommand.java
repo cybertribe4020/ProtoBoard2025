@@ -14,6 +14,11 @@ import frc.robot.subsystems.drive.Drive;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 
+// This command uses a single profiled PID controller to rotate the robot
+// in the current position to face a target angle
+// The constraints for velocity and acceleration of rotation as well as the
+// tolerance for finishing the rotation are static constants
+// The command could be overloaded to make these settable parameters
 public class TurnToAngleCommand extends ProfiledPIDCommand {
 
   public TurnToAngleCommand(Drive drive, DoubleSupplier targetAngleRad) {

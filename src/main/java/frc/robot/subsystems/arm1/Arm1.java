@@ -1,16 +1,3 @@
-// Copyright 2021-2024 FRC 6328
-// http://github.com/Mechanical-Advantage
-//
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// version 3 as published by the Free Software Foundation or
-// available in the root directory of this project.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-
 package frc.robot.subsystems.arm1;
 
 import edu.wpi.first.math.MathUtil;
@@ -63,7 +50,7 @@ public class Arm1 extends SubsystemBase {
   public Arm1(Arm1IO io) {
     this.io = io;
 
-    // set pulse durations for servo range
+    // set PWM pulse duration range for outrigger linear servo
     // 1000 us = fully retracted
     // 2000 us = fully extended
     outriggerLeft.setBoundsMicroseconds(2000, 1500, 1500, 1500, 1000);
@@ -154,7 +141,7 @@ public class Arm1 extends SubsystemBase {
         <= ArmConstants.ARM_LOAD_ANGLE_DEG + ArmConstants.ARM_IS_DOWN_TOLERANCE_DEG;
   }
 
-  // Define "up" as an angle greater than 0 radians - currently no
+  // Define "arm up" as an angle greater than 0 radians - currently no
   // shooting position would be lower than that
   public boolean armIsUp() {
     return inputs.internalPositionRad >= 0.0;

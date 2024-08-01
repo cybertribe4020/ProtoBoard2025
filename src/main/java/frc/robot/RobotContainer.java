@@ -1,16 +1,3 @@
-// Copyright 2021-2024 FRC 6328
-// http://github.com/Mechanical-Advantage
-//
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// version 3 as published by the Free Software Foundation or
-// available in the root directory of this project.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -78,12 +65,24 @@ import frc.robot.subsystems.winch.WinchIOSim;
 import frc.robot.subsystems.winch.WinchIOSparkMax;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
-/**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
- * subsystems, commands, and button mappings) should be declared here.
- */
+// Define the robot here:
+// - All subsystems
+// - Controllers
+// - Binding controller button events to commands
+// - Triggers (binding arbitrary events to commands)
+// - Named commands for PathPlanner
+// - An autonomous routine chooser for the driver dashboard
+
+// Commands for buttons can be created within the button mapping if they
+// are reasonably simple and easy to understand
+
+// More complex commands that involve multiple subsytems can be built here
+// using "command factory" methods since all the subsystems are already available
+
+// It is also acceptble to build complex commands as classes elsewhere in the codebase
+// but if it can be done here with command factory methods, it will take a lot less
+// boilerplate code to make it happen
+
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
@@ -473,6 +472,9 @@ public class RobotContainer {
     return autoChooser.get();
   }
 
+  // This is a good area to build more complex commands that are called by
+  // controller button event triggers or other triggers
+
   // aimAtSpeaker will do these things in parallel
   // Spin up the shooter to the correct voltage based on distance to target
   // Raise the arm to the correct angle looked up based on distance to target (verify noteIsLoaded
@@ -733,6 +735,10 @@ public class RobotContainer {
         new InstantCommand(() -> shooter.runVoltsEach(2.4, 6.0)));
   }
 
+  // If there is anything that needs to happen when the robot enters disable,
+  // auto, or teleop modes, those things can be defined here
+  // This might be an easier place to make this happen rather than directly
+  // in Robot.java, since all the subsystems already exist here
   public void disableInitialize() {
     arm.armClosedLoop = false;
   }

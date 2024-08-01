@@ -13,6 +13,11 @@ public class FieldConstants {
         .orElse(true);
   }
 
+  // field position in pretty much all standard software for FRC is relative
+  // to an origin where field endline on the blue side intersects with the
+  // right sideline as viewed from the blue driver stations
+  // when field elements are reflectively symmetric about the field center line
+  // you often need to "flip" the X coordinate when you are on the red alliance
   public static boolean shouldFlip() {
     return (DriverStation.getAlliance()
         .map(alliance -> alliance == DriverStation.Alliance.Red)
@@ -23,6 +28,8 @@ public class FieldConstants {
     return isBlue() ? 1 : -1;
   }
 
+  // position of the center of the speaker opening projected to the floor
+  // returned as a Translation2d object
   public static Translation2d redSpeakerPosition =
       AprilTagFields.k2024Crescendo
           .loadAprilTagLayoutField()
@@ -46,6 +53,7 @@ public class FieldConstants {
     }
   }
 
+  // location of the "center" speaker AprilTag returned as a Pose2d object
   public static Pose2d getSpeakerPose2d() {
     if (isBlue()) {
       return AprilTagFields.k2024Crescendo.loadAprilTagLayoutField().getTagPose(7).get().toPose2d();
@@ -54,8 +62,10 @@ public class FieldConstants {
     }
   }
 
-  public static Translation2d shooterPositionOffset = new Translation2d(0, 0);
-
+  // position of the center of the shooter exit projected to the floor
+  // if the robot bumper is touching the subwoofer base and the robot
+  // is centered side-to-side on the subwoofer
+  // returned as a Translation2d object
   public static Translation2d getSubwooferPosition() {
     if (DriverStation.getAlliance().isPresent()
         && DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
@@ -66,6 +76,9 @@ public class FieldConstants {
         new Translation2d(Units.feetToMeters(4.083), 0).plus(shooterPositionOffset));
   }
 
+  public static Translation2d shooterPositionOffset = new Translation2d(0, 0);
+
+  // return AprilTag IDs for red and blue for a given face of the stage
   public static enum StageLocation {
     RIGHT(12, 16),
     LEFT(11, 15),

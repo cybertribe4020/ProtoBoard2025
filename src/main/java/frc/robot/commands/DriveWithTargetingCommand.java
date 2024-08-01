@@ -25,6 +25,15 @@ import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
+// While the robot is being driven with the XY joystick, use controllers
+// to continuously adjust the robot rotation to face the shooting target
+// and also adjust the shooter speed and arm angle for the given distance
+// to target based on estimated robot pose
+// The shooter speed and arm angle are set differently depending on whether
+// the target is the speaker or a lob shot floor position
+// For speaker shots, the robot rotation is biased "past" the center of the
+// speaker opening to take advantage of the "hood" over the opening and give
+// more clearance for a shot to go in
 public class DriveWithTargetingCommand extends Command {
 
   private static final double DEADBAND = 0.1;

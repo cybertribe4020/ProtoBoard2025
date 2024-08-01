@@ -25,8 +25,16 @@ import frc.robot.FieldConstants;
 import frc.robot.subsystems.drive.Drive;
 import java.util.function.Supplier;
 
+// Drive directly to a goal pose from the current estimated robot pose
+// Separate profiled PID controllers are used for the X position,
+// Y position, and the rotation of the robot
+// Constraints on the velocity and acceleration for XY translation
+// and for rotation can be passsed or default constraints will be used
 public class DriveToPoseCommand extends Command {
 
+  // Tolerances that define when the drive controllers have reached their goal
+  // These are currently static at default values
+  // The constructor could be overloaded to allow these to be passed in as parameters
   private static final double TRANSLATION_TOLERANCE = 0.02;
   private static final double THETA_TOLERANCE = Units.degreesToRadians(2.0);
 

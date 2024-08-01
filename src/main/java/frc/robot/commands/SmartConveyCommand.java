@@ -6,6 +6,14 @@ import java.util.function.BooleanSupplier;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
+// Handles the running of the Note conveyor so the driver doesn't have to
+// Runs the conveyor at high speed when the driver asks to shoot and the shooter
+// wheels are running
+// Runs the conveyor at regular speed to move a note from the intake into the shooter
+// if the arm is down in loading position and the note sensor before the shooter wheels
+// does not detect a note
+// Stops the conveyor in any other situation
+
 public class SmartConveyCommand extends Command {
 
   private final Convey convey;

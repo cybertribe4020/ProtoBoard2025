@@ -6,6 +6,11 @@ import java.util.function.BooleanSupplier;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
+// When this command is triggered it runs the intake so the driver doesn't have to
+// It runs both intake axles in the intake direction if the arm is down in the loading
+// position and the note sensor before the shooter wheels does not detect a note
+// In any other case it runs the front/top intake axle in reverse to repel notes that
+// the robot might drive into -- the bottom axle is stopped in this mode
 public class SmartIntakeCommand extends Command {
 
   private final Intake intake;

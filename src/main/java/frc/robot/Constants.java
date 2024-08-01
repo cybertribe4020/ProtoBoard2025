@@ -1,16 +1,3 @@
-// Copyright 2021-2024 FRC 6328
-// http://github.com/Mechanical-Advantage
-//
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// version 3 as published by the Free Software Foundation or
-// available in the root directory of this project.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-
 package frc.robot;
 
 import static java.lang.Math.PI;
@@ -28,14 +15,9 @@ import edu.wpi.first.math.util.Units;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
- * constants. This class should not be used for any other purpose. All constants should be declared
- * globally (i.e. public static). Do not put anything functional in this class.
- *
- * <p>It is advised to statically import this class (or one of its inner classes) wherever the
- * constants are needed, to reduce verbosity.
- */
+// Place to hold constants that are used in multiple locations within the code
+// Consider placing subsystem-only constants in the subsystem
+// Constants should generally be declared public static final
 public final class Constants {
   public static final Mode currentMode = Mode.SIM;
   public static final Integer NUM_CAMS = 2;
@@ -94,6 +76,14 @@ public final class Constants {
     public static final String CAM_NAME_LEFT = "aprilTagLeft";
     public static final String CAM_NAME_RIGHT = "aprilTagRight";
 
+    // cam pose translation is relative to the center of the robot
+    // x is front positive to back negative
+    // y is left positive to right negative
+    // z is distance from the floor - up is positive
+    // rotation roll is if the camera is rotated about the axis pointing perpendicularly
+    //   out from the lens - this should be 0 in most cases
+    // pitch is the angle the camera is tilted up or down - negative is tilted up
+    // yaw is the angle the camera is facing - 0 is front and angle increases CCW
     public static final Transform3d CAM_POSE_REAR =
         new Transform3d(
             new Translation3d(-10.0, 0.0, 17.0).times(Units.inchesToMeters(1.0)),
@@ -108,10 +98,22 @@ public final class Constants {
             new Translation3d(-10.375, -7.44, 14.25).times(Units.inchesToMeters(1.0)),
             new Rotation3d(0.0, Math.toRadians(-26.0), Units.degreesToRadians(270.0)));
 
+    // standard deviations of pose estimates for Kalman filter fusing
+    // cameras are relative to odometry - pick odometry base values and then set cameras at
+    // multiples
+    // note that odometry angle (n3) is the gyro, so it should be very good relative to camera angle
+    // estimates
+    // n1 and n2 are x and y translation and should generally be equal
+
+    // reference odometry standard deviations are roughly in (meters, meters, radians)
+    // could probably go with (1, 1, 1) and scale camera SDs from there, but a lot of example code
+    // uses (0.05, 0.05, 0.05) and scales from that, so that is used here so our values are typical
+    public static final Matrix<N3, N1> STD_DEVS_ODOMETRY = VecBuilder.fill(0.05, 0.05, 0.05);
+
     public static final Matrix<N3, N1> STD_DEVS_VISION_DEFAULT = VecBuilder.fill(1, 1, 1.5);
     public static final Matrix<N3, N1> STD_DEVS_SINGLE_TAG = VecBuilder.fill(1.5, 1.5, 8);
     public static final Matrix<N3, N1> STD_DEVS_MULTI_TAG = VecBuilder.fill(0.5, 0.5, 1);
-    public static final Matrix<N3, N1> STD_DEVS_ODOMETRY = VecBuilder.fill(0.05, 0.05, 0.05);
+
     public static final double VISION_CUTOFF_DIST_M = 4.0;
     public static final double DIST_TO_DOUBLE_SD_M = 5.5;
     // multiply std_devs in auto to trust them less (>1) or more (<1)
@@ -192,11 +194,12 @@ public final class Constants {
     public static final double ANGLE_BIAS_MULTIPLIER = 1.1;
     public static final double AMP_SHOOT_VOLTS = 2.0;
 
-    // x: distance (meters) from rear camera lens to center of speaker opening projected down
-    // Code will take care of offset from camera lens to center of robot
-    // y: shooter arm angle above horizontal (degrees)
     public static final InterpolatingDoubleTreeMap ANGLE_MAP = new InterpolatingDoubleTreeMap();
 
+    // x: distance (meters) from rear camera lens to center of speaker opening projected down
+    // This is how the data was collected
+    // Code will take care of offset from camera lens to center of robot
+    // y: shooter arm angle above horizontal (degrees)
     static {
       ANGLE_MAP.put(Units.feetToMeters(0.0), 5.0);
       ANGLE_MAP.put(Units.feetToMeters(4.0), 6.0);
@@ -214,11 +217,12 @@ public final class Constants {
       ANGLE_MAP.put(Units.feetToMeters(16.0), 32.0);
     }
 
-    // x: distance (meters) from rear camera lens to center of speaker opening projected down
-    // Code will take care of offset from camera lens to center of robot
-    // y: shooter motor fraction output - code will convert to motor volts
     public static final InterpolatingDoubleTreeMap SPEED_MAP = new InterpolatingDoubleTreeMap();
 
+    // x: distance (meters) from rear camera lens to center of speaker opening projected down
+    // This is how the data was collected
+    // Code will take care of offset from camera lens to center of robot
+    // y: shooter motor fraction output - code will convert to motor volts
     static {
       SPEED_MAP.put(Units.feetToMeters(0.0), 0.53);
       SPEED_MAP.put(Units.feetToMeters(4.0), 0.53);
@@ -238,6 +242,8 @@ public final class Constants {
 
     public static final InterpolatingDoubleTreeMap LOB_ANGLE_MAP = new InterpolatingDoubleTreeMap();
 
+    // x: distance (meters) from the center of the robot to the target point on the floor
+    // y: arm angle above horizontal (degrees)
     static {
       LOB_ANGLE_MAP.put(Units.feetToMeters(10.0), 1.5);
       LOB_ANGLE_MAP.put(Units.feetToMeters(15.0), 3.75);
@@ -248,6 +254,8 @@ public final class Constants {
 
     public static final InterpolatingDoubleTreeMap LOB_SPEED_MAP = new InterpolatingDoubleTreeMap();
 
+    // x: distance (meters) from the center of the robot to the target point on the floor
+    // y: shooter motor volts
     static {
       LOB_SPEED_MAP.put(Units.feetToMeters(10.0), 3.3);
       LOB_SPEED_MAP.put(Units.feetToMeters(15.0), 4.0);
