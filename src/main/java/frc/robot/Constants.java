@@ -83,7 +83,7 @@ public final class Constants {
     // rotation roll is if the camera is rotated about the axis pointing perpendicularly
     //   out from the lens - this should be 0 in most cases
     // pitch is the angle the camera is tilted up or down - negative is tilted up
-    // yaw is the angle the camera is facing - 0 is front and angle increases CCW
+    // yaw is the angle the camera is facing from the robot - 0 is front and angle increases CCW
     public static final Transform3d CAM_POSE_REAR =
         new Transform3d(
             new Translation3d(-10.0, 0.0, 17.0).times(Units.inchesToMeters(1.0)),
@@ -161,6 +161,8 @@ public final class Constants {
     // External encoder reading in degrees when the arm is parallel to the floor
     public static final double ARM_ENCODER_OFFSET_DEG = 187.0;
 
+    // climb stabilization outriggers mounted to the base of the arm
+    // extension amount is 0-1, where 0 is fully retracted
     public static final double OUTRIGGER_LEFT_UP = 0.0;
     public static final double OUTRIGGER_LEFT_DOWN = 1.0;
     public static final double OUTRIGGER_RIGHT_UP = 0.05;
@@ -171,10 +173,12 @@ public final class Constants {
 
   public static class WinchConstants {
     public static final double WINCH_GEAR_REDUCTION = 25.0;
-    public static final double WINCH_TENSION_LOAD_LB = 1.0; // tension from the gas spring
-    public static final double WINCH_ROBOT_LOAD_LB =
-        117.0 / 2.0; // each winch gets 1/2 the total robot weight
+    // tension from the gas spring
+    public static final double WINCH_TENSION_LOAD_LB = 1.0;
+    // each winch gets 1/2 the total robot weight
+    public static final double WINCH_ROBOT_LOAD_LB = 117.0 / 2.0; 
     public static final double WINCH_SPOOL_DIA_IN = 1.125;
+    // winch heights are distance from the top (fully extended) position
     public static final double WINCH_MIN_HEIGHT_IN = 0.0;
     public static final double WINCH_MAX_HEIGHT_IN = 26.0;
     public static final double WINCH_START_HEIGHT_IN = 8.34;

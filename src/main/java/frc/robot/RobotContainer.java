@@ -202,12 +202,27 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+
+    // Left stick drive translation front-back, left-right
+    // Right stick chassis rotation on x-axis of stick, left CCW, right CW
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
             () -> -controller.getLeftY(),
             () -> -controller.getLeftX(),
             () -> -controller.getRightX()));
+
+    // Left stick press-down button
+    // Drive robot centric
+    controller
+        .leftStick()
+        .onTrue(Commands.runOnce(() -> drive.driveFieldCentric = false).ignoringDisable(true));
+
+    // Right stick press-down button
+    // Drive field centric
+    controller
+        .rightStick()
+        .onTrue(Commands.runOnce(() -> drive.driveFieldCentric = true).ignoringDisable(true));
 
     // POV - drive translation slowly
     // Go in the direction of the POV
@@ -230,45 +245,22 @@ public class RobotContainer {
             DriveCommands.driveByValues(drive, 0.0, -0.08, 0.0, () -> drive.driveFieldCentric));
 
     // X button
-    // Stop the drivetrain and turn the wheels to an X position
-    // controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
-
-    /* // X button
-    // Test running the winches to the 0 inch point
-    // fully extended to catch the chain
-    controller
-        .x()
-        .onTrue(
-            Commands.parallel(
-                    // Tuning for extension has less load and moves more slowly
-                    new InstantCommand(() -> winchLeft.winchTuning(false), winchLeft),
-                    new InstantCommand(() -> winchRight.winchTuning(false), winchRight))
-                .andThen(
-                    Commands.parallel(
-                        new InstantCommand(() -> winchLeft.setGoalInch(0.0), winchLeft),
-                        new InstantCommand(() -> winchRight.setGoalInch(0.0), winchRight)))); */
-
-    // X button
     // reserved for manual shooting into the trap
     // command is part of the climbing sequence
 
-    /* // A button
-    // Test running the winches to the starting point (8.34 inches)
+    // Y Button
+    // Drive to a staging location in front of the Amp
+    // Will not avoid any obstacles in the way!!
+    // Simultaneously raise the arm and run the shooter as needed for the Amp
     controller
-        .a()
-        .onTrue(
-            Commands.parallel(
-                    // Run at the slow extension rate for testing
-                    new InstantCommand(() -> winchLeft.winchTuning(false), winchLeft),
-                    new InstantCommand(() -> winchRight.winchTuning(false), winchRight))
-                .andThen(
-                    Commands.parallel(
-                        new InstantCommand(
-                            () -> winchLeft.setGoalInch(WinchConstants.WINCH_START_HEIGHT_IN),
-                            winchLeft),
-                        new InstantCommand(
-                            () -> winchRight.setGoalInch(WinchConstants.WINCH_START_HEIGHT_IN),
-                            winchRight)))); */
+        .y()
+        .whileTrue(
+            new DriveToPoseCommand(
+                    drive,
+                    drive::getPose, // could also use () -> drive.getPose()
+                    () -> new Pose2d(1.82, 7.49, Rotation2d.fromDegrees(270.0)),
+                    true)
+                .alongWith(prepareForAmpCommand()));
 
     // A button
     // Drive to the climb start location in front of stage left
@@ -308,48 +300,6 @@ public class RobotContainer {
     // Climb sequence
     controller.b().toggleOnTrue(ClimbCommand());
 
-    /* // B button
-    // Test running the winches to the 25.5 inch point
-    // mostly retracted all the way to the frame
-    controller
-        .b()
-        .onTrue(
-            Commands.parallel(
-                    // Tuning for climbing has more load and moves more quickly
-                    new InstantCommand(() -> winchLeft.winchTuning(true), winchLeft),
-                    new InstantCommand(() -> winchRight.winchTuning(true), winchRight))
-                .andThen(
-                    Commands.parallel(
-                        new InstantCommand(() -> winchLeft.setGoalInch(25.5), winchLeft),
-                        new InstantCommand(() -> winchRight.setGoalInch(25.5), winchRight)))); */
-
-    /* // B button
-    //
-    controller
-        .b()
-        .onTrue(
-            Commands.runOnce(
-                    () ->
-                        drive.setPose(
-                            new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
-                    drive)
-                .ignoringDisable(true)); */
-
-    // Right Bumper
-    // Run the intake and conveyor
-    // For now, this is set to toggle to be able to turn these motors off while testing
-    controller
-        .rightBumper()
-        .toggleOnTrue(
-            Commands.parallel(
-                new SmartIntakeCommand(intake, arm::armIsDown, convey::noteIsLoaded),
-                new SmartConveyCommand(
-                    convey,
-                    arm::armIsDown,
-                    convey::noteIsLoaded,
-                    shooter::shooterIsRunning,
-                    () -> controller.getRightTriggerAxis() > 0.5)));
-
     // Left Bumper
     // Continuous chassis rotation to face lob target but allow joystick chassis translation
     // Set shooter speed and angle continouously based on range to lob target
@@ -365,6 +315,21 @@ public class RobotContainer {
                 drive::getPose,
                 drive::getVectorForLob,
                 true));
+
+    // Right Bumper
+    // Run the intake and conveyor
+    // For now, this is set to toggle to be able to turn these motors off while testing
+    controller
+        .rightBumper()
+        .toggleOnTrue(
+            Commands.parallel(
+                new SmartIntakeCommand(intake, arm::armIsDown, convey::noteIsLoaded),
+                new SmartConveyCommand(
+                    convey,
+                    arm::armIsDown,
+                    convey::noteIsLoaded,
+                    shooter::shooterIsRunning,
+                    () -> controller.getRightTriggerAxis() > 0.5)));
 
     // Left Trigger
     // Continuous chassis rotation to face speaker but allow joystick chassis translation
@@ -395,20 +360,6 @@ public class RobotContainer {
         .onTrue(
             new ConditionalCommand(shootCommand(), depositAmpCommand(), () -> arm.armIsNotAmped()));
 
-    // Y Button
-    // Drive to a staging location in front of the Amp
-    // Will not avoid any obstacles in the way!!
-    // Simultaneously raise the arm and run the shooter as needed for the Amp
-    controller
-        .y()
-        .whileTrue(
-            new DriveToPoseCommand(
-                    drive,
-                    drive::getPose, // could also use () -> drive.getPose()
-                    () -> new Pose2d(1.82, 7.49, Rotation2d.fromDegrees(270.0)),
-                    true)
-                .alongWith(prepareForAmpCommand()));
-
     // Start button
     // Drive a path with obstacle avoidance to climb start location in front of red stage left
     // Note that the pathplanner only gets within a "navgrid" resolution of the target pose
@@ -437,20 +388,75 @@ public class RobotContainer {
             Commands.runOnce(() -> drive.isUsingVision = !drive.isUsingVision)
                 .ignoringDisable(true));
 
-    // Left stick press-down button
-    // Drive robot centric
-    controller
-        .leftStick()
-        .onTrue(Commands.runOnce(() -> drive.driveFieldCentric = false).ignoringDisable(true));
+    // X button
+    // Stop the drivetrain and turn the wheels to an X position
+    // controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
-    // Right stick press-down button
-    // Drive field centric
+    /* // X button
+    // Test running the winches to the 0 inch point
+    // fully extended to catch the chain
     controller
-        .rightStick()
-        .onTrue(Commands.runOnce(() -> drive.driveFieldCentric = true).ignoringDisable(true));
+        .x()
+        .onTrue(
+            Commands.parallel(
+                    // Tuning for extension has less load and moves more slowly
+                    new InstantCommand(() -> winchLeft.winchTuning(false), winchLeft),
+                    new InstantCommand(() -> winchRight.winchTuning(false), winchRight))
+                .andThen(
+                    Commands.parallel(
+                        new InstantCommand(() -> winchLeft.setGoalInch(0.0), winchLeft),
+                        new InstantCommand(() -> winchRight.setGoalInch(0.0), winchRight)))); */
+
+    /* // A button
+    // Test running the winches to the starting point (8.34 inches)
+    controller
+        .a()
+        .onTrue(
+            Commands.parallel(
+                    // Run at the slow extension rate for testing
+                    new InstantCommand(() -> winchLeft.winchTuning(false), winchLeft),
+                    new InstantCommand(() -> winchRight.winchTuning(false), winchRight))
+                .andThen(
+                    Commands.parallel(
+                        new InstantCommand(
+                            () -> winchLeft.setGoalInch(WinchConstants.WINCH_START_HEIGHT_IN),
+                            winchLeft),
+                        new InstantCommand(
+                            () -> winchRight.setGoalInch(WinchConstants.WINCH_START_HEIGHT_IN),
+                            winchRight)))); */
+
+    /* // B button
+    // Test running the winches to the 25.5 inch point
+    // mostly retracted all the way to the frame
+    controller
+        .b()
+        .onTrue(
+            Commands.parallel(
+                    // Tuning for climbing has more load and moves more quickly
+                    new InstantCommand(() -> winchLeft.winchTuning(true), winchLeft),
+                    new InstantCommand(() -> winchRight.winchTuning(true), winchRight))
+                .andThen(
+                    Commands.parallel(
+                        new InstantCommand(() -> winchLeft.setGoalInch(25.5), winchLeft),
+                        new InstantCommand(() -> winchRight.setGoalInch(25.5), winchRight)))); */
+
+    /* // B button
+    //
+    controller
+        .b()
+        .onTrue(
+            Commands.runOnce(
+                    () ->
+                        drive.setPose(
+                            new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
+                    drive)
+                .ignoringDisable(true)); */
   }
 
   // Compute the pose where the robot should start a climb sequence
+  // Determine the AprilTag ID of the stage face to climb on
+  // then lookup the pose of that tag and offset a desired distance
+  // in front of that tag
   public Pose2d getStagePose(StageLocation stage, boolean isRedAlliance, double offsetInches) {
     int tagId = isRedAlliance ? stage.tagIdRed : stage.tagIdBlue;
     Pose2d tagPose =
@@ -636,11 +642,15 @@ public class RobotContainer {
 
   public static final InterpolatingDoubleTreeMap CLIMB_MAP = new InterpolatingDoubleTreeMap();
 
+  // curve to follow relating the arm angle to the distance driven out
+  // from the sensed under-stage starting position in the pre-climb sequence
   static {
     CLIMB_MAP.put(Units.feetToMeters(0.0), 23.0);
     CLIMB_MAP.put(Units.feetToMeters(1.33), 63.0);
   }
 
+  // Huge sequence of steps to take to accomplish a climb starting from
+  // a known pose in front of the target trap
   public Command ClimbCommand() {
     return new SequentialCommandGroup(
         new ParallelCommandGroup(
@@ -649,30 +659,30 @@ public class RobotContainer {
             new InstantCommand(() -> drive.isUsingVision = false)),
         // drive to clear chain before starting to look for the stage
         new ParallelDeadlineGroup(
-            new WaitUntilCommand(() -> drive.getDistFromPointM() > 0.61),
+            new WaitUntilCommand(() -> drive.getDistFromPointM() > Units.inchesToMeters(24.0)),
             // speed was -.19 for comp bot
             DriveCommands.driveByValues(drive, -0.125, 0.0, 0.0, () -> false)),
-        // drive until sensing the stage
+        // drive until sensing the stage (or a fixed distance in simulation)
         new ParallelDeadlineGroup(
             new WaitUntilCommand(
                 () ->
                     drive.underStage()
                         || (Constants.currentMode == Constants.Mode.SIM
-                            && drive.getDistFromPointM() > 1.0)),
+                            && drive.getDistFromPointM() > Units.inchesToMeters(40.0))),
             // speed was -.19 for comp bot
             DriveCommands.driveByValues(drive, -0.125, 0.0, 0.0, () -> false)),
-        // reset reference point for drive-out
         // tuck Note into shooter and raise arm to pre-drive angle
         new ParallelDeadlineGroup(
             new WaitUntilCommand(() -> arm.atGoal()),
             new InstantCommand(drive::stop, drive),
             new InstantCommand(() -> convey.runVolts(1.2), convey),
             new InstantCommand(() -> arm.setGoalDeg(23.0), arm)),
+        // reset reference point for drive-out
         new InstantCommand(drive::setReferencePoint),
         // drive out step 1 and raise arm on the distance curve
         // raise the hooks
         new ParallelDeadlineGroup(
-            new WaitUntilCommand(() -> drive.getDistFromPointM() > 0.15),
+            new WaitUntilCommand(() -> drive.getDistFromPointM() > Units.inchesToMeters(5.9)),
             new InstantCommand(() -> convey.runVolts(0.0), convey),
             // speed was 0.10 for comp bot
             DriveCommands.driveByValues(drive, 0.06, 0.0, 0.0, () -> false),
@@ -681,7 +691,7 @@ public class RobotContainer {
             new RunCommand(() -> arm.setGoalDeg(CLIMB_MAP.get(drive.getDistFromPointM())), arm)),
         // continue to drive out a little slower while raising the arm on the curve
         new ParallelDeadlineGroup(
-            new WaitUntilCommand(() -> drive.getDistFromPointM() > 0.41),
+            new WaitUntilCommand(() -> drive.getDistFromPointM() > Units.inchesToMeters(16.0)),
             // speed was 0.09 for comp bot
             DriveCommands.driveByValues(drive, 0.05, 0.0, 0.0, () -> false),
             new RunCommand(() -> arm.setGoalDeg(CLIMB_MAP.get(drive.getDistFromPointM())), arm)),
@@ -697,7 +707,7 @@ public class RobotContainer {
         // drive far enough to latch hooks on chain and pull them off the uprights
         // also raise the arm to the final position for shooting in the trap
         new ParallelDeadlineGroup(
-            new WaitUntilCommand(() -> drive.getDistFromPointM() > 0.69),
+            new WaitUntilCommand(() -> drive.getDistFromPointM() > Units.inchesToMeters(27.0)),
             // speed was 0.15 for comp bot
             DriveCommands.driveByValues(drive, 0.10, 0.0, 0.0, () -> false),
             new InstantCommand(() -> arm.setGoalDeg(93.0), arm),
