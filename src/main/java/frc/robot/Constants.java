@@ -176,7 +176,7 @@ public final class Constants {
     // tension from the gas spring
     public static final double WINCH_TENSION_LOAD_LB = 1.0;
     // each winch gets 1/2 the total robot weight
-    public static final double WINCH_ROBOT_LOAD_LB = 117.0 / 2.0; 
+    public static final double WINCH_ROBOT_LOAD_LB = 117.0 / 2.0;
     public static final double WINCH_SPOOL_DIA_IN = 1.125;
     // winch heights are distance from the top (fully extended) position
     public static final double WINCH_MIN_HEIGHT_IN = 0.0;
