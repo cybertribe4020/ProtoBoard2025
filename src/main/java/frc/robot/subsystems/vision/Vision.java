@@ -4,6 +4,8 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.drive.Drive;
@@ -14,12 +16,21 @@ public class Vision extends SubsystemBase {
 
   private Drive drive;
   private VisionSystemSim visionSim;
+  private Field2d field;
+  private final FieldObject2d[] visionEsts = new FieldObject2d[Constants.NUM_CAMS];
 
   // The layout of the AprilTags on the field
   public AprilTagFieldLayout tagLayout = (AprilTagFields.kDefaultField.loadAprilTagLayoutField());
 
   public Vision(Drive robotDrive) {
     drive = robotDrive;
+
+    // create a field object for displaying on a dashboard
+    field = new Field2d();
+    for (int i = 0; i < visionEsts.length; i++) {
+      visionEsts[i] = field.getObject("camera-" + i);
+    }
+    SmartDashboard.putData("Field", field);
 
     if (Constants.currentMode == Constants.Mode.SIM) { // SIM only, not REPLAY
       // Create the vision system simulation which handles cameras and targets on the field.
@@ -41,7 +52,13 @@ public class Vision extends SubsystemBase {
   public void periodic() {
     for (int n = 0; n < Constants.NUM_CAMS; n++) {
       cameras[n].periodic();
+
+      // update the estimated poses from each camera in the field object
+      visionEsts[n].setPose(cameras[n].getCameraEstPose());
     }
+
+    // update the robot pose in the field object
+    field.setRobotPose(drive.getPose());
   }
 
   @Override

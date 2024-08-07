@@ -11,6 +11,7 @@ public class Intake extends SubsystemBase {
   private final IntakeIO io;
   private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
   private final SimpleMotorFeedforward ffModel;
+  private String intakeStatus = "#F44336";
 
   /** Creates a new Intake. */
   public Intake(IntakeIO io) {
@@ -40,9 +41,17 @@ public class Intake extends SubsystemBase {
   @Override
   public void periodic() {
     io.updateInputs(inputs);
+    if (inputs.velocityRPM[1] > 100) {
+      intakeStatus = "#4CAF50"; // green
+    } else if (inputs.velocityRPM[1] < -100) {
+      intakeStatus = "#CCCC3D"; // yellow
+    } else {
+      intakeStatus = "#F44336"; // red
+    }
     Logger.processInputs("Intake", inputs);
     Logger.recordOutput("Intake/RPMLower", inputs.velocityRPM[0]);
     Logger.recordOutput("Intake/RPMUpper", inputs.velocityRPM[1]);
+    Logger.recordOutput("Intake/Status", intakeStatus);
   }
 
   /** Stops the intake. */

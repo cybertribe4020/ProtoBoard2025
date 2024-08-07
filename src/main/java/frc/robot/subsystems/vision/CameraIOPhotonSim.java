@@ -2,6 +2,7 @@ package frc.robot.subsystems.vision;
 
 import static frc.robot.Constants.VisionConstants.*;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import frc.robot.subsystems.drive.Drive;
@@ -15,6 +16,7 @@ import org.photonvision.targeting.PhotonPipelineResult;
 public class CameraIOPhotonSim extends CameraIOPhoton {
   private final PhotonCameraSim cameraSim;
   private final VisionSystemSim visionSim;
+  protected Pose2d estPose2d;
 
   public CameraIOPhotonSim(Drive robotDrive, int index, VisionSystemSim visSim) {
     super(robotDrive, index);
@@ -60,7 +62,10 @@ public class CameraIOPhotonSim extends CameraIOPhoton {
     Boolean newResult = (Math.abs(pipelineResult.getTimestampSeconds() - lastEstTimestamp) > 1e-5);
 
     visionEst.ifPresentOrElse(
-        est -> simField.getObject(cameraName).setPose(est.estimatedPose.toPose2d()),
+        est -> {
+          simField.getObject(cameraName).setPose(est.estimatedPose.toPose2d());
+          estPose2d = est.estimatedPose.toPose2d();
+        },
         () -> {
           if (newResult) {
             simField.getObject(cameraName).setPoses();
@@ -68,5 +73,10 @@ public class CameraIOPhotonSim extends CameraIOPhoton {
         });
 
     return visionEst;
+  }
+
+  @Override
+  public Pose2d getEstPose2d() {
+    return (estPose2d == null) ? new Pose2d(0, 0, new Rotation2d(0)) : estPose2d;
   }
 }

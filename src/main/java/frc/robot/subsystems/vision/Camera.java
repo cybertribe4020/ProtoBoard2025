@@ -1,5 +1,6 @@
 package frc.robot.subsystems.vision;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import frc.robot.Constants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.vision.CameraIO.CameraIOInputs;
@@ -33,5 +34,9 @@ public class Camera {
   public void periodic() {
     cameraIO.updateInputs(cameraInputs);
     Logger.processInputs("Vision/Camera" + Integer.toString(cameraIndex), cameraInputs);
+  }
+
+  public Pose2d getCameraEstPose() {
+    return cameraIO.getEstPose2d();
   }
 }

@@ -30,6 +30,7 @@ public class Arm1 extends SubsystemBase {
   private Double pidOutput;
   private Double feedforwardOutput;
   private Double angleGoalRad = Units.degreesToRadians(ArmConstants.ARM_LOAD_ANGLE_DEG);
+  private String armStatus = "#000000";
   public Boolean armClosedLoop = false;
 
   // Create a Mechanism2d display of an Arm with a fixed ArmTower and moving Arm.
@@ -104,10 +105,19 @@ public class Arm1 extends SubsystemBase {
       pid.reset(inputs.internalPositionRad);
     }
 
+    if (inputs.internalPositionRad < -0.523) {
+      armStatus = "#4CAF50"; // green
+    } else if (inputs.internalPositionRad < 0.872) {
+      armStatus = "#F44336"; // red
+    } else {
+      armStatus = "#9528CC"; // purple
+    }
+
     Logger.recordOutput("Arm/angleInternalRad", inputs.internalPositionRad);
     Logger.recordOutput("Arm/angleInternalDeg", Units.radiansToDegrees(inputs.internalPositionRad));
     Logger.recordOutput("Arm/motorVolts", inputs.appliedVolts);
     Logger.recordOutput("Arm/armIsUp", armIsUp());
+    Logger.recordOutput("Arm/status", armStatus);
 
     // Update the Mechanism Arm angle based on the simulated arm angle
     arm.setAngle(Units.radiansToDegrees(inputs.internalPositionRad));

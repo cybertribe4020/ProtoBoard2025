@@ -7,6 +7,7 @@ import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
@@ -33,6 +34,7 @@ public class CameraIOPhoton implements CameraIO {
   private final RawSubscriber rawBytesSubscriber;
   protected String cameraName;
   private Drive drive;
+  protected Pose2d estPose2d;
 
   // The layout of the AprilTags on the field
   public AprilTagFieldLayout tagLayout = (AprilTagFields.kDefaultField.loadAprilTagLayoutField());
@@ -175,7 +177,7 @@ public class CameraIOPhoton implements CameraIO {
 
       if (visionEst.isPresent()) {
         var photonPoseEst = visionEst.get();
-        var estPose2d = photonPoseEst.estimatedPose.toPose2d();
+        estPose2d = photonPoseEst.estimatedPose.toPose2d();
         var latestTimestamp = pipelineResult.getTimestampSeconds();
 
         if (Math.abs(latestTimestamp - lastEstTimestamp) > 1e-5) {
@@ -216,5 +218,10 @@ public class CameraIOPhoton implements CameraIO {
         Logger.recordOutput("Vision/" + cameraName + "/distance", Double.NaN);
       }
     }
+  }
+
+  @Override
+  public Pose2d getEstPose2d() {
+    return (estPose2d == null) ? new Pose2d(0, 0, new Rotation2d(0)) : estPose2d;
   }
 }

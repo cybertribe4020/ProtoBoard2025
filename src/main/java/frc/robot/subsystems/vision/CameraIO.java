@@ -57,4 +57,6 @@ public interface CameraIO {
 
   public abstract Matrix<N3, N1> getEstimationStdDevs(
       Pose2d estimatedPose, PhotonPipelineResult pipelineResult);
+
+  public abstract Pose2d getEstPose2d();
 }
