@@ -10,12 +10,15 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 public class Shooter extends SubsystemBase {
   private final ShooterIO io;
   private final ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
   private final SimpleMotorFeedforward ffModel;
   private final SysIdRoutine sysId;
+
+  public LoggedDashboardNumber shooterSpeedMult = new LoggedDashboardNumber("ShootSpeedMult", 1.0);
 
   /** Creates a new Shooter. */
   public Shooter(ShooterIO io) {
@@ -60,17 +63,19 @@ public class Shooter extends SubsystemBase {
 
   /** Run open loop at the specified voltage. */
   public void runVolts(double volts) {
-    io.setVoltage(volts);
+    io.setVoltage(volts * shooterSpeedMult.get());
   }
 
   /** Run open loop at the specified voltage for each axle separately. */
   public void runVoltsEach(double voltsLower, double voltsUpper) {
-    io.setVoltageEach(voltsLower, voltsUpper);
+    double multiplier = shooterSpeedMult.get();
+    io.setVoltageEach(voltsLower * multiplier, voltsUpper * multiplier);
   }
 
   /** Run closed loop at the specified velocity. */
   public void runVelocity(double velocityRPM) {
-    var velocityRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(velocityRPM);
+    var velocityRadPerSec =
+        Units.rotationsPerMinuteToRadiansPerSecond(velocityRPM) * shooterSpeedMult.get();
     io.setVelocity(velocityRadPerSec, ffModel.calculate(velocityRadPerSec));
 
     // Log shooter setpoint
