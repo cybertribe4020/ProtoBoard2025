@@ -660,7 +660,7 @@ public class RobotContainer {
             new InstantCommand(() -> drive.isUsingVision = false)),
         // drive to clear chain before starting to look for the stage
         new ParallelDeadlineGroup(
-            new WaitUntilCommand(() -> drive.getDistFromPointM() > Units.inchesToMeters(24.0)),
+            new WaitUntilCommand(() -> drive.getMetersFromPoint() > Units.inchesToMeters(24.0)),
             // speed was -.19 for comp bot
             DriveCommands.driveByValues(drive, -0.125, 0.0, 0.0, () -> false)),
         // drive until sensing the stage (or a fixed distance in simulation)
@@ -669,7 +669,7 @@ public class RobotContainer {
                 () ->
                     drive.underStage()
                         || (Constants.currentMode == Constants.Mode.SIM
-                            && drive.getDistFromPointM() > Units.inchesToMeters(40.0))),
+                            && drive.getMetersFromPoint() > Units.inchesToMeters(40.0))),
             // speed was -.19 for comp bot
             DriveCommands.driveByValues(drive, -0.125, 0.0, 0.0, () -> false)),
         // tuck Note into shooter and raise arm to pre-drive angle
@@ -683,19 +683,19 @@ public class RobotContainer {
         // drive out step 1 and raise arm on the distance curve
         // raise the hooks
         new ParallelDeadlineGroup(
-            new WaitUntilCommand(() -> drive.getDistFromPointM() > Units.inchesToMeters(5.9)),
+            new WaitUntilCommand(() -> drive.getMetersFromPoint() > Units.inchesToMeters(5.9)),
             new InstantCommand(() -> convey.runVolts(0.0), convey),
             // speed was 0.10 for comp bot
             DriveCommands.driveByValues(drive, 0.06, 0.0, 0.0, () -> false),
             new InstantCommand(() -> winchLeft.setGoalInch(0.0), winchLeft),
             new InstantCommand(() -> winchRight.setGoalInch(0.0), winchRight),
-            new RunCommand(() -> arm.setGoalDeg(CLIMB_MAP.get(drive.getDistFromPointM())), arm)),
+            new RunCommand(() -> arm.setGoalDeg(CLIMB_MAP.get(drive.getMetersFromPoint())), arm)),
         // continue to drive out a little slower while raising the arm on the curve
         new ParallelDeadlineGroup(
-            new WaitUntilCommand(() -> drive.getDistFromPointM() > Units.inchesToMeters(16.0)),
+            new WaitUntilCommand(() -> drive.getMetersFromPoint() > Units.inchesToMeters(16.0)),
             // speed was 0.09 for comp bot
             DriveCommands.driveByValues(drive, 0.05, 0.0, 0.0, () -> false),
-            new RunCommand(() -> arm.setGoalDeg(CLIMB_MAP.get(drive.getDistFromPointM())), arm)),
+            new RunCommand(() -> arm.setGoalDeg(CLIMB_MAP.get(drive.getMetersFromPoint())), arm)),
         // start lowering the outriggers - servo internal controller handles the lowering
         new InstantCommand(
             () ->
@@ -708,7 +708,7 @@ public class RobotContainer {
         // drive far enough to latch hooks on chain and pull them off the uprights
         // also raise the arm to the final position for shooting in the trap
         new ParallelDeadlineGroup(
-            new WaitUntilCommand(() -> drive.getDistFromPointM() > Units.inchesToMeters(27.0)),
+            new WaitUntilCommand(() -> drive.getMetersFromPoint() > Units.inchesToMeters(27.0)),
             // speed was 0.15 for comp bot
             DriveCommands.driveByValues(drive, 0.10, 0.0, 0.0, () -> false),
             new InstantCommand(() -> arm.setGoalDeg(93.0), arm),

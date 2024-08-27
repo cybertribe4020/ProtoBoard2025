@@ -379,7 +379,7 @@ public class Drive extends SubsystemBase {
 
   // returns distance from the estimated robot pose to a reference point
   // distance in meters
-  public double getDistFromPointM() {
+  public double getMetersFromPoint() {
     var distance = getPose().getTranslation().minus(referencePoint).getNorm();
     Logger.recordOutput("Drive/distFromRef", distance);
     return distance;
