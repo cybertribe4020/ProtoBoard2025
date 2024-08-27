@@ -83,6 +83,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 // but if it can be done here with command factory methods, it will take a lot less
 // boilerplate code to make it happen
 
+@SuppressWarnings({"unused"})
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
