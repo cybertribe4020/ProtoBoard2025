@@ -264,12 +264,26 @@ public class RobotContainer {
                 .alongWith(prepareForAmpCommand()));
 
     // A button
+    // Drive to the climb start location in front of the closest stage face
+    // When done driving, put robot in robot-centric drive mode to enable sideways adjustment
+    controller
+        .a()
+        .whileTrue(
+            new DriveToPoseCommand(
+                    drive,
+                    drive::getPose, // could also use () -> drive.getPose()
+                    () -> getNearestStagePose(!FieldConstants.isBlue(), 44.0),
+                    false)
+                .andThen(new InstantCommand(() -> drive.driveFieldCentric = false)));
+
+    // A button
     // Drive to the climb start location in front of stage left
     // Will avoid stage trusses with PathPlanner
     // Note that pathfindToPoseFlipped could not be used becuase stage left is
     // rotationally symmetric about the field center, not "flipped"
     // about the center line
     // When done driving, put robot in robot-centric drive mode to enable sideways adjustment
+    /*
     controller
         .a()
         .whileTrue(
@@ -296,9 +310,12 @@ public class RobotContainer {
                                 FieldConstants.StageLocation.LEFT, !FieldConstants.isBlue(), 44.0),
                         false))
                 .andThen(new InstantCommand(() -> drive.driveFieldCentric = false)));
+    */
 
     // B button
     // Climb sequence
+    // Press and release the B button to run the sequence
+    // If there is a problem, press and release the B button again to cancel
     controller.b().toggleOnTrue(ClimbCommand());
 
     // Left Bumper
@@ -452,6 +469,55 @@ public class RobotContainer {
                             new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
                     drive)
                 .ignoringDisable(true)); */
+  }
+
+  // Compute the pose where the robot should start a climb sequence
+  // Find the nearest stage AprilTag to the current robot position
+  // then lookup the pose of that tag and offset a desired distance
+  // in front of that tag
+  public Pose2d getNearestStagePose(boolean isRedAlliance, double offsetInches) {
+    Pose2d botPose = drive.getPose();
+    Pose2d tagPose;
+    double distMin;
+    if (isRedAlliance) {
+      var tagPoseL = FieldConstants.getTagPose2d(11);
+      var distL = botPose.minus(tagPoseL).getTranslation().getNorm();
+      var tagPoseR = FieldConstants.getTagPose2d(12);
+      var distR = botPose.minus(tagPoseR).getTranslation().getNorm();
+      if (distL < distR) {
+        tagPose = tagPoseL;
+        distMin = distL;
+      } else {
+        tagPose = tagPoseR;
+        distMin = distR;
+      }
+      var tagPoseC = FieldConstants.getTagPose2d(13);
+      var distC = botPose.minus(tagPoseC).getTranslation().getNorm();
+      if (distC < distMin) {
+        tagPose = tagPoseC;
+      }
+    } else {
+      var tagPoseL = FieldConstants.getTagPose2d(15);
+      var distL = botPose.minus(tagPoseL).getTranslation().getNorm();
+      var tagPoseR = FieldConstants.getTagPose2d(16);
+      var distR = botPose.minus(tagPoseR).getTranslation().getNorm();
+      if (distL < distR) {
+        tagPose = tagPoseL;
+        distMin = distL;
+      } else {
+        tagPose = tagPoseR;
+        distMin = distR;
+      }
+      var tagPoseC = FieldConstants.getTagPose2d(14);
+      var distC = botPose.minus(tagPoseC).getTranslation().getNorm();
+      if (distC < distMin) {
+        tagPose = tagPoseC;
+      }
+    }
+    Transform2d offset =
+        new Transform2d(
+            new Translation2d(Units.inchesToMeters(offsetInches), 0), Rotation2d.fromDegrees(0));
+    return tagPose.plus(offset);
   }
 
   // Compute the pose where the robot should start a climb sequence

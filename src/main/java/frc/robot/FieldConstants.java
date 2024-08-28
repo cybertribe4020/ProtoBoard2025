@@ -62,6 +62,15 @@ public class FieldConstants {
     }
   }
 
+  // location of an AprilTag ID returned as a Pose2d object
+  public static Pose2d getTagPose2d(int tagId) {
+    return AprilTagFields.k2024Crescendo
+        .loadAprilTagLayoutField()
+        .getTagPose(tagId)
+        .get()
+        .toPose2d();
+  }
+
   // position of the center of the shooter exit projected to the floor
   // if the robot bumper is touching the subwoofer base and the robot
   // is centered side-to-side on the subwoofer

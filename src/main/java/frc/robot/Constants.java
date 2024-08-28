@@ -19,7 +19,7 @@ import java.util.Map;
 // Consider placing subsystem-only constants in the subsystem
 // Constants should generally be declared public static final
 public final class Constants {
-  public static final Mode currentMode = Mode.REAL;
+  public static final Mode currentMode = Mode.SIM;
   public static final Integer NUM_CAMS = 3;
 
   public static enum Mode {
