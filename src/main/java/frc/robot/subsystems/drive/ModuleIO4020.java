@@ -42,38 +42,38 @@ public class ModuleIO4020 implements ModuleIO {
   private final RelativeEncoder turnRelativeEncoder;
 
   // Gear ratio for SDS MK4i L2 with 16T drive motor pinion
-  private final double DRIVE_GEAR_RATIO =
-      (50.0 / 16.0) * (17.0 / 27.0) * (45.0 / 15.0); // this is the gear reduction (driven/driving)
-  private final double TURN_GEAR_RATIO = 150.0 / 7.0; // this is the gear reduction (driven/driving)
+  // Gear ratios are for reduction (driven/driving)
+  private final double DRIVE_GEAR_RATIO = (50.0 / 16.0) * (17.0 / 27.0) * (45.0 / 15.0);
+  private final double TURN_GEAR_RATIO = 150.0 / 7.0;
 
   private final boolean isTurnMotorInverted = true;
   private final Rotation2d absoluteEncoderOffset;
 
   public ModuleIO4020(int index) {
     switch (index) {
-      case 0: // FL
+      case 0: // FRONT LEFT
         driveTalon = new TalonFX(4);
         turnSparkMax = new CANSparkMax(3, MotorType.kBrushless);
         cancoder = new CANcoder(3);
-        absoluteEncoderOffset = new Rotation2d(5.28); // ToDo: MUST BE CALIBRATED
+        absoluteEncoderOffset = new Rotation2d(5.28); // Calibration value in radians Module0
         break;
-      case 1: // FR
+      case 1: // FRONT RIGHT
         driveTalon = new TalonFX(2);
         turnSparkMax = new CANSparkMax(1, MotorType.kBrushless);
         cancoder = new CANcoder(1);
-        absoluteEncoderOffset = new Rotation2d(1.92); // ToDo: MUST BE CALIBRATED
+        absoluteEncoderOffset = new Rotation2d(1.92); // Calibration value in radians Module1
         break;
-      case 2: // BL
+      case 2: // BACK LEFT
         driveTalon = new TalonFX(6);
         turnSparkMax = new CANSparkMax(5, MotorType.kBrushless);
         cancoder = new CANcoder(5);
-        absoluteEncoderOffset = new Rotation2d(3.30); // ToDo: MUST BE CALIBRATED
+        absoluteEncoderOffset = new Rotation2d(3.30); // Calibration value in radians Module2
         break;
-      case 3: // BR
+      case 3: // BACK RIGHT
         driveTalon = new TalonFX(8);
         turnSparkMax = new CANSparkMax(7, MotorType.kBrushless);
         cancoder = new CANcoder(7);
-        absoluteEncoderOffset = new Rotation2d(0.49); // ToDo: MUST BE CALIBRATED
+        absoluteEncoderOffset = new Rotation2d(0.49); // Calibration value in radians Module3
         break;
       default:
         throw new RuntimeException("Invalid module index");
@@ -103,8 +103,10 @@ public class ModuleIO4020 implements ModuleIO {
 
     turnRelativeEncoder.setPosition(0.0);
     // default encoder sensor filtering may be too much filtering for good control
-    // reduce filtering substantially compared to defaults
-    turnRelativeEncoder.setMeasurementPeriod(10);
+    // reduce filtering substantially for a NEO compared to defaults
+    // period can be 8-64 (default 32) for NEO, 1-100 (default) for Vortex
+    // average depth can be 1, 2, 4, 8 (default) for NEO, 1-64 (default) for Vortex
+    turnRelativeEncoder.setMeasurementPeriod(16);
     turnRelativeEncoder.setAverageDepth(2);
 
     BaseStatusSignal.setUpdateFrequencyForAll(

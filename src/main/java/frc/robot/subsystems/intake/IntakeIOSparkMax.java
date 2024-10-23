@@ -38,6 +38,8 @@ public class IntakeIOSparkMax implements IntakeIO {
 
     // for velocity control with low inertia, reduce the encoder sensor filtering
     // default filter values add so much effective dead time that P control is almost impossible
+    // period can be 8-64 (default 32) for NEO, 1-100 (default) for Vortex
+    // average depth can be 1, 2, 4, 8 (default) for NEO, 1-64 (default) for Vortex
     encLower.setMeasurementPeriod(16);
     encUpper.setMeasurementPeriod(16);
     encLower.setAverageDepth(2);

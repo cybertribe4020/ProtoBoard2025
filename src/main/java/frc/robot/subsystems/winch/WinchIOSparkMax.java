@@ -35,6 +35,8 @@ public class WinchIOSparkMax implements WinchIO {
 
     // Start with default filtering on the NEO internal encoders
     // Reduce filtering if needed for good control
+    // period can be 8-64 (default 32) for NEO, 1-100 (default) for Vortex
+    // average depth can be 1, 2, 4, 8 (default) for NEO, 1-64 (default) for Vortex
     // internalEncoder.setMeasurementPeriod(16); // default is 32
     // internalEncoder.setAverageDepth(2); // default is 8
     // internalEncoder.setMeasurementPeriod(16); // default is 32

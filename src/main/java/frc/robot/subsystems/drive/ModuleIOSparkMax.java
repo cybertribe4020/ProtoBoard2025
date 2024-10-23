@@ -99,13 +99,17 @@ public class ModuleIOSparkMax implements ModuleIO {
     driveEncoder.setPosition(0.0);
     // default encoder sensor filtering may be too much filtering for good control
     // reduce filtering substantially compared to defaults
-    driveEncoder.setMeasurementPeriod(10);
+    // period can be 8-64 (default 32) for NEO, 1-100 (default) for Vortex
+    // average depth can be 1, 2, 4, 8 (default) for NEO, 1-64 (default) for Vortex
+    driveEncoder.setMeasurementPeriod(16);
     driveEncoder.setAverageDepth(2);
 
     turnRelativeEncoder.setPosition(0.0);
     // default encoder sensor filtering may be too much filtering for good control
     // reduce filtering substantially compared to defaults
-    turnRelativeEncoder.setMeasurementPeriod(10);
+    // period can be 8-64 (default 32) for NEO, 1-100 (default) for Vortex
+    // average depth can be 1, 2, 4, 8 (default) for NEO, 1-64 (default) for Vortex
+    turnRelativeEncoder.setMeasurementPeriod(16);
     turnRelativeEncoder.setAverageDepth(2);
 
     driveSparkMax.setCANTimeout(0);

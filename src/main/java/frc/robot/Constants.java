@@ -20,7 +20,7 @@ import java.util.Map;
 // Constants should generally be declared public static final
 public final class Constants {
   public static final Mode currentMode = Mode.REAL;
-  public static final Integer NUM_CAMS = 3;
+  public static final Integer NUM_CAMS = 1;
 
   public static enum Mode {
     REAL, // running on a real robot
@@ -99,10 +99,10 @@ public final class Constants {
             new Rotation3d(0.0, Math.toRadians(-26.0), Units.degreesToRadians(270.0)));
 
     // standard deviations of pose estimates for Kalman filter fusing
-    // cameras are relative to odometry - pick odometry base values and then set cameras at
-    // multiples
-    // note that odometry angle (n3) is the gyro, so it should be very good relative to camera angle
-    // estimates
+    // cameras are relative to odometry
+    // pick odometry base values and then set cameras at multiples
+    // note that odometry angle (n3) is the gyro,
+    //   so it should be very good relative to camera angle estimates
     // n1 and n2 are x and y translation and should generally be equal
 
     // reference odometry standard deviations are roughly in (meters, meters, radians)

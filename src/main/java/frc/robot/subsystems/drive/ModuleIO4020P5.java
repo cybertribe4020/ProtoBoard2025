@@ -95,7 +95,7 @@ public class ModuleIO4020P5 implements ModuleIO {
     turnRelativeEncoder.setPosition(0.0);
     // default encoder sensor filtering may be too much filtering for good control
     // reduce filtering substantially compared to defaults
-    turnRelativeEncoder.setMeasurementPeriod(10);
+    turnRelativeEncoder.setMeasurementPeriod(16);
     turnRelativeEncoder.setAverageDepth(2);
 
     driveTalon.setStatusFramePeriod(
