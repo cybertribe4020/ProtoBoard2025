@@ -1,4 +1,4 @@
-package frc.robot.subsystems.convey;
+package frc.robot.subsystems.maxVelocity1;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -11,16 +11,17 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
-public class Convey extends SubsystemBase {
-  private final ConveyIO io;
-  private final ConveyIOInputsAutoLogged inputs = new ConveyIOInputsAutoLogged();
+public class MaxVelocity1 extends SubsystemBase {
+  private final MaxVelocity1IO io;
+  private final MaxVelocity1IOInputsAutoLogged inputs = new MaxVelocity1IOInputsAutoLogged();
   private final SimpleMotorFeedforward ffModel;
-  private final DigitalInput conveyNoteSensor = new DigitalInput(9);
+  private final DigitalInput maxVelocity1NoteSensor = new DigitalInput(9);
 
-  public LoggedDashboardNumber conveyVelocityInput = new LoggedDashboardNumber("Convey RPM", 900);
+  public LoggedDashboardNumber maxVelocity1VelocityInput =
+      new LoggedDashboardNumber("MaxVelocity1 RPM", 900);
 
-  /** Creates a new Convey. */
-  public Convey(ConveyIO io) {
+  /** Creates a new MaxVelocity1. */
+  public MaxVelocity1(MaxVelocity1IO io) {
     this.io = io;
 
     // Switch constants based on mode (the physics simulator is treated as a
@@ -47,7 +48,7 @@ public class Convey extends SubsystemBase {
   @Override
   public void periodic() {
     io.updateInputs(inputs);
-    Logger.processInputs("Convey", inputs);
+    Logger.processInputs("MaxVelocity1", inputs);
   }
 
   /** Run open loop at the specified voltage. */
@@ -59,8 +60,8 @@ public class Convey extends SubsystemBase {
   public void runVelocity(double velocityRPM) {
     io.setVelocity(velocityRPM, ffModel.calculate(velocityRPM));
 
-    Logger.recordOutput("Convey/SetpointRPM", velocityRPM);
-    Logger.recordOutput("Convey/ffVolts", ffModel.calculate(velocityRPM));
+    Logger.recordOutput("MaxVelocity1/SetpointRPM", velocityRPM);
+    Logger.recordOutput("MaxVelocity1/ffVolts", ffModel.calculate(velocityRPM));
   }
 
   /** Stops the convey. */
@@ -77,13 +78,15 @@ public class Convey extends SubsystemBase {
   // The note sensor reads True without a note present and False when it sees a note
   @AutoLogOutput
   public boolean noteIsLoaded() {
-    return !conveyNoteSensor.get();
+    return !maxVelocity1NoteSensor.get();
   }
 
   // Run conveyor until the Note sensor detects the Note
-  // There is no simulation of the Note sensor, so just stop the simulated conveyor immediately
+  // There is no simulation of the Note sensor, so just stop the simulated maxVelocity1or
+  // immediately
   public Command loadCommand() {
-    return new StartEndCommand(() -> runVelocity(conveyVelocityInput.get()), () -> stop(), this)
+    return new StartEndCommand(
+            () -> runVelocity(maxVelocity1VelocityInput.get()), () -> stop(), this)
         .until(() -> (noteIsLoaded() || RobotBase.isSimulation()))
         .withName("Load");
   }

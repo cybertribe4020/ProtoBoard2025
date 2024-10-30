@@ -5,20 +5,14 @@ import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import frc.robot.Constants.ArmConstants;
 
 public class Arm1IOSparkFlex implements Arm1IO {
 
-  private final CANSparkFlex leader = new CANSparkFlex(22, MotorType.kBrushless);
+  private final CANSparkFlex leader = new CANSparkFlex(3, MotorType.kBrushless);
   private final RelativeEncoder motorInternalEncoder = leader.getEncoder();
-  private final DutyCycleEncoder extAbsoluteEncoder = new DutyCycleEncoder(8);
 
   private final boolean isMotorInverted = true;
-
-  // Offset so through-bore encoder will read 0 when the arm is parallel to the floor
-  private final double absoluteEncoderOffsetRad =
-      Units.degreesToRadians(ArmConstants.ARM_ENCODER_OFFSET_DEG);
 
   // Power on the robot with the arm fully down against the physical stops
   // This position is the ARM_MIN_ANGLE_DEG
@@ -45,14 +39,10 @@ public class Arm1IOSparkFlex implements Arm1IO {
 
     leader.setCANTimeout(0);
     leader.burnFlash();
-
-    extAbsoluteEncoder.setDutyCycleRange(1.0 / 1025.0, 1024.0 / 1025.0);
   }
 
   @Override
   public void updateInputs(Arm1IOInputs inputs) {
-    inputs.absolutePositionRad =
-        (extAbsoluteEncoder.getAbsolutePosition() * 2.0 * Math.PI) - absoluteEncoderOffsetRad;
     inputs.internalPositionRad =
         Units.rotationsToRadians(motorInternalEncoder.getPosition())
             / ArmConstants.ARM_GEAR_REDUCTION;

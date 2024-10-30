@@ -52,7 +52,6 @@ public class Arm1IOSim implements Arm1IO {
     arm1Sim.update(LOOP_PERIOD_SEC);
 
     // Log sim data
-    inputs.absolutePositionRad = arm1Sim.getAngleRads();
     inputs.internalPositionRad = arm1Sim.getAngleRads();
     inputs.internalVelocityRadPerSec = arm1Sim.getVelocityRadPerSec();
     inputs.appliedVolts = appliedVolts;

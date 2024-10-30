@@ -13,7 +13,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -28,8 +27,8 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
  * the package after creating this project, you must also update the build.gradle file in the
  * project.
  */
+@SuppressWarnings("unused")
 public class Robot extends LoggedRobot {
-  private Command autonomousCommand;
   private RobotContainer robotContainer;
 
   /**
@@ -39,22 +38,6 @@ public class Robot extends LoggedRobot {
   @Override
   public void robotInit() {
     // Record metadata
-    Logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
-    Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
-    Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
-    Logger.recordMetadata("GitDate", BuildConstants.GIT_DATE);
-    Logger.recordMetadata("GitBranch", BuildConstants.GIT_BRANCH);
-    switch (BuildConstants.DIRTY) {
-      case 0:
-        Logger.recordMetadata("GitDirty", "All changes committed");
-        break;
-      case 1:
-        Logger.recordMetadata("GitDirty", "Uncomitted changes");
-        break;
-      default:
-        Logger.recordMetadata("GitDirty", "Unknown");
-        break;
-    }
 
     // Set up data receivers & replay source
     switch (Constants.currentMode) {
@@ -101,44 +84,18 @@ public class Robot extends LoggedRobot {
   }
 
   /** This function is called once when the robot is disabled. */
-  @Override
-  public void disabledInit() {
-    robotContainer.disableInitialize();
-  }
 
   /** This function is called periodically when disabled. */
   @Override
   public void disabledPeriodic() {}
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
-  @Override
-  public void autonomousInit() {
-    robotContainer.autoInitialize();
-    autonomousCommand = robotContainer.getAutonomousCommand();
-
-    // schedule the autonomous command (example)
-    if (autonomousCommand != null) {
-      autonomousCommand.schedule();
-    }
-  }
 
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {}
 
   /** This function is called once when teleop is enabled. */
-  @Override
-  public void teleopInit() {
-    // This makes sure that the autonomous stops running when
-    // teleop starts running. If you want the autonomous to
-    // continue until interrupted by another command, remove
-    // this line or comment it out.
-    if (autonomousCommand != null) {
-      autonomousCommand.cancel();
-    }
-
-    robotContainer.teleopInitialize();
-  }
 
   /** This function is called periodically during operator control. */
   @Override

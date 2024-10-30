@@ -5,7 +5,6 @@ import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
@@ -25,11 +24,9 @@ public class Arm1 extends SubsystemBase {
   private final Arm1IOInputsAutoLogged inputs = new Arm1IOInputsAutoLogged();
   private final ArmFeedforward ffModel;
   private final ProfiledPIDController pid;
-  private final Servo outriggerLeft = new Servo(0);
-  private final Servo outriggerRight = new Servo(1);
   private Double pidOutput;
   private Double feedforwardOutput;
-  private Double angleGoalRad = Units.degreesToRadians(ArmConstants.ARM_LOAD_ANGLE_DEG);
+  private Double angleGoalRad = Units.degreesToRadians(ArmConstants.ARM_TARGET_DEG);
   private String armStatus = "#000000";
   public Boolean armClosedLoop = false;
 
@@ -50,12 +47,6 @@ public class Arm1 extends SubsystemBase {
   /** Creates a new Arm. */
   public Arm1(Arm1IO io) {
     this.io = io;
-
-    // set PWM pulse duration range for outrigger linear servo
-    // 1000 us = fully retracted
-    // 2000 us = fully extended
-    outriggerLeft.setBoundsMicroseconds(2000, 1500, 1500, 1500, 1000);
-    outriggerRight.setBoundsMicroseconds(2000, 1500, 1500, 1500, 1000);
 
     // Put Mechanism 2d to SmartDashboard
     SmartDashboard.putData("Arm Sim", mech2d);
@@ -146,9 +137,14 @@ public class Arm1 extends SubsystemBase {
 
   // Check if arm is within a tolerance of the down/load position.
   // Typically used as a permissive in commands.
-  public boolean armIsDown() {
+  public boolean armAtTarget() {
     return Units.radiansToDegrees(inputs.internalPositionRad)
-        <= ArmConstants.ARM_LOAD_ANGLE_DEG + ArmConstants.ARM_IS_DOWN_TOLERANCE_DEG;
+        <= ArmConstants.ARM_TARGET_DEG + ArmConstants.ARM_IS_DOWN_TOLERANCE_DEG;
+  }
+
+  public boolean armAtZero() {
+    return Units.radiansToDegrees(inputs.internalPositionRad)
+        <= ArmConstants.ARM_IS_DOWN_TOLERANCE_DEG;
   }
 
   // Define "arm up" as an angle greater than 0 radians - currently no
@@ -168,17 +164,12 @@ public class Arm1 extends SubsystemBase {
     return pid.atGoal();
   }
 
-  // Set outriggers to desired fraction of full extension
-  // 0 = fully retracted
-  // 1 = fully extended
-  public void setOutriggerPos(double fracExtendLeft, double fracExtendRight) {
-    outriggerLeft.set(MathUtil.clamp(fracExtendLeft, 0.0, 1.0));
-    outriggerRight.set(MathUtil.clamp(fracExtendRight, 0.0, 1.0));
+  // Move the arm to the stow/loading position.
+  public Command armToTargetCommand() {
+    return new RunCommand(() -> setGoalDeg(ArmConstants.ARM_TARGET_DEG)).until(() -> armAtTarget());
   }
 
-  // Move the arm to the stow/loading position.
-  public Command armToLoadCommand() {
-    return new RunCommand(() -> setGoalDeg(ArmConstants.ARM_LOAD_ANGLE_DEG))
-        .until(() -> armIsDown());
+  public Command armToZeroCommand() {
+    return new RunCommand(() -> setGoalDeg(0.0)).until(() -> armAtZero());
   }
 }

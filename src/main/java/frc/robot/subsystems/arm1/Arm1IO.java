@@ -5,7 +5,6 @@ import org.littletonrobotics.junction.AutoLog;
 public interface Arm1IO {
   @AutoLog
   public static class Arm1IOInputs {
-    public double absolutePositionRad = 0.0;
     public double internalPositionRad = 0.0;
     public double internalVelocityRadPerSec = 0.0;
     public double appliedVolts = 0.0;

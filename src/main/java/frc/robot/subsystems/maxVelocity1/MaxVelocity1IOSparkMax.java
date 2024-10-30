@@ -1,4 +1,4 @@
-package frc.robot.subsystems.convey;
+package frc.robot.subsystems.maxVelocity1;
 
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -7,14 +7,14 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.SparkPIDController.ArbFFUnits;
 
-public class ConveyIOSparkMax implements ConveyIO {
+public class MaxVelocity1IOSparkMax implements MaxVelocity1IO {
   private static final double GEAR_RATIO = 4.0; // this is the gear reduction (driven/driving)
 
-  private final CANSparkMax leader = new CANSparkMax(11, MotorType.kBrushless);
+  private final CANSparkMax leader = new CANSparkMax(1, MotorType.kBrushless);
   private final RelativeEncoder encoder = leader.getEncoder();
   private final SparkPIDController pid = leader.getPIDController();
 
-  public ConveyIOSparkMax() {
+  public MaxVelocity1IOSparkMax() {
     leader.restoreFactoryDefaults();
     leader.setCANTimeout(250);
     leader.setInverted(false);
@@ -33,7 +33,7 @@ public class ConveyIOSparkMax implements ConveyIO {
   }
 
   @Override
-  public void updateInputs(ConveyIOInputs inputs) {
+  public void updateInputs(MaxVelocity1IOInputs inputs) {
     inputs.positionRot = encoder.getPosition() / GEAR_RATIO;
     inputs.velocityRPM = encoder.getVelocity() / GEAR_RATIO;
     inputs.appliedVolts = leader.getAppliedOutput() * leader.getBusVoltage();

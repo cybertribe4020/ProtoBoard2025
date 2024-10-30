@@ -1,11 +1,11 @@
-package frc.robot.subsystems.convey;
+package frc.robot.subsystems.maxVelocity2;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 
-public class ConveyIOSim implements ConveyIO {
+public class MaxVelocity2IOSim implements MaxVelocity2IO {
   private FlywheelSim sim = new FlywheelSim(DCMotor.getNeo550(1), 4.0, 0.0001);
   private PIDController pid = new PIDController(0.0, 0.0, 0.0);
 
@@ -14,7 +14,7 @@ public class ConveyIOSim implements ConveyIO {
   private double appliedVolts = 0.0;
 
   @Override
-  public void updateInputs(ConveyIOInputs inputs) {
+  public void updateInputs(MaxVelocity2IOInputs inputs) {
     if (closedLoop) {
       appliedVolts =
           MathUtil.clamp(pid.calculate(sim.getAngularVelocityRPM()) + ffVolts, -12.0, 12.0);

@@ -11,29 +11,27 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
-package frc.robot.subsystems.intake;
+package frc.robot.subsystems.maxVelocity1;
 
 import org.littletonrobotics.junction.AutoLog;
 
-public interface IntakeIO {
+public interface MaxVelocity1IO {
   @AutoLog
-  public static class IntakeIOInputs {
-    // Note that the 0 list position is the lower/back roller and 1 is upper/front
-    public double[] positionRot = new double[] {};
-    public double[] velocityRPM = {0.0, 0.0};
-    public double[] appliedVolts = new double[] {};
-    public double[] currentAmps = new double[] {};
+  public static class MaxVelocity1IOInputs {
+    public double positionRot = 0.0;
+    public double velocityRPM = 0.0;
+    public double appliedVolts = 0.0;
+    public double currentAmps = 0.0;
   }
 
   /** Updates the set of loggable inputs. */
-  public default void updateInputs(IntakeIOInputs inputs) {}
+  public default void updateInputs(MaxVelocity1IOInputs inputs) {}
 
-  /** Run each axle (lower/upper) open loop at the specified voltage. */
-  public default void setVoltage(double voltsLower, double voltsUpper) {}
+  /** Run open loop at the specified voltage. */
+  public default void setVoltage(double volts) {}
 
-  /** Run each axle (lower/upper) closed loop at the specified velocity. */
-  public default void setVelocity(
-      double velocityRPMLower, double ffVoltsLower, double velocityRPMUpper, double ffVoltsUpper) {}
+  /** Run closed loop at the specified velocity. */
+  public default void setVelocity(double velocityRPM, double ffVolts) {}
 
   /** Stop in open loop. */
   public default void stop() {}

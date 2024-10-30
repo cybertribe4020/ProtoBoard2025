@@ -11,34 +11,27 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
-package frc.robot.subsystems.shooter;
+package frc.robot.subsystems.maxVelocity2;
 
 import org.littletonrobotics.junction.AutoLog;
 
-public interface ShooterIO {
+public interface MaxVelocity2IO {
   @AutoLog
-  public static class ShooterIOInputs {
-    public double positionLowerRad = 0.0;
-    public double velocityLowerRadPerSec = 0.0;
-    public double appliedVoltsLower = 0.0;
-    public double currentAmpsLower = 0.0;
-    public double positionUpperRad = 0.0;
-    public double velocityUpperRadPerSec = 0.0;
-    public double appliedVoltsUpper = 0.0;
-    public double currentAmpsUpper = 0.0;
+  public static class MaxVelocity2IOInputs {
+    public double positionRot = 0.0;
+    public double velocityRPM = 0.0;
+    public double appliedVolts = 0.0;
+    public double currentAmps = 0.0;
   }
 
   /** Updates the set of loggable inputs. */
-  public default void updateInputs(ShooterIOInputs inputs) {}
+  public default void updateInputs(MaxVelocity2IOInputs inputs) {}
 
   /** Run open loop at the specified voltage. */
   public default void setVoltage(double volts) {}
 
-  /** Run open loop at the specified voltage per axle. */
-  public default void setVoltageEach(double voltsLower, double voltsUpper) {}
-
   /** Run closed loop at the specified velocity. */
-  public default void setVelocity(double velocityRadPerSec, double ffVolts) {}
+  public default void setVelocity(double velocityRPM, double ffVolts) {}
 
   /** Stop in open loop. */
   public default void stop() {}

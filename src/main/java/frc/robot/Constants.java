@@ -151,7 +151,7 @@ public final class Constants {
     // Arm angle is defined to be 0 when the arm is parallel to the floor
     public static final double ARM_MIN_ANGLE_DEG = -34.0;
     public static final double ARM_MAX_ANGLE_DEG = 95.0;
-    public static final double ARM_LOAD_ANGLE_DEG = -31.0;
+    public static final double ARM_TARGET_DEG = 90.0;
     public static final double ARM_AMP_ANGLE_DEG = 83.0;
     public static final double ARM_AMP_ANGLE2_DEG = 93.0;
     // how close to the PID goal to be considered at goal?
